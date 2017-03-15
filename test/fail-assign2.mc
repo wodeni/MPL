@@ -1,0 +1,1 @@
+boolean b = 12;
