@@ -21,8 +21,7 @@ open Ast
 %token FUNC NULL NEW 
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
 %token IMG MAT
-%token <int> LITERAL
-%token <float> FLOATLIT
+%token <Ast.num> LITERAL
 %token <string> ID
 %token <string> LITSTR
 %token EOF
@@ -69,7 +68,7 @@ formal_list:
 
 typ:
   primitives { Typ($1) }
-  
+
 primitives:
     LITERAL { Int }
   | BOOL { Bool }

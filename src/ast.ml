@@ -24,7 +24,6 @@ type num = Int of int | Float of float
 
 type expr =
     Literal of num
-  | FloatLit of num
   | BoolLit of bool
   | MatrixLit of num list list
   | Id of string
