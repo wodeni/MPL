@@ -10,8 +10,7 @@
  * Jiangfeng Wang    <jw3107@columbia.edu>
  *)
 
-type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or
+type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq | And | Or
 
 type uop = Neg | Not
 

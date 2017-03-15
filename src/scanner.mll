@@ -64,6 +64,10 @@ let newline = '\n' | "\r\n"
 let whitespace = [' ' '\t']
 let consecutive_strings = ['"'] whitespace* ['"']
 let backslash_escapes = ['\\' '"' '\'' 'n' 't' 'b' 'r']
+let digit      = ['0'-'9']
+let integer    = digit+
+let exp = ('e' | 'E') ('+' | '-')? digit+
+let float = '.' digit+ exp? | digit+ ('.' digit* exp? | exp)
 
 rule token = parse
   newline            { Lexing.new_line lexbuf; token lexbuf }
@@ -96,7 +100,7 @@ rule token = parse
 | "AND"    { AND }
 | "OR"     { OR }
 | "NOT"    { NOT }
-| "neg"	   { NEG }
+(* | "neg"	   { NEG } *)
 | "@"      { APPLY }
 | ".@"     { MATAPP }
 | "^"      { TRANS }
@@ -135,7 +139,8 @@ rule token = parse
 | "Mat"	   { MAT }
 
 (* Integer literals, identifiers, and others *)
-| ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
+| integer as lxm { LITERAL(int_of_string lxm) }
+| float as lxm { FLOATLIT(float_of_string lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }

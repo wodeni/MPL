@@ -16,12 +16,13 @@ open Ast
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA
 %token PLUS MINUS TIMES DIVIDE ASSIGN NOT
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR
-%token NEG APPLY MATAPP TRANS EMULT VOID
-%token RETURN IF ELSE WHILE INT BOOL 
+%token APPLY MATAPP TRANS EMULT EDIV VOID
+%token RETURN IF ELSE ELSEIF WHILE INT BOOL FLOAT
 %token FUNC NULL NEW 
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
 %token IMG MAT
 %token <int> LITERAL
+%token <float> FLOATLIT
 %token <string> ID
 %token <string> LITSTR
 %token EOF
@@ -67,8 +68,8 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-    INT                      { BInt($1)  }
-  | NEG INT                  { BInt(-$2) }
+    LITERAL                      { BInt($1)  }
+  | NEG LITERAL                  { BInt(-$2) }
   | BOOL { Bool }
   | VOID { Void }
   | FLOAT { Float }/* to be checked */
@@ -91,8 +92,6 @@ stmt:
   | LBRACE stmt_list RBRACE { Block(List.rev $2) }
   | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
-  | FOR LPAREN expr_opt SEMI expr SEMI expr_opt RPAREN stmt
-     { For($3, $5, $7, $9) }
   | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
 
 expr_opt:
