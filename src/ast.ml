@@ -10,30 +10,38 @@
  * Jiangfeng Wang    <jw3107@columbia.edu>
  *)
 
-type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq | And | Or
+type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
+          And | Or | Apply | Matapp
 
 type uop = Neg | Not
 
-type typ = Int | Bool | Void
+type typ = Int | Bool | Void | Float
+          | Mat of typ
 
 type bind = typ * string
 
+type num = Int of int | Float of float
+
 type expr =
-    Literal of int
+    Literal of num
+  | FloatLit of num
   | BoolLit of bool
+  | MatrixLit of num list list
   | Id of string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
   | Call of string * expr list
   | Noexpr
+  | Null
+  | MatrixAccess of string * expr * expr
 
 type stmt =
     Block of stmt list
   | Expr of expr
   | Return of expr
   | If of expr * stmt * stmt
-  | For of expr * expr * expr * stmt
+(*  | For of expr * expr * expr * stmt *)
   | While of expr * stmt
 
 type func_decl = {
@@ -61,6 +69,8 @@ let string_of_op = function
   | Geq -> ">="
   | And -> "&&"
   | Or -> "||"
+  | Apply -> "@"
+  | Matapp -> ".@"
 
 let string_of_uop = function
     Neg -> "-"

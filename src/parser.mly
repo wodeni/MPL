@@ -13,7 +13,7 @@
 open Ast
 %}
 
-%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA
+%token SEMI LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COMMA
 %token PLUS MINUS TIMES DIVIDE ASSIGN NOT
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR
 %token APPLY MATAPP TRANS EMULT EDIV VOID
@@ -68,11 +68,14 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-    LITERAL                      { BInt($1)  }
-  | NEG LITERAL                  { BInt(-$2) }
+  primitives { Typ($1) }
+  
+primitives:
+    LITERAL { Int }
   | BOOL { Bool }
   | VOID { Void }
-  | FLOAT { Float }/* to be checked */
+  | FLOAT { Float }
+  | MAT LT typ GT ID { Matrix($3)}
 
 vdecl_list:
     /* nothing */    { [] }
@@ -117,12 +120,15 @@ expr:
   | expr GEQ    expr { Binop($1, Geq,   $3) }
   | expr AND    expr { Binop($1, And,   $3) }
   | expr OR     expr { Binop($1, Or,    $3) }
+  | expr APPLY  expr { Binop($1, Apply, $3) }
+  | expr MATAPP expr { Binop($1, Matapp, $3) }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
   | NOT expr         { Unop(Not, $2) }
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
-  | matrix           { ChanMat((BInt(1),BInt(1)), List.rev $1) } /*added*/
+  | LBRACKET mat_lit RBRACKET { MatrixLit($2) } 
+  | ID LBRACKET expr COMMA expr RBRACKET      { MatrixAccess($1, $3, $5) }
 
 expr_opt:
     /* nothing */ { [] }
@@ -138,15 +144,13 @@ actuals_list:
 
 /* matrix parsing */
 lit:
-  typ                    { $1 }
+  LITERAL                     { $1 }
 
-matrix_row:
-  lit                         { [$1] }
-  | matrix_row lit            { $2 :: $1 } 
+lit_list:
+    lit                       { [$1] }
+    | lit_list lit            { $2 :: $1 }
 
-matrix_start:
-  | LBRACE matrix_row        { [List.rev $2] }
-  | matrix_start SEMI matrix_row { (List.rev $3) :: $1 }
-
-matrix:
-  matrix_start RBRACE         { $1 }             
+matrix_lit:
+  | lit_list                  { $1 }
+  | matrix_lit SEMI lit_list  { $3 :: $1 }
+             
