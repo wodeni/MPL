@@ -21,7 +21,7 @@ open Ast
 %token FUNC NULL NEW 
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
 %token IMG MAT
-%token <Ast.num> LITERAL
+%token <int> LITERAL
 %token <string> ID
 %token <string> LITSTR
 %token EOF
@@ -53,10 +53,10 @@ decls:
 fdecl:
    typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
      { { typ = $1;
-	 fname = $2;
-	 formals = $4;
-	 locals = List.rev $7;
-	 body = List.rev $8 } }
+   fname = $2;
+   formals = $4;
+   locals = List.rev $7;
+   body = List.rev $8 } }
 
 formals_opt:
     /* nothing */ { [] }
@@ -67,15 +67,10 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-  primitives { Typ($1) }
-
-primitives:
-    LITERAL { Int }
+    INT { Int }
   | BOOL { Bool }
   | VOID { Void }
   | FLOAT { Float }
-  | MAT LT typ GT ID { Matrix($3)}
-
 vdecl_list:
     /* nothing */    { [] }
   | vdecl_list vdecl { $2 :: $1 }
@@ -105,8 +100,8 @@ expr:
   | TRUE             { BoolLit(true) }
   | FALSE            { BoolLit(false) }
   | ID               { Id($1) }
-  | LITSTR           { StringLit($1) } /* added */
-  | NULL             { NULL } /* added */
+  | NULL             { NULL }
+  | LITSTR           { Litstr($1) }
   | expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
   | expr TIMES  expr { Binop($1, Mult,  $3) }
@@ -119,19 +114,13 @@ expr:
   | expr GEQ    expr { Binop($1, Geq,   $3) }
   | expr AND    expr { Binop($1, And,   $3) }
   | expr OR     expr { Binop($1, Or,    $3) }
-  | expr APPLY  expr { Binop($1, Apply, $3) }
-  | expr MATAPP expr { Binop($1, Matapp, $3) }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
   | NOT expr         { Unop(Not, $2) }
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
-  | LBRACKET mat_lit RBRACKET { MatrixLit($2) } 
+  | LBRACKET matrix_lit RBRACKET              { MatrixLit($2) } /* lbrace causes shift/reduct conflict */
   | ID LBRACKET expr COMMA expr RBRACKET      { MatrixAccess($1, $3, $5) }
-
-expr_opt:
-    /* nothing */ { [] }
-  | expr  { $1 }  /*added*/
 
 actuals_opt:
     /* nothing */ { [] }

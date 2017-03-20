@@ -23,10 +23,11 @@ type bind = typ * string
 type num = Int of int | Float of float
 
 type expr =
-    Literal of num
+    Literal of typ
   | BoolLit of bool
-  | MatrixLit of num list list
+  | MatrixLit of typ list list
   | Id of string
+  | Litstr of string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
