@@ -76,7 +76,7 @@ rule token = parse
 | '"'       	     { reset_string_buffer ();    (* String literals *)
 			parse_string lexbuf;
 			(*handle_lexical_error string lexbuf;*)
-			LITSTR(get_stored_string ()) }
+			STRLIT(get_stored_string ()) }
 (* Punctuation *)
 | '('      { LPAREN }
 | ')'      { RPAREN }

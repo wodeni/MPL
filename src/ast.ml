@@ -11,21 +11,24 @@
  *)
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or | Apply | Matapp
+          And | Or | Apply | Matapp | Emult | Ediv
 
 type uop = Neg | Not
 
-type typ = Int | Bool | Float
-          | Mat of typ
+type primitives = Int | Bool | Float | Mat
+type typ = Typ of primitives
 
 type bind = typ * string
 
 type num = Int of int | Float of float
 
+type var_dec = typ * string
+type formal = Formal of typ * string
+type local = Local of typ * string
+
 type expr =
-    Intlit of int
+    NumLit of num
   | BoolLit of bool
-  | FloatLit of float
   | MatrixLit of typ list list
   | Id of string
   | Litstr of string
@@ -55,7 +58,7 @@ type func_decl = {
 
 type program = bind list * func_decl list
 
-(* Pretty-printing functions *)
+(* Pretty-printing functions
 
 let string_of_op = function
     Add -> "+"
@@ -72,13 +75,15 @@ let string_of_op = function
   | Or -> "||"
   | Apply -> "@"
   | Matapp -> ".@"
+  | Emult -> ".*"
+  | Ediv -> "./"
 
 let string_of_uop = function
     Neg -> "-"
   | Not -> "!"
 
 let rec string_of_expr = function
-    Literal(l) -> string_of_int l
+    IntLit(l) -> string_of_int l
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   | Id(s) -> s
@@ -120,3 +125,4 @@ let string_of_fdecl fdecl =
 let string_of_program (vars, funcs) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs)
+*)
