@@ -16,12 +16,13 @@ open Ast
 %token SEMI LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COMMA
 %token PLUS MINUS TIMES DIVIDE ASSIGN NOT
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR
-%token APPLY MATAPP TRANS EMULT EDIV VOID
+%token APPLY MATAPP TRANS EMULT EDIV
 %token RETURN IF ELSE ELSEIF WHILE INT BOOL FLOAT
 %token FUNC NULL NEW 
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
 %token IMG MAT
-%token <int> LITERAL
+%token <int> INTLIT
+%token <float> FLOATLIT
 %token <string> ID
 %token <string> LITSTR
 %token EOF
@@ -33,6 +34,7 @@ open Ast
 %left AND
 %left EQ NEQ
 %left LT GT LEQ GEQ
+%left APPLY MATAPP
 %left PLUS MINUS
 %left TIMES DIVIDE
 %right NOT NEG
@@ -69,8 +71,9 @@ formal_list:
 typ:
     INT { Int }
   | BOOL { Bool }
-  | VOID { Void }
   | FLOAT { Float }
+  | MAT { Mat($2, $4, $6) }
+
 vdecl_list:
     /* nothing */    { [] }
   | vdecl_list vdecl { $2 :: $1 }
@@ -96,7 +99,8 @@ expr_opt:
   | expr          { $1 }
 
 expr:
-    LITERAL          { Literal($1) }
+    INTLIT           { IntLit($1) }
+  | FLOATLIT         { FloatLit($1) }
   | TRUE             { BoolLit(true) }
   | FALSE            { BoolLit(false) }
   | ID               { Id($1) }
@@ -114,12 +118,14 @@ expr:
   | expr GEQ    expr { Binop($1, Geq,   $3) }
   | expr AND    expr { Binop($1, And,   $3) }
   | expr OR     expr { Binop($1, Or,    $3) }
+  | expr APPLY  expr { Binop($1, Apply, $3) }
+  | expr MATAPP expr { Binop($1, Matapp, $3) } 
   | MINUS expr %prec NEG { Unop(Neg, $2) }
   | NOT expr         { Unop(Not, $2) }
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
-  | LBRACKET matrix_lit RBRACKET              { MatrixLit($2) } /* lbrace causes shift/reduct conflict */
+  | LBRACKET matrix_lit RBRACKET              { MatrixLit($2) }
   | ID LBRACKET expr COMMA expr RBRACKET      { MatrixAccess($1, $3, $5) }
 
 actuals_opt:
@@ -132,11 +138,12 @@ actuals_list:
 
 /* matrix parsing */
 lit:
-  LITERAL                     { $1 }
+  INTLIT                      { $1 }
+  | FLOATLIT                  { $1 }
 
 lit_list:
-    lit                       { [$1] }
-    | lit_list lit            { $2 :: $1 }
+  lit                       { [$1] }
+  | lit_list lit            { $2 :: $1 }
 
 matrix_lit:
   | lit_list                  { $1 }
