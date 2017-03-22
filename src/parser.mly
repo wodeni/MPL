@@ -70,7 +70,7 @@ primitives:
     INT { Int }
   | BOOL { Bool }
   | FLOAT { Float }
-  | MAT LT primitives GT { Mat }
+  | MAT LT primitives GT { Mat($3) }
 
 vdecl_list:
     /* nothing */    { [] }
