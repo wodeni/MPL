@@ -34,7 +34,7 @@ type expr =
   | Litstr of string
   | Binop of expr * op * expr
   | Unop of uop * expr
-  | Assign of string * expr
+  | Assign of expr * expr
   | Call of string * expr list
   | Noexpr
   | Null
