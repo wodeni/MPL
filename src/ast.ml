@@ -34,7 +34,7 @@ type expr =
   | Litstr of string
   | Binop of expr * op * expr
   | Unop of uop * expr
-  | Assign of expr * expr
+  | Assign of string * expr
   | Call of string * expr list
   | Noexpr
   | Null
@@ -56,7 +56,7 @@ type func_decl = {
     body : stmt list;
   }
 
-type program = bind list * func_decl list
+type program = func_decl list
 
 (* Pretty-printing functions
 
