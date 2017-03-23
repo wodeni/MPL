@@ -15,15 +15,18 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-type primitives = Int | Bool | Float | Mat
+type mtype = Int | Float | Bool
+type primitives = Int | Bool | Float | Void
+                  | Mat of mtype * num * num 
+                  | FMat of mtype * num * num
+
 type typ = Typ of primitives
 
 type bind = typ * string
 
-type num = Int of int | Float of float
+type num = IntLit of int | FloatLit of float
 
 type var_dec = typ * string
-type formal = Formal of typ * string
 type local = Local of typ * string
 
 type expr =
@@ -51,7 +54,6 @@ type stmt =
 type func_decl = {
     typ : typ;
     fname : string;
-    formals : bind list;
     locals : bind list;
     body : stmt list;
   }

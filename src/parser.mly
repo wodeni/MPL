@@ -17,7 +17,7 @@ open Ast
 %token PLUS MINUS TIMES DIVIDE ASSIGN NOT
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR
 %token APPLY MATAPP TRANS EMULT EDIV
-%token RETURN IF ELSE ELSEIF WHILE INT BOOL FLOAT
+%token RETURN VOID IF ELSE ELSEIF WHILE INT BOOL FLOAT
 %token NULL NEW FUNC
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
 %token IMG MAT
@@ -51,17 +51,9 @@ decls:
   | decls fdecl        { fst $1, ($2 :: snd $1) }
 
 fdecl:
-  typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
-    { { return_type = $1; fname = $2; formals = $4;
-      locals = List.rev $7; body = List.rev $8 } }
-
-formals_opt:
-    /* nothing */ { [] }
-  | formal_list   { List.rev $1 }
-
-formal_list:
-    typ ID                   { [Formal($1,$2)] }
-  | formal_list COMMA typ ID { Formal($3, $4) :: $1 }
+  typ ID LBRACE vdecl_list stmt_list RBRACE
+    { { return_type = $1; fname = $2;
+      locals = List.rev $4; body = List.rev $5 } }
 
 typ:
   primitives { Typ($1) }
@@ -70,7 +62,9 @@ primitives:
     INT { Int }
   | BOOL { Bool }
   | FLOAT { Float }
-  | MAT LT primitives GT { Mat($3) }
+  | VOID { Void }
+  | MAT LT primitives GT LBRACKET NUMLIT RBRACKET LBRACKET NUMLIT RBRACKET { Mat($3, $6, $9) }
+  | FMAT LT primitives GT LBRACKET NUMLIT RBRACKET LBRACKET NUMLIT RBRACKET { FMat($3, $6, $9) }
   | IMG { Img }
 
 vdecl_list:

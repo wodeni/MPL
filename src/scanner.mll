@@ -119,7 +119,7 @@ rule token = parse
 | "int"    { INT }
 | "float"  { FLOAT }
 | "boolean"{ BOOL }
-(* | "void"   { VOID } *)
+| "void"   { VOID }
 | "true"   { TRUE }
 | "false"  { FALSE }
 | "func"   { FUNC }
@@ -139,10 +139,11 @@ rule token = parse
 (* Built-in Types *)
 | "Img"	   { IMG }
 | "Mat"	   { MAT }
+| "FMat"   { FMAT }
 
 (* Integer literals, identifiers, and others *)
-| integer as lxm { INTLIT(int_of_string lxm) }
-| float as lxm { FLOATLIT(float_of_string lxm) }
+| integer as lxm { NUMLIT(Ast.IntLit(int_of_string lxm)) }
+| float as lxmd { NUMLIT(Ast.FloatLit(float_of_string lxmd)) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
