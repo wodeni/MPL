@@ -15,16 +15,16 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-type mtype = Int | Float | Bool
+(*type mtype = Int | Float | Bool*)
+type num = IntLit of int | FloatLit of float
 type primitives = Int | Bool | Float | Void
-                  | Mat of mtype * num * num 
-                  | FMat of mtype * num * num
+                  | Mat of primitives * num * num 
+                  | FMat of primitives * num * num
+                  | Img
 
 type typ = Typ of primitives
 
 type bind = typ * string
-
-type num = IntLit of int | FloatLit of float
 
 type var_dec = typ * string
 type local = Local of typ * string
@@ -32,9 +32,9 @@ type local = Local of typ * string
 type expr =
     NumLit of num
   | BoolLit of bool
-  | MatrixLit of typ list list
+  | MatrixLit of num list list
   | Id of string
-  | Litstr of string
+  | StrLit of string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
@@ -54,7 +54,7 @@ type stmt =
 type func_decl = {
     typ : typ;
     fname : string;
-    locals : bind list;
+    locals : local list;
     body : stmt list;
   }
 

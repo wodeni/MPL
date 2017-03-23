@@ -20,7 +20,7 @@ open Ast
 %token RETURN VOID IF ELSE ELSEIF WHILE INT BOOL FLOAT
 %token NULL NEW FUNC
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
-%token IMG MAT
+%token IMG MAT FMAT
 %token <Ast.num> NUMLIT
 %token <string> ID
 %token <string> STRLIT
@@ -46,13 +46,13 @@ program:
     decls EOF { $1 }
 
 decls:
-    /* nothing */      { [], [] }
-  | decls gdecl        { ($2 :: fst $1), snd $1 }
-  | decls fdecl        { fst $1, ($2 :: snd $1) }
+    /* nothing */      { []}
+  /*| decls gdecl        { ($2 :: fst $1), snd $1 }*/
+  | decls fdecl        { $2 :: $1 }
 
 fdecl:
   typ ID LBRACE vdecl_list stmt_list RBRACE
-    { { return_type = $1; fname = $2;
+    { { typ = $1; fname = $2;
       locals = List.rev $4; body = List.rev $5 } }
 
 typ:
@@ -74,9 +74,6 @@ vdecl_list:
 vdecl:
   typ ID SEMI { Local($1, $2) }
 
-gdecl:
-  typ ID SEMI { ($1, $2) }
-
 stmt_list:
     /* nothing */  { [] }
   | stmt_list stmt { $2 :: $1 }
@@ -95,7 +92,7 @@ expr:
   | TRUE             { BoolLit(true) }
   | FALSE            { BoolLit(false) }
   | ID               { Id($1) }
-  | NULL             { NULL }
+  | NULL             { Null }
   | STRLIT           { StrLit($1) }
   | expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
