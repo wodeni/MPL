@@ -1,0 +1,7 @@
+( ) { } [ ]
+if else while return main
+== != < > <= >= AND OR NOT
++ - * / = @ .@ ^ .* ./
+int float boolean void null true false
+; ,
+hi 99 "hi" 1.0
