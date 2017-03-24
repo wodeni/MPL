@@ -24,7 +24,7 @@ type primitives = Int | Bool | Float | Void
 
 type typ = Typ of primitives
 
-(*type bind = typ * string*)
+type bind = typ * string
 (*type var_dec = typ * string*)
 
 type var_dec = typ * string
