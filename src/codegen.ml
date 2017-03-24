@@ -10,6 +10,7 @@
  * Jiangfeng Wang    <jw3107@columbia.edu>
  *)
 
+open Exceptions
 module L = Llvm
 module A = Ast
 
@@ -28,17 +29,19 @@ let translate (functions) =
   in
 
   let ltype_of_typ = function
-      A.Int   -> i32_t
-    | A.Float -> float_t
-    | A.Bool  -> i1_t
-    (*
+      A.Typ(Int)   -> i32_t
+    | A.Typ(Float) -> float_t
+    | A.Typ(Bool)  -> i1_t
+    | A.Typ(Void) -> void_t 
+    (* TODO: wait until AST is done
     | A.Matrix(typ, rows, cols) ->
         let rows' = match rows with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
         let cols' = match cols with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
         (match typ with
                 A.Int      -> array_t (array_t i32_t cols') rows'
-    *)
     | _ -> raise(Exceptions.UnsupportedMatrixType))
+    *)
+    | _ -> raise(Exceptions.UnsupportedType)
   in
 
   
@@ -51,13 +54,12 @@ let translate (functions) =
   let printbig_t = L.function_type i32_t [| i32_t |] in
   let printbig_func = L.declare_function "printbig" printbig_t the_module in
 
-  (* Define each function (arguments and return type) so we can call it *)
+  (* Define each function so we can call it *)
+  (* NOTE: We only have one argument, and it has the same type of the return type *)
   let function_decls =
     let function_decl m fdecl =
       let name = fdecl.A.fname
-      and formal_types =
-	Array.of_list (List.map (fun (t,_) -> ltype_of_typ t) fdecl.A.formals)
-      in let ftype = L.function_type (ltype_of_typ fdecl.A.typ) formal_types in
+      in let ftype = L.function_type (ltype_of_typ fdecl.A.typ) [| (ltype_of_typ fdecl.A.typ) |] in
       StringMap.add name (L.define_function name ftype the_module, fdecl) m in
     List.fold_left function_decl StringMap.empty functions in
 
@@ -84,22 +86,29 @@ let translate (functions) =
 	in StringMap.add n local_var m in
 
     (* NOTE: We do not have any argument. Might not need this
+     * NOTE: For entry functions - do we put the neighbors in the formal
+     * , or the matrix and the location of the entry??
       let formals = List.fold_left2 add_formal StringMap.empty fdecl.A.formals
           (Array.to_list (L.params the_function)) in
-      List.fold_left add_local formals fdecl.A.locals in
     *)
 
+    (* Add the local variables to a new map *)
+    List.fold_left add_local StringMap.empty fdecl.A.locals in
+
     (* Return the value for a variable or formal argument *)
+    (* TODO: should we dthrow exception here? *)
     let lookup n = try StringMap.find n local_vars
-                   with Not_found ->  raise (Error "unknown variable name")
+                   with Not_found ->  raise(Exceptions.LocalNotFound)
+                       (* raise (Error "unknown variable name") *)
     in
 
 
     (* Construct code for an expression; return its value *)
     let rec expr builder = function
-	A.Literal i -> L.const_int i32_t i
+	A.NumLit(IntLit(i)) -> L.const_int i32_t i
+	  | A.NumLit(FloatLit(i)) -> L.const_float float_t i
       | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
-      | A.Litstr s -> L.build_global_stringstr s ("str_" ^ s) builder
+      | A.StrLit s -> L.build_global_stringptr s ("str_" ^ s) builder
       | A.Noexpr -> L.const_int i32_t 0
       | A.Id s -> L.build_load (lookup s) s builder
       | A.Binop (e1, op, e2) ->
@@ -147,6 +156,7 @@ let translate (functions) =
                                             | _ -> f ^ "_result") in
          L.build_call fdef (Array.of_list actuals) result builder
     *)
+      | _ -> raise(Exceptions.StatementNotSuuported)
     in
 
     (* Invoke "f builder" if the current block doesn't already
@@ -163,13 +173,46 @@ let translate (functions) =
 	A.Block sl -> List.fold_left stmt builder sl
       | A.Expr e -> ignore (expr builder e); builder
       | A.Return e -> ignore (match fdecl.A.typ with
+	  A.Typ(Void) -> L.build_ret_void builder
+	| _ -> L.build_ret (expr builder e) builder); builder
+      | A.If (predicate, then_stmt, else_stmt) ->
+         let bool_val = expr builder predicate in
+	 let merge_bb = L.append_block context "merge" the_function in
+
+	 let then_bb = L.append_block context "then" the_function in
+	 add_terminal (stmt (L.builder_at_end context then_bb) then_stmt)
+	   (L.build_br merge_bb);
+
+	 let else_bb = L.append_block context "else" the_function in
+	 add_terminal (stmt (L.builder_at_end context else_bb) else_stmt)
+	   (L.build_br merge_bb);
+
+	 ignore (L.build_cond_br bool_val then_bb else_bb builder);
+	 L.builder_at_end context merge_bb
+
+      | A.While (predicate, body) ->
+	  let pred_bb = L.append_block context "while" the_function in
+	  ignore (L.build_br pred_bb builder);
+
+	  let body_bb = L.append_block context "while_body" the_function in
+	  add_terminal (stmt (L.builder_at_end context body_bb) body)
+	    (L.build_br pred_bb);
+
+	  let pred_builder = L.builder_at_end context pred_bb in
+	  let bool_val = expr pred_builder predicate in
+
+	  let merge_bb = L.append_block context "merge" the_function in
+	  ignore (L.build_cond_br bool_val body_bb merge_bb pred_builder);
+	  L.builder_at_end context merge_bb
+
+    in
 
     (* Build the code for each statement in the function *)
     let builder = stmt builder (A.Block fdecl.A.body) in
 
     (* Add a return if the last block falls off the end *)
     add_terminal builder (match fdecl.A.typ with
-        A.Void -> L.build_ret_void
+        A.Typ(Void) -> L.build_ret_void
       | t -> L.build_ret (L.const_int (ltype_of_typ t) 0))
   in
 
