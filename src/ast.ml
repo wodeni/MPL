@@ -25,9 +25,10 @@ type primitives = Int | Bool | Float | Void
 type typ = Typ of primitives
 
 type bind = typ * string
+(*type var_dec = typ * string*)
 
 type var_dec = typ * string
-type local = Local of typ * string
+(* type local = Local of typ * string *)
 
 type expr =
     NumLit of num
@@ -54,7 +55,7 @@ type stmt =
 type func_decl = {
     typ : typ;
     fname : string;
-    locals : local list;
+    locals : bind list;
     body : stmt list;
   }
 
