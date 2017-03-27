@@ -1,6 +1,6 @@
 language: mpl
 
-before_install: make clean
+before_install: cd src && make clean
 
 install: make
 
