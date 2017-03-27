@@ -1,9 +1,5 @@
 open Parser
 
-type num =
-  | IntLit of int
-  | FloatLit of float
-
 let stringify = function
   (* Punctuation *)
   | LPAREN -> "LPAREN"  | RPAREN -> "RPAREN"
@@ -38,7 +34,8 @@ let stringify = function
   | ID(string) -> "ID"
 
   (* Literals *)
-  | NUMLIT(num) -> "NUMLIT"
+  | INTLIT(int) -> "INTLIT"
+  | FLOATLIT(float) -> "FLOATLIT"
   | STRLIT(string) -> "STRLIT"
   | SEMI -> "SEMI" | LBRACKET -> "LBRACKET" | RBRACKET -> "RBRACKET"
   | LT -> "LT" | GT -> "GT" | WHILE -> "WHILE"

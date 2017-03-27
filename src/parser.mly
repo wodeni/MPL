@@ -21,7 +21,8 @@ open Ast
 %token NULL NEW FUNC
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
 %token IMG MAT FMAT
-%token <Ast.num> NUMLIT
+%token <int> INTLIT
+%token <float> FLOATLIT
 %token <string> ID
 %token <string> STRLIT
 %token EOF
@@ -47,7 +48,6 @@ program:
 
 decls:
     /* nothing */      { []}
-  /*| decls gdecl        { ($2 :: fst $1), snd $1 }*/
   | decls fdecl        { $2 :: $1 }
 
 fdecl:
@@ -56,15 +56,12 @@ fdecl:
       locals = List.rev $4; body = List.rev $5 } }
 
 typ:
-  primitives { Typ($1) }
-
-primitives:
     INT { Int }
   | BOOL { Bool }
   | FLOAT { Float }
   | VOID { Void }
-  | MAT LT primitives GT LBRACKET NUMLIT RBRACKET LBRACKET NUMLIT RBRACKET { Mat($3, $6, $9) }
-  | FMAT LT primitives GT LBRACKET NUMLIT RBRACKET LBRACKET NUMLIT RBRACKET { FMat($3, $6, $9) }
+  | MAT LT typ GT LBRACKET INTLIT RBRACKET LBRACKET INTLIT RBRACKET { Mat($3, $6, $9) }
+  | FMAT LT typ GT LBRACKET INTLIT RBRACKET LBRACKET INTLIT RBRACKET { FMat($3, $6, $9) }
   | IMG { Img }
 
 vdecl_list:
@@ -88,7 +85,8 @@ stmt:
   | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
 
 expr:
-    NUMLIT           { NumLit($1) }
+    INTLIT           { IntLit($1) }
+  | FLOATLIT         { FloatLit($1) }
   | TRUE             { BoolLit(true) }
   | FALSE            { BoolLit(false) }
   | ID               { Id($1) }
@@ -116,7 +114,7 @@ expr:
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
   | LBRACKET mat_lit RBRACKET                 { MatrixLit($2) }
-  | ID LBRACKET expr COMMA expr RBRACKET      { MatrixAccess($1, $3, $5) }
+  | ID LBRACKET INTLIT COMMA INTLIT RBRACKET      { MatrixAccess($1, $3, $5) }
 
 /*expr_opt:
     nothing                   { Noexpr }
@@ -131,7 +129,8 @@ actuals_list:
   | actuals_list COMMA expr         { $3 :: $1 }
 
 lit:
-    NUMLIT                          { $1 }
+    INTLIT                          { IntLit($1) }
+    | FLOATLIT                      { FloatLit($1) }
 
 mat_lit:
     lit_list                        { [$1] }

@@ -15,25 +15,21 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-(*type mtype = Int | Float | Bool*)
-type num = IntLit of int | FloatLit of float
-type primitives = Int | Bool | Float | Void
-                  | Mat of primitives * num * num 
-                  | FMat of primitives * num * num
+type typ = Int | Bool | Float | Void
+                  | Mat of typ * int * int
+                  | FMat of typ * int * int
                   | Img
 
-type typ = Typ of primitives
+(*type num = IntLit of int | FloatLit of float*)
 
 type bind = typ * string
-(*type var_dec = typ * string*)
-
 type var_dec = typ * string
-(* type local = Local of typ * string *)
 
 type expr =
-    NumLit of num
+    IntLit of int
+  | FloatLit of float
   | BoolLit of bool
-  | MatrixLit of num list list
+  | MatrixLit of expr list list
   | Id of string
   | StrLit of string
   | Binop of expr * op * expr
@@ -42,7 +38,7 @@ type expr =
   | Call of string * expr list
   | Noexpr
   | Null
-  | MatrixAccess of string * expr * expr
+  | MatrixAccess of string * int * int
 
 type stmt =
     Block of stmt list

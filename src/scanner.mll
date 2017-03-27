@@ -73,10 +73,10 @@ rule token = parse
   newline            { Lexing.new_line lexbuf; token lexbuf }
 | whitespace         { token lexbuf }
 | "/*"               { comment 0 lexbuf }           (* Comments *)
-| '"'       	     { reset_string_buffer ();    (* String literals *)
-			parse_string lexbuf;
-			(*handle_lexical_error string lexbuf;*)
-			STRLIT(get_stored_string ()) }
+| '"'              { reset_string_buffer ();    (* String literals *)
+      parse_string lexbuf;
+      (*handle_lexical_error string lexbuf;*)
+      STRLIT(get_stored_string ()) }
 (* Punctuation *)
 | '('      { LPAREN }
 | ')'      { RPAREN }
@@ -102,7 +102,7 @@ rule token = parse
 | "AND"    { AND }
 | "OR"     { OR }
 | "NOT"    { NOT }
-(* | "neg"	   { NEG } *)
+(* | "neg"     { NEG } *)
 | "@"      { APPLY }
 | ".@"     { MATAPP }
 | "^"      { TRANS }
@@ -137,13 +137,13 @@ rule token = parse
 
 
 (* Built-in Types *)
-| "Img"	   { IMG }
-| "Mat"	   { MAT }
+| "Img"    { IMG }
+| "Mat"    { MAT }
 | "FMat"   { FMAT }
 
 (* Integer literals, identifiers, and others *)
-| integer as lxm { NUMLIT(Ast.IntLit(int_of_string lxm)) }
-| float as lxmd { NUMLIT(Ast.FloatLit(float_of_string lxmd)) }
+| integer as lxm { INTLIT(int_of_string lxm) }
+| float as lxm { FLOATLIT(float_of_string lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
