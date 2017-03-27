@@ -29,10 +29,10 @@ let translate (functions) =
   in
 
   let ltype_of_typ = function
-      A.Typ(Int)   -> i32_t
-    | A.Typ(Float) -> float_t
-    | A.Typ(Bool)  -> i1_t
-    | A.Typ(Void) -> void_t 
+      A.Int   -> i32_t
+    | A.Float -> float_t
+    | A.Bool  -> i1_t
+    | A.Void -> void_t 
     (* TODO: wait until AST is done
     | A.Matrix(typ, rows, cols) ->
         let rows' = match rows with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
@@ -105,8 +105,8 @@ let translate (functions) =
 
     (* Construct code for an expression; return its value *)
     let rec expr builder = function
-	A.NumLit(IntLit(i)) -> L.const_int i32_t i
-	  | A.NumLit(FloatLit(i)) -> L.const_float float_t i
+	A.IntLit(i) -> L.const_int i32_t i
+	  | A.FloatLit(i) -> L.const_float float_t i
       | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
       | A.StrLit s -> L.build_global_stringptr s ("str_" ^ s) builder
       | A.Noexpr -> L.const_int i32_t 0
@@ -173,7 +173,7 @@ let translate (functions) =
 	A.Block sl -> List.fold_left stmt builder sl
       | A.Expr e -> ignore (expr builder e); builder
       | A.Return e -> ignore (match fdecl.A.typ with
-	  A.Typ(Void) -> L.build_ret_void builder
+	  A.Void -> L.build_ret_void builder
 	| _ -> L.build_ret (expr builder e) builder); builder
       | A.If (predicate, then_stmt, else_stmt) ->
          let bool_val = expr builder predicate in
@@ -212,7 +212,7 @@ let translate (functions) =
 
     (* Add a return if the last block falls off the end *)
     add_terminal builder (match fdecl.A.typ with
-        A.Typ(Void) -> L.build_ret_void
+        A.Void -> L.build_ret_void
       | t -> L.build_ret (L.const_int (ltype_of_typ t) 0))
   in
 
