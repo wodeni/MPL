@@ -1,0 +1,10 @@
+language: mpl
+
+before_install: make clean
+
+install: make
+
+script: 
+    
+after_script: 
+

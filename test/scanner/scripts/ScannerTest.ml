@@ -52,7 +52,7 @@ let stringify = function
   | INT -> "INT" | FLOAT -> "FLOAT"
   | BOOL -> "BOOL"
   | TRUE -> "TRUE" | FALSE -> "FALSE"
-  | NUMLIT(num) -> "NUMLIT"
+  | INTLIT(num) -> "NUMLIT"
   | FUNC -> "FUNC"
   | NULL -> "NULL"
   | NEW -> "NEW"
