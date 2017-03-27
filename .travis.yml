@@ -2,9 +2,12 @@ language: mpl
 
 before_install: cd src && make clean
 
-install: make
+install:
+    - bash -ex travis-ci.sh
 
 script: 
-    
+    - cd src
+    - make clean && make
+
 after_script: 
 
