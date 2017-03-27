@@ -1,6 +1,6 @@
 language: mpl
 
-before_install: cd src && make clean
+before_install: 
 
 install:
     - bash -ex travis-ci.sh
