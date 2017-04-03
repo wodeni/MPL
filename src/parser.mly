@@ -16,14 +16,15 @@ open Ast
 %token SEMI LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COMMA
 %token PLUS MINUS TIMES DIVIDE ASSIGN NOT
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR
-%token APPLY MATAPP TRANS EMULT EDIV VOID
-%token RETURN IF ELSE ELSEIF WHILE INT BOOL FLOAT
-%token FUNC NULL NEW 
+%token APPLY MATAPP TRANS EMULT EDIV
+%token RETURN VOID IF ELSE ELSEIF WHILE INT BOOL FLOAT
+%token NULL NEW FUNC
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
-%token IMG MAT
-%token <int> LITERAL
+%token IMG MAT FMAT
+%token <int> INTLIT
+%token <float> FLOATLIT
 %token <string> ID
-%token <string> LITSTR
+%token <string> STRLIT
 %token EOF
 
 %nonassoc NOELSE
@@ -33,6 +34,7 @@ open Ast
 %left AND
 %left EQ NEQ
 %left LT GT LEQ GEQ
+%left APPLY MATAPP EMULT EDIV
 %left PLUS MINUS
 %left TIMES DIVIDE
 %right NOT NEG
@@ -41,42 +43,33 @@ open Ast
 %type <Ast.program> program
 
 %%
-
 program:
-  decls EOF { $1 }
+    decls EOF { $1 }
 
 decls:
-   /* nothing */ { [], [] }
- | decls vdecl { ($2 :: fst $1), snd $1 }
- | decls fdecl { fst $1, ($2 :: snd $1) }
+    /* nothing */      { []}
+  | decls fdecl        { $2 :: $1 }
 
 fdecl:
-   typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
-     { { typ = $1;
-   fname = $2;
-   formals = $4;
-   locals = List.rev $7;
-   body = List.rev $8 } }
-
-formals_opt:
-    /* nothing */ { [] }
-  | formal_list   { List.rev $1 }
-
-formal_list:
-    typ ID                   { [($1,$2)] }
-  | formal_list COMMA typ ID { ($3,$4) :: $1 }
+  typ ID LBRACE vdecl_list stmt_list RBRACE
+    { { typ = $1; fname = $2;
+      locals = List.rev $4; body = List.rev $5 } }
 
 typ:
     INT { Int }
   | BOOL { Bool }
-  | VOID { Void }
   | FLOAT { Float }
+  | VOID { Void }
+  | MAT LT typ GT LBRACKET INTLIT RBRACKET LBRACKET INTLIT RBRACKET { Mat($3, $6, $9) }
+  | FMAT LT typ GT LBRACKET INTLIT RBRACKET LBRACKET INTLIT RBRACKET { FMat($3, $6, $9) }
+  | IMG { Img }
+
 vdecl_list:
     /* nothing */    { [] }
   | vdecl_list vdecl { $2 :: $1 }
 
 vdecl:
-   typ ID SEMI { ($1, $2) }
+  typ ID SEMI { ($1, $2) }
 
 stmt_list:
     /* nothing */  { [] }
@@ -91,17 +84,14 @@ stmt:
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
   | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
 
-expr_opt:
-    /* nothing */ { Noexpr }
-  | expr          { $1 }
-
 expr:
-    LITERAL          { Literal($1) }
+    INTLIT           { IntLit($1) }
+  | FLOATLIT         { FloatLit($1) }
   | TRUE             { BoolLit(true) }
   | FALSE            { BoolLit(false) }
   | ID               { Id($1) }
-  | NULL             { NULL }
-  | LITSTR           { Litstr($1) }
+  | NULL             { Null }
+  | STRLIT           { StrLit($1) }
   | expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
   | expr TIMES  expr { Binop($1, Mult,  $3) }
@@ -114,31 +104,38 @@ expr:
   | expr GEQ    expr { Binop($1, Geq,   $3) }
   | expr AND    expr { Binop($1, And,   $3) }
   | expr OR     expr { Binop($1, Or,    $3) }
+  | expr APPLY  expr { Binop($1, Apply, $3) }
+  | expr MATAPP expr { Binop($1, Matapp, $3) }
+  | expr EMULT  expr { Binop($1, Emult,  $3) }
+  | expr EDIV   expr { Binop($1, Ediv,   $3) }
   | MINUS expr %prec NEG { Unop(Neg, $2) }
   | NOT expr         { Unop(Not, $2) }
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
-  | LBRACKET matrix_lit RBRACKET              { MatrixLit($2) } /* lbrace causes shift/reduct conflict */
-  | ID LBRACKET expr COMMA expr RBRACKET      { MatrixAccess($1, $3, $5) }
+  | LBRACKET mat_lit RBRACKET                 { MatrixLit($2) }
+  | ID LBRACKET INTLIT COMMA INTLIT RBRACKET      { MatrixAccess($1, $3, $5) }
+
+/*expr_opt:
+    nothing                   { Noexpr }
+  | expr                            { $1 } */
 
 actuals_opt:
-    /* nothing */ { [] }
-  | actuals_list  { List.rev $1 }
-
+    /* nothing */                   { [] }
+  | actuals_list                    { List.rev $1 }
+  
 actuals_list:
-    expr                    { [$1] }
-  | actuals_list COMMA expr { $3 :: $1 }
+    expr                            { [$1] }
+  | actuals_list COMMA expr         { $3 :: $1 }
 
-/* matrix parsing */
 lit:
-  LITERAL                     { $1 }
+    INTLIT                          { IntLit($1) }
+    | FLOATLIT                      { FloatLit($1) }
+
+mat_lit:
+    lit_list                        { [$1] }
+    | mat_lit SEMI lit_list         { $3 :: $1 }
 
 lit_list:
-    lit                       { [$1] }
-    | lit_list lit            { $2 :: $1 }
-
-matrix_lit:
-  | lit_list                  { $1 }
-  | matrix_lit SEMI lit_list  { $3 :: $1 }
-             
+    lit                             { [$1] }
+    | lit_list COMMA lit            { $3 :: $1 }

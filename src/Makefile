@@ -15,9 +15,9 @@ mpl.native :
 .PHONY : clean
 clean :
 	ocamlbuild -clean
-	rm -rf testall.log *.diff mpl scanner.ml parser.ml parser.mli
+	rm -rf testall.log *.diff mpl.native scanner.ml parser.ml parser.mli
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o
-	rm -rf *~ *.swp
+	rm -rf *~ *.swp *.ll
 
 # This is just for the use of the developer. 
 # Compile Scanner. Parser and AST

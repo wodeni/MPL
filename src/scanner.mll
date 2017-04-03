@@ -73,10 +73,10 @@ rule token = parse
   newline            { Lexing.new_line lexbuf; token lexbuf }
 | whitespace         { token lexbuf }
 | "/*"               { comment 0 lexbuf }           (* Comments *)
-| '"'       	     { reset_string_buffer ();    (* String literals *)
-			parse_string lexbuf;
-			(*handle_lexical_error string lexbuf;*)
-			LITSTR(get_stored_string ()) }
+| '"'              { reset_string_buffer ();    (* String literals *)
+      parse_string lexbuf;
+      (*handle_lexical_error string lexbuf;*)
+      STRLIT(get_stored_string ()) }
 (* Punctuation *)
 | '('      { LPAREN }
 | ')'      { RPAREN }
@@ -102,7 +102,7 @@ rule token = parse
 | "AND"    { AND }
 | "OR"     { OR }
 | "NOT"    { NOT }
-(* | "neg"	   { NEG } *)
+(* | "neg"     { NEG } *)
 | "@"      { APPLY }
 | ".@"     { MATAPP }
 | "^"      { TRANS }
@@ -119,7 +119,7 @@ rule token = parse
 | "int"    { INT }
 | "float"  { FLOAT }
 | "boolean"{ BOOL }
-(* | "void"   { VOID } *)
+| "void"   { VOID }
 | "true"   { TRUE }
 | "false"  { FALSE }
 | "func"   { FUNC }
@@ -137,11 +137,12 @@ rule token = parse
 
 
 (* Built-in Types *)
-| "Img"	   { IMG }
-| "Mat"	   { MAT }
+| "Img"    { IMG }
+| "Mat"    { MAT }
+| "FMat"   { FMAT }
 
 (* Integer literals, identifiers, and others *)
-| integer as lxm { LITERAL(int_of_string lxm) }
+| integer as lxm { INTLIT(int_of_string lxm) }
 | float as lxm { FLOATLIT(float_of_string lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }

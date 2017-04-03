@@ -11,30 +11,34 @@
  *)
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or | Apply | Matapp
+          And | Or | Apply | Matapp | Emult | Ediv
 
 type uop = Neg | Not
 
-type typ = Int | Bool | Void | Float
-          | Mat of typ
+type typ = Int | Bool | Float | Void
+                  | Mat of typ * int * int
+                  | FMat of typ * int * int
+                  | Img
+
+(*type num = IntLit of int | FloatLit of float*)
 
 type bind = typ * string
-
-type num = Int of int | Float of float
+type var_dec = typ * string
 
 type expr =
-    Literal of typ
+    IntLit of int
+  | FloatLit of float
   | BoolLit of bool
-  | MatrixLit of typ list list
+  | MatrixLit of expr list list
   | Id of string
-  | Litstr of string
+  | StrLit of string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
   | Call of string * expr list
   | Noexpr
   | Null
-  | MatrixAccess of string * expr * expr
+  | MatrixAccess of string * int * int
 
 type stmt =
     Block of stmt list
@@ -47,14 +51,13 @@ type stmt =
 type func_decl = {
     typ : typ;
     fname : string;
-    formals : bind list;
     locals : bind list;
     body : stmt list;
   }
 
-type program = bind list * func_decl list
+type program = func_decl list
 
-(* Pretty-printing functions *)
+(* Pretty-printing functions
 
 let string_of_op = function
     Add -> "+"
@@ -71,13 +74,15 @@ let string_of_op = function
   | Or -> "||"
   | Apply -> "@"
   | Matapp -> ".@"
+  | Emult -> ".*"
+  | Ediv -> "./"
 
 let string_of_uop = function
     Neg -> "-"
   | Not -> "!"
 
 let rec string_of_expr = function
-    Literal(l) -> string_of_int l
+    IntLit(l) -> string_of_int l
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   | Id(s) -> s
@@ -105,7 +110,6 @@ let rec string_of_stmt = function
 let string_of_typ = function
     Int -> "int"
   | Bool -> "bool"
-  | Void -> "void"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
@@ -120,3 +124,4 @@ let string_of_fdecl fdecl =
 let string_of_program (vars, funcs) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs)
+*)
