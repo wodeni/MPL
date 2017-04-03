@@ -15,7 +15,7 @@ pause "\e[20mPress enter to continue"
 cd src/
 make clean && make 2> /dev/null
 pause "Press enter to continue"
-./mpl.native < test-prints.mpl
+./mpl.native < test-prints.mpl > hello.ll
 pause "Press enter to continue"
 cat hello.ll
 pause "Press enter to continue"
