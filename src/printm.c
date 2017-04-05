@@ -1,5 +1,5 @@
 #include <stdio.h>
-#define BUILD_TEST
+// #define BUILD_TEST
 
 void printm_int(int* mat, int m, int n) {
     printf("[");

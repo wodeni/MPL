@@ -98,10 +98,11 @@ let translate (functions) =
             StringMap.add n local m in
 	let add_local (m,mat_m) (t, n) =  
 		let local_var = L.build_alloca (ltype_of_typ t) n builder in
-		(* FIXME: Syntax error here *)
 		(match t with
-			A.Mat(typ, row, cols) ->let dim = get_mat_dimensions t in ((StringMap.add n local_var m),(StringMap.add n dim mat_m)) 
-			| _ -> ((StringMap.add n local_var m),mat_m)) 
+			A.Mat(typ, row, cols) -> 
+                let dim = get_mat_dimensions t in 
+                ((StringMap.add n local_var m),(StringMap.add n dim mat_m)) 
+			| _ -> ((StringMap.add n local_var m), mat_m)) 
     in
 
     (* NOTE: We do not have any argument. Might not need this
@@ -143,7 +144,7 @@ let translate (functions) =
                         let arrayOfArrays   = Array.of_list i64ListOfArrays in
               L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
       | A.Noexpr      -> L.const_int i32_t 0
-      | A.Id s        -> L.build_load (lookup s) s builder
+      | A.Id s        -> (* L.build_load (lookup s) s builder *) lookup s
       | A.Binop (e1, op, e2) ->
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
@@ -184,7 +185,6 @@ let translate (functions) =
 		in   
 		let (typ, rows, cols) = (lookupM e) in
         let id = (expr builder e) in
-        (* let value_ptr = L.build_malloc (matrix_int_t rows cols) "value" builder in *)
         let id_ptr = L.build_in_bounds_gep id (idx 0 0) "build_in_bounds_gep" builder in 
         let mat_ptr = L.build_bitcast id_ptr (pointer_t i8_t) "mat_ptr" builder 
                 in (match typ with

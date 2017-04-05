@@ -20,7 +20,7 @@ clean :
 	rm -rf testall.log *.diff mpl.native scanner.ml parser.ml parser.mli
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o
 	rm -rf *~ *.swp *.ll
-	rm -rf printm
+	rm -rf printm *.s a.out
 
 # This is just for the use of the developer. 
 # Compile Scanner. Parser and AST
