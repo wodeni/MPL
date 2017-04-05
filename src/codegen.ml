@@ -80,7 +80,7 @@ let translate (functions) =
     let string_format_str = L.build_global_stringptr "%s\n" "fmts" builder in
 
 
-    let get_mat_dimensions t = function
+    let get_mat_dimensions t = match t with
         A.Mat(typ, rows, cols) -> (typ, rows, cols)
         | _                    -> raise ( UnsupportedMatrixType ) 
     in
@@ -93,14 +93,12 @@ let translate (functions) =
             let local = L.build_alloca (ltype_of_typ t) n builder in
             ignore (L.build_store p local builder);
             StringMap.add n local m in
-
-        let add_local m mat_m (t, n) = 
-            let local_var = L.build_alloca (ltype_of_typ t) n builder in 
-            (* FIXME: Syntax error here *)
-            (match t with
-                A.Mat -> let dim = get_mat_dimensions t in
-                        StringMap.add n dim mat_m : StringMap.add n local_var m 
-                | _   -> StringMap.add n local_var m)
+	let add_local (m,mat_m) (t, n) =  
+		let local_var = L.build_alloca (ltype_of_typ t) n builder in
+		(* FIXME: Syntax error here *)
+		(match t with
+			A.Mat(typ, row, cols) ->let dim = get_mat_dimensions t in ((StringMap.add n local_var m),(StringMap.add n dim mat_m)) 
+			| _ -> ((StringMap.add n local_var m),mat_m)) 
     in
 
     (* NOTE: We do not have any argument. Might not need this
@@ -111,16 +109,16 @@ let translate (functions) =
     *)
 
     (* Add the local variables to a new map *)
-    List.fold_left add_local StringMap.empty MatrixMap.empty fdecl.A.locals in
+    List.fold_left add_local (StringMap.empty,MatrixMap.empty) fdecl.A.locals in
 
     (* Return the value for a variable or formal argument *)
     (* TODO: should we dthrow exception here? *)
-    let lookup n = try StringMap.find n local_vars
+    let getSlocal (a,_) = a in
+    let getMlocal (_,b) = b in
+    let lookup n = try StringMap.find n (getSlocal local_vars)
                    with Not_found ->  raise(Exceptions.LocalNotFound)
                        (* raise (Error "unknown variable name") *)
-    in
-
-
+    in 
     let find_matrix_type matrix =
       match (List.hd (List.hd matrix)) with
         A.IntLit _   -> ltype_of_typ (A.Int)
@@ -173,11 +171,16 @@ let translate (functions) =
 	    L.build_call printf_func [| string_format_str ; (expr builder e) |] "printf" builder
       | A.Call ("printbig", [e]) ->
 	  L.build_call printbig_func [| (expr builder e) |] "printbig" builder
-      | A.Call ("printm", [e]) -> 
-              let (typ, rows, cols) = (Matmap.find e)
-              (match typ with
-                            A.Int     -> L.build_call printm_int_func [| (expr builder e); rows; cols |] "printm_int" builder
-                            | A.Float -> L.build_call printm_float_func [| (expr builder e); rows; cols |] "printm_float" builder
+      | A.Call ("printm", [e]) ->
+		let lookupM t =
+			match t with 
+			A.Id(s) -> MatrixMap.find s (getMlocal local_vars)
+			| _ -> raise(Exceptions.UnsupportedMatrixType) 
+		in   
+		let (typ, rows, cols) = (lookupM e)
+                in (match typ with
+                            A.Int -> L.build_call printm_int_func [| (expr builder e);(L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_int" builder
+                            | A.Float -> L.build_call printm_float_func [| (expr builder e);(L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_float" builder
                             | _ -> raise(Exceptions.UnsupportedMatrixType)        )
                         
       (* TODO: to be implemented
