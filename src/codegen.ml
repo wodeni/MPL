@@ -29,6 +29,9 @@ let translate (functions) =
   and pointer_t  = L.pointer_type
   in
 
+  let matrix_int_t m n   = array_t (array_t i32_t m) n 
+  and matrix_float_t m n = array_t (array_t float_t m) n in
+
   let ltype_of_typ = function
       A.Int   -> i32_t
     | A.Float -> float_t
@@ -126,8 +129,10 @@ let translate (functions) =
       | A.BoolLit _  -> ltype_of_typ (A.Bool)
       | _            -> raise (UnsupportedMatrixType) in
 
+    let idx n m = [| L.const_int i32_t n; L.const_int i32_t m |] in
+
     (* Construct code for an expression; return its value *)
-    let rec expr builder = function
+    let rec expr builder expression =  match expression with
 	A.IntLit(i)       -> L.const_int i32_t i
 	  | A.FloatLit(i) -> L.const_float float_t i
       | A.BoolLit b   -> L.const_int i1_t (if b then 1 else 0)
@@ -177,10 +182,14 @@ let translate (functions) =
 			A.Id(s) -> MatrixMap.find s (getMlocal local_vars)
 			| _ -> raise(Exceptions.UnsupportedMatrixType) 
 		in   
-		let (typ, rows, cols) = (lookupM e)
+		let (typ, rows, cols) = (lookupM e) in
+        let id = (expr builder e) in
+        (* let value_ptr = L.build_malloc (matrix_int_t rows cols) "value" builder in *)
+        let id_ptr = L.build_in_bounds_gep id (idx 0 0) "build_in_bounds_gep" builder in 
+        let mat_ptr = L.build_bitcast id_ptr (pointer_t i8_t) "mat_ptr" builder 
                 in (match typ with
-                            A.Int -> L.build_call printm_int_func [| (expr builder e);(L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_int" builder
-                            | A.Float -> L.build_call printm_float_func [| (expr builder e);(L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_float" builder
+                            A.Int -> L.build_call printm_int_func [| mat_ptr;(L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_int" builder
+                            | A.Float -> L.build_call printm_float_func [| mat_ptr; (L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_float" builder
                             | _ -> raise(Exceptions.UnsupportedMatrixType)        )
                         
       (* TODO: to be implemented
