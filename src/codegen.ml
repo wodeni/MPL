@@ -1,5 +1,5 @@
 (*
- * File: codegen.mll
+ * File: codegen.ml
  * Date: 2017-03-13
  *
  * PLT Spring 2017
@@ -15,6 +15,7 @@ module L = Llvm
 module A = Ast
 
 module StringMap = Map.Make(String)
+module MatrixMap = Map.Make(String)
 
 let translate (functions) =
   let context    = L.global_context () in
@@ -28,19 +29,23 @@ let translate (functions) =
   and pointer_t  = L.pointer_type
   in
 
+  let matrix_int_t m n   = array_t (array_t i32_t m) n 
+  and matrix_float_t m n = array_t (array_t float_t m) n in
+
   let ltype_of_typ = function
       A.Int   -> i32_t
     | A.Float -> float_t
     | A.Bool  -> i1_t
     | A.Void -> void_t 
-    (* TODO: wait until AST is done
-    | A.Matrix(typ, rows, cols) ->
-        let rows' = match rows with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
-        let cols' = match cols with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
+    | A.Mat(typ, rows, cols) ->
+            (*
+        let rows' = match rows with A.IntLit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
+        let cols' = match cols with A.IntLit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
+  *)
         (match typ with
-                A.Int      -> array_t (array_t i32_t cols') rows'
-    | _ -> raise(Exceptions.UnsupportedMatrixType))
-    *)
+                A.Int     -> array_t (array_t i32_t cols) rows
+                | A.Float -> array_t (array_t float_t cols) rows
+                | _ -> raise(Exceptions.UnsupportedMatrixType)        )
     | _ -> raise(Exceptions.UnsupportedType)
   in
 
@@ -50,9 +55,14 @@ let translate (functions) =
   let printf_func = L.declare_function "printf" printf_t the_module in
 
   (* TODO: Declare the built-in printbig() function *)
-  (* TODO: We could define printm() function here *)
   let printbig_t = L.function_type i32_t [| i32_t |] in
   let printbig_func = L.declare_function "printbig" printbig_t the_module in
+
+  let printm_int_t = L.function_type i32_t [| L.pointer_type i8_t; i32_t; i32_t |] in
+  let printm_int_func = L.declare_function "printm_int" printm_int_t the_module in
+
+  let printm_float_t = L.function_type i32_t [| L.pointer_type i8_t; float_t; float_t |] in
+  let printm_float_func = L.declare_function "printm_float" printm_float_t the_module in
 
   (* Define each function so we can call it *)
   (* NOTE: We only have one argument, and it has the same type of the return type *)
@@ -67,23 +77,33 @@ let translate (functions) =
   (* Fill in the body of the given function *)
   let build_function_body fdecl =
     let (the_function, _) = StringMap.find fdecl.A.fname function_decls in
-    let builder = L.builder_at_end context (L.entry_block the_function) in
+    let builder           = L.builder_at_end context (L.entry_block the_function) in
 
-    let int_format_str = L.build_global_stringptr "%d\n" "fmti" builder in
+    let int_format_str    = L.build_global_stringptr "%d\n" "fmti" builder in
     let string_format_str = L.build_global_stringptr "%s\n" "fmts" builder in
+
+
+    let get_mat_dimensions t = match t with
+        A.Mat(typ, rows, cols) -> (typ, rows, cols)
+        | _                    -> raise ( UnsupportedMatrixType ) 
+    in
 
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
        value, if appropriate, and remember their values in the "locals" map *)
     let local_vars =
-      let add_formal m (t, n) p = L.set_value_name n p;
-	let local = L.build_alloca (ltype_of_typ t) n builder in
-	ignore (L.build_store p local builder);
-	StringMap.add n local m in
-
-      let add_local m (t, n) =
-	let local_var = L.build_alloca (ltype_of_typ t) n builder
-	in StringMap.add n local_var m in
+        let add_formal m (t, n) p = L.set_value_name n p;
+            let local = L.build_alloca (ltype_of_typ t) n builder in
+            ignore (L.build_store p local builder);
+            StringMap.add n local m in
+	let add_local (m,mat_m) (t, n) =  
+		let local_var = L.build_alloca (ltype_of_typ t) n builder in
+		(match t with
+			A.Mat(typ, row, cols) -> 
+                let dim = get_mat_dimensions t in 
+                ((StringMap.add n local_var m),(StringMap.add n dim mat_m)) 
+			| _ -> ((StringMap.add n local_var m), mat_m)) 
+    in
 
     (* NOTE: We do not have any argument. Might not need this
      * NOTE: For entry functions - do we put the neighbors in the formal
@@ -93,24 +113,38 @@ let translate (functions) =
     *)
 
     (* Add the local variables to a new map *)
-    List.fold_left add_local StringMap.empty fdecl.A.locals in
+    List.fold_left add_local (StringMap.empty,MatrixMap.empty) fdecl.A.locals in
 
     (* Return the value for a variable or formal argument *)
     (* TODO: should we dthrow exception here? *)
-    let lookup n = try StringMap.find n local_vars
+    let getSlocal (a,_) = a in
+    let getMlocal (_,b) = b in
+    let lookup n = try StringMap.find n (getSlocal local_vars)
                    with Not_found ->  raise(Exceptions.LocalNotFound)
                        (* raise (Error "unknown variable name") *)
-    in
+    in 
+    let find_matrix_type matrix =
+      match (List.hd (List.hd matrix)) with
+        A.IntLit _   -> ltype_of_typ (A.Int)
+      | A.FloatLit _ -> ltype_of_typ (A.Float)
+      | A.BoolLit _  -> ltype_of_typ (A.Bool)
+      | _            -> raise (UnsupportedMatrixType) in
 
+    let idx n m = [| L.const_int i32_t n; L.const_int i32_t m |] in
 
     (* Construct code for an expression; return its value *)
-    let rec expr builder = function
-	A.IntLit(i) -> L.const_int i32_t i
+    let rec expr builder expression =  match expression with
+	A.IntLit(i)       -> L.const_int i32_t i
 	  | A.FloatLit(i) -> L.const_float float_t i
-      | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
-      | A.StrLit s -> L.build_global_stringptr s ("str_" ^ s) builder
-      | A.Noexpr -> L.const_int i32_t 0
-      | A.Id s -> L.build_load (lookup s) s builder
+      | A.BoolLit b   -> L.const_int i1_t (if b then 1 else 0)
+      | A.StrLit s    -> L.build_global_stringptr s ("str_" ^ s) builder
+      | A.MatrixLit l -> let i64Lists        = List.map (List.map (expr builder)) l in
+                        let listOfArrays    = List.map Array.of_list i64Lists in
+                        let i64ListOfArrays = List.rev (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
+                        let arrayOfArrays   = Array.of_list i64ListOfArrays in
+              L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
+      | A.Noexpr      -> L.const_int i32_t 0
+      | A.Id s        -> (* L.build_load (lookup s) s builder *) lookup s
       | A.Binop (e1, op, e2) ->
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
@@ -143,6 +177,21 @@ let translate (functions) =
 	    L.build_call printf_func [| string_format_str ; (expr builder e) |] "printf" builder
       | A.Call ("printbig", [e]) ->
 	  L.build_call printbig_func [| (expr builder e) |] "printbig" builder
+      | A.Call ("printm", [e]) ->
+		let lookupM t =
+			match t with 
+			A.Id(s) -> MatrixMap.find s (getMlocal local_vars)
+			| _ -> raise(Exceptions.UnsupportedMatrixType) 
+		in   
+		let (typ, rows, cols) = (lookupM e) in
+        let id = (expr builder e) in
+        let id_ptr = L.build_in_bounds_gep id (idx 0 0) "build_in_bounds_gep" builder in 
+        let mat_ptr = L.build_bitcast id_ptr (pointer_t i8_t) "mat_ptr" builder 
+                in (match typ with
+                            A.Int -> L.build_call printm_int_func [| mat_ptr;(L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_int" builder
+                            | A.Float -> L.build_call printm_float_func [| mat_ptr; (L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_float" builder
+                            | _ -> raise(Exceptions.UnsupportedMatrixType)        )
+                        
       (* TODO: to be implemented
       | A.Call ("printm", [e]) ->
 	  L.build_call printbig_func [| (expr builder e) |] "printm" builder

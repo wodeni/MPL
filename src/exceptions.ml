@@ -30,7 +30,6 @@ exception MatrixDimensionMustBeInt
 exception MatrixAccessOnNonMatrix of string
 exception MatrixColOnNonMatrix of string
 exception MatrixLitMustBeOneType
-exception VectorLitMustBeOneType
 exception MatrixOutOfBoundsAccess of string
 exception MatrixRowOnNonMatrix of string
 exception MismatchedMatricesForAddSub of string
@@ -40,13 +39,8 @@ exception ReturnTypeMismatch of string * string
 exception UndefinedID of string
 exception UnsupportedMatrixBinop of string
 exception UnsupportedStringBinop of string
-exception UnsupportedVectorBinop of string
-exception VectorAccessOnNonMatrix of string
-exception VectorDimensionMustBeIntLit
-exception VoidFunctionFormal of string
 exception VoidFunctionLocal of string
 exception VoidFunc of string
-exception VoidGlobal of string
 
 (* Codegen Exceptions *)
 exception AssignLHSMustBeAssignable
