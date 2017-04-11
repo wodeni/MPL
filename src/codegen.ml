@@ -144,7 +144,7 @@ let translate (functions) =
                         let arrayOfArrays   = Array.of_list i64ListOfArrays in
               L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
       | A.Noexpr      -> L.const_int i32_t 0
-      | A.Id s        -> (* L.build_load (lookup s) s builder *) lookup s
+      | A.Id s        -> L.build_load (lookup s) s builder (* lookup s *)
       | A.Binop (e1, op, e2) ->
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
