@@ -67,7 +67,7 @@ let backslash_escapes = ['\\' '"' '\'' 'n' 't' 'b' 'r']
 let digit      = ['0'-'9']
 let integer    = digit+
 let exp = ('e' | 'E') ('+' | '-')? digit+
-let float = '.' digit+ exp? | digit+ ('.' digit* exp? | exp)
+let float_re = '.' digit+ exp? | digit+ ('.' digit* exp? | exp)
 
 rule token = parse
   newline            { Lexing.new_line lexbuf; token lexbuf }
@@ -143,7 +143,7 @@ rule token = parse
 
 (* Integer literals, identifiers, and others *)
 | integer as lxm { INTLIT(int_of_string lxm) }
-| float as lxm { FLOATLIT(float_of_string lxm) }
+| float_re as lxm { FLOATLIT(float_of_string lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }

@@ -169,6 +169,7 @@ let translate (functions) =
             A.Neg     -> L.build_neg
           | A.Not     -> L.build_not) 
           e' "tmp" builder
+      (* | A.MatrixAccess *)
       | A.Assign (s, e) -> let e' = expr builder e in
 	                   ignore (L.build_store e' (lookup s) builder); e'
       | A.Call ("print", [e]) | A.Call ("printb", [e]) ->
@@ -182,9 +183,14 @@ let translate (functions) =
 			match t with 
 			A.Id(s) -> MatrixMap.find s (getMlocal local_vars)
 			| _ -> raise(Exceptions.UnsupportedMatrixType) 
+        in
+        let lookup_matrixid t =  
+			match t with 
+			A.Id(s) -> lookup s 
+			| _ -> raise(Exceptions.UnsupportedMatrixType) 
 		in   
 		let (typ, rows, cols) = (lookupM e) in
-        let id = (expr builder e) in
+        let id = lookup_matrixid e in
         let id_ptr = L.build_in_bounds_gep id (idx 0 0) "build_in_bounds_gep" builder in 
         let mat_ptr = L.build_bitcast id_ptr (pointer_t i8_t) "mat_ptr" builder 
                 in (match typ with
@@ -192,10 +198,6 @@ let translate (functions) =
                             | A.Float -> L.build_call printm_float_func [| mat_ptr; (L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_float" builder
                             | _ -> raise(Exceptions.UnsupportedMatrixType)        )
                         
-      (* TODO: to be implemented
-      | A.Call ("printm", [e]) ->
-	  L.build_call printbig_func [| (expr builder e) |] "printm" builder
-      *)
       (* NOTE: we do not have any user defined functions
        *       Will use this code once we implement "@"
       | A.Call (f, act) ->

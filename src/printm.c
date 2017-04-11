@@ -39,12 +39,12 @@ void printm_float(double* mat, int m, int n) {
 }
 
 #ifdef BUILD_TEST
-int main()
-{
-    int m1[2][2]; 
-    double m2[2][2]; 
-    printm_int((int *)m1, 2, 2);
-    printm_float((double *)m2, 2, 2);
-    return 0;
-}
+// int main()
+// {
+//     int m1[2][2]; 
+//     double m2[2][2]; 
+//     printm_int((int *)m1, 2, 2);
+//     printm_float((double *)m2, 2, 2);
+//     return 0;
+// }
 #endif
