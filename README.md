@@ -4,6 +4,23 @@ Implementing a new programming language.
 
 --------
 
+## PLT Meeting David, Chy, and Nimo 04/07
+
+- Tasks and tentative deadlines:
+    - 04/13/2017: __definitions of entry functions__
+        - What are the parameters
+        - Scope of variables
+    - 04/13/2017: `Img`
+    - 04/24/2017: __`fMat`__
+    - 04/27/2017: apply operator
+    - 04/27/2017: `imgread` and `imgwrite`
+    - 05/01/2017: Game of life
+- Meetings
+    - Monday   : 20:00 ~ 22:00
+    - Tuesday  : 15:00 ~ 16:30
+    - Thursday : 20:00 ~ 22:00
+    - Sunday   : 18:00 ~ 21:00
+
 # Useful links
 
 - The CLAM project report(2011): [Link](http://www.cs.columbia.edu/~sedwards/classes/2011/w4115-fall/reports/CLAM.pdf)
