@@ -159,9 +159,9 @@ let translate (functions) =
     let build_matrix_access i j s rows cols builder assign =
         if ((rows < i) && (cols > j)) then raise(Exceptions.MatrixOutOfBoundsAccess(""));
         if assign
-            then L.build_gep (lookup s) (idx i j) s builder
+            then L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
            (* FIXME: it only gets the row, not what we want. *)
-        else L.build_load (L.build_gep (lookup s) (idx i j)  s builder) s builder
+        else L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
     in
 
     (* Construct code for an expression; return its value *)
