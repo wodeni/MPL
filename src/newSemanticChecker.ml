@@ -11,12 +11,21 @@
 *)
 
 open Ast
- 
-module StringMap = Map.Make(String)
 
-let getIDType s =
-	try StringMap.find s symbols
-	with Not_found -> raise (Failure ("undeclared identifier " ^ s))
+type symbol_table = {
+    parent : symbol_table option;
+    variables : var_decl list;
+}
+
+type translation_environment = {
+    scope : symbol_table;
+    return_type: variable_type;
+    current_func: func_decl option;
+    (*functions : func_decl list;*)
+    exception_scope: exception_scope;
+}
+
+module StringMap = Map.Make(String)
 
 let requireIntegers tlist str = 
     let _ = List.map(
@@ -34,39 +43,86 @@ let requireFloats tlist str =
     ) tlist in
     true
 
+let requireBools tlist str = 
+    let _ = List.map(
+        fun t ->  match t with 
+            Bool -> true
+          | _ -> raise (Failure(str))
+    ) tlist in
+    true
 
 let checkNums tlist = match List.hd tlist with
-	Int -> requireIntegers tlist "All of tlist must be Integers"
+	Int -> requireIntegers tlist "All of tlist must be Integers" 
 	| Float -> requireFloats tlist "All of tlist must be Floats"
-	| Mat(typ1, i1, j1) 
-	|_ -> raise(Failure ("Invalid first type in checkNums"))
+	| _ -> raise(Failure ("Invalid first type in checkNums"))
 
-let getArithSBinop se1 se2 op = function
-	(Int, Int) -> SBinop(se1, op, se2, Int)
-	| (Float, Float) -> SBinop(se1, op, se2, Float)
-	| (Matrix(typ1, i1, j1), Matrix(typ2, i2, j2)) ->
-			(match op with
-				Add | Sub 	->
-					if typ1=typ2 && i1=i2 && j1=j2 then
-						SBinop(se1, op, se2, Mat(typ1, i1, j2))
-					else raise(Failuer("Matrices must be same type and dimensions for +/-"))
-				| Mult 		->
-					if typ1=typ2 && j1 = i2 then
-						SBinop(se1, op, se2, Mat(typ1, i1, j2))
-					else raise(Failuer("Matrices M1(i1,j1) and M2(i2,j2) must have j1 = i2 and be of same type to be multiplied"))
-				| _ -> raise(Failuer("Cannot divide matrices"))
+(* find functions *)
+let rec find_variable (scope : symbol_table) name = 
+    try 
+        (* do match with the different types of variables in the List.find
+         * function *)
+        List.find ( fun var_decl ->
+            begin match var_decl with 
+            Array_decl(_, _, s) -> s = name
+            | Var(_, s) -> s = name 
+            | VarInit(_, s, _) -> s = name
+            end ) scope.variables
+    with Not_found ->
+        match scope.parent with 
+          Some(parent) -> find_variable parent name
+          | _ -> raise Not_found
 
-let checkArithBinop e1 op e2 =
-	let se1 = exprToSexpr e1 in
-	let se2 = exprToSexpr e2 in
-	let t1 = sexprToExpr se1 in
-	let t2 = sexprToExpr se2 in
+let getArithBinopType t1 t2 op = function
+	(Ast.Int, Ast.Int) -> Ast.Int
+	| (Ast.Float, Ast.Float) -> Ast.Float
+	| (Ast.Mat(typ1, i1, j1), Ast.Mat(typ2, i2, j2)) ->
+		(match op with
+			Add | Sub -> if typ1=typ2 && n1=n2 then Ast.Mat(typ1, i1, j1)
+						else raise(Failure("Matrices must be of same type and dimensions for +/-"))
+			| Mult -> if typ1=typ2 && i2=j1 then Ast.Mat(typ1, i1, j2)
+						else raise(Failure("M1(a,b) and M2(c,d) must have b=c for *"))
+			| _ -> raise(Failure("No matrices division")))
+	| _ -> raise(Failure("Invalid type for arithmetic operand"))
+
+let getLogicalBinopType t1 t2 op = function
+	(Ast.Int, Ast.Int) -> Ast.Bool
+	| (Ast.Float, Ast.Float) -> Ast.Bool
+	| _ -> raise(Failure("Invalid type for logical operand"))
+
+let getEqualityBinopType t1 t2 op = function
+		(Ast.Int, Ast.Int) -> Ast.Bool
+	| (Ast.Float, Ast.Float) -> Ast.Bool
+	| _ -> raise(Failure("Invalid type for logical operand"))
+
+let checkBinop t1 t2 op =
+	let e1 = expr env t1
+	and e2 = expr env t2 in
+	let _,t1 = e1
+	and _,t2 = e2 in
 	match op with
-		Add|Sub|Mult|Div -> getArithSBinop se1 se2 op (t1, t2) (*(let _ = checkNums[e1;e2] in e1)*)
-		| Equal | Neq -> when t1 = t2 -> SBinop(se1, op, se2, Bool)
-		| And | Or -> when t1 = Bool && t2 = Bool -> SBinop(se1, op, se2, Bool)
-		| Less | Leq | Greater | Geq when t1 = t2 && (t1 = Int) || t1 = Float) -> SBinop(se1, op, se2, t1)
-		|_ -> raise (Failure ("Invalid operand in checkArithBinop"))
+	Add | Mult | Sub | Div -> getArithBinopType t1 t2 op
+	| Equal | Neq -> getEqualityBinopType t1 t2 op
+	| And | Or -> getLogicalBinopType t1 t2 op
+	| Less | Leq | Greater | Geq when (t1=t2 && (t1=Ast.Int || t1=Ast.Float)) -> t1
+	|_ -> raise (Failure ("Invalid operand in getBinopType"))
+
+let rec checkExpr env = function
+	Ast.IntLiteral(v) -> (Ast.IntLit(v), Ast.Int)
+	| Ast.FloatLit(v) -> (Ast.FloatLit(v), Ast.Float)
+    | Ast.StrLit(v) -> (Ast.StrLit(v), Ast.String)
+    | Ast.BoolLit(v) -> (Ast.BoolLit(v), Ast.Bool)
+    | Ast.Id(vname) -> 
+                let vdecl = (try
+                find_variable env.scope vname 
+                with Not_found -> 
+                    raise(Failure("Invalid variable usage " ^ vname))
+                let (_, typ) = vdecl in
+                in (Ast.Id(vname), typ)
+    | Ast.Binop(e1, op, e2) ->
+                let (e1, t1) = checkExpr env e1
+                and (e2, t2) = checkExpr env e2 in
+                (Ast.Binop(e1, op, e2), checkBinop t1 t2 op)
+        (* assign, matrix access, call, matrix literal *)
 
 (*This returns the type of e and raises a flag if inconsistent or invalid syntax*)
  let checkType e = function
@@ -76,46 +132,3 @@ let checkArithBinop e1 op e2 =
 	|MatrixLit m -> checkMatrixLiterals m 	(*To be done later*)
 	|Id s -> getIDType s
 
-let rec getIDType s =
-	try StringMap.find s
-	with | Not_found -> raise (Failure("Undefined ID type"))
-
-let exprToSExpr expr = function
-	  IntLit(n) 				-> SIntLit(n)
-	| FloatLit(n)				-> SFloatLit(n)
-	| BoolLit(b)       			-> SBoolLit(b)
-	| StringLit(s)        		-> SStringLit(s)
-	| Id(s)                		-> SId(s, getIDType s)
-	| Null                 		-> SNull
-	| Noexpr               		-> SNoexpr
-	| Unop(op, e)          		-> checkUnop fname_map func_st op e
-	| Assign(s, e)   			-> checkAssign fname_map func_st s e
-	| Binop(e1, op, e2)    		-> checkArithBinop e1 op e2
-	| Call(s, el)				-> let fd = function_decl s fname_map in
-		if List.length el != List.length fd.formals then
-			raise (Exceptions.IncorrectNumberOfArguments(fd.fname, List.length el, List.length fd.formals))
-		else
-		SCall(s, List.map (expr_to_sexpr fname_map func_st) el, fd.return_type)
-	| MatrixAccess(s, e1, e2)	-> check_matrix_access fname_map func_st s e1 e2
-	| MatrixLit(nll)			-> check_matrix_lit fname_map func_st nll
-
-and sexprToExpr sexpr = match sexpr with
-	  SIntLit(_)						-> Int
-	| SFloatLit(_)						-> Float
-	| SBoolLit(_)						-> Bool
-	| SStringLit(_) 					-> String
-	| SNoexpr 							-> Void
-	| SNull								-> Null
-	| SId(_, t) 						-> t
-	| SBinop(_, _, _, t) 				-> t
-	| SAssign(_, _, t) 					-> t
-	| SCall(_, _, t)					-> t
-	| SUnop(_, _, t) 					-> t
-	| SMatrixAccess(_, _, _, t)			-> t
-	| SMatrixLit(l, t)				->
-		let c = List.length (List.hd l) in
-		let r = List.length l in
-		(match d with
-			Int 				-> Matrix(Int, IntLit(r), IntLit(c))
-			| Float				-> Mat(Float, IntLit(r), IntLit(c))
-			| _ 				-> raise(Failure("Unsupported matrix type"))
