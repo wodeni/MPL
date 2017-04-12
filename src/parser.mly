@@ -113,7 +113,7 @@ expr:
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
-  | LBRACKET mat_lit RBRACKET                 { MatrixLit($2) }
+  | LBRACKET mat_lit RBRACKET                 { MatrixLit(List.rev $2) }
   | ID LBRACKET INTLIT COMMA INTLIT RBRACKET      { MatrixAccess($1, $3, $5) }
 
 /*expr_opt:
@@ -138,4 +138,4 @@ mat_lit:
 
 lit_list:
     lit                             { [$1] }
-    | lit_list COMMA lit            { $3 :: $1 }
+    | lit_list COMMA lit            { $1 @ [$3] }

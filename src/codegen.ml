@@ -68,8 +68,14 @@ let translate (functions) =
   (* NOTE: We only have one argument, and it has the same type of the return type *)
   let function_decls =
     let function_decl m fdecl =
-      let name = fdecl.A.fname
-      in let ftype = L.function_type (ltype_of_typ fdecl.A.typ) [| (ltype_of_typ fdecl.A.typ) |] in
+      let name = fdecl.A.fname in 
+      let arr  = Array.make 9 (ltype_of_typ fdecl.A.typ) in
+      let ftype = 
+          if(name = "main") then 
+              L.function_type (ltype_of_typ fdecl.A.typ) [| (ltype_of_typ fdecl.A.typ) |]
+          else 
+              L.function_type (ltype_of_typ fdecl.A.typ) arr 
+          in
       StringMap.add name (L.define_function name ftype the_module, fdecl) m in
     List.fold_left function_decl StringMap.empty functions in
 
@@ -120,7 +126,7 @@ let translate (functions) =
     let getSlocal (a,_) = a in
     let getMlocal (_,b) = b in
     let lookup n = try StringMap.find n (getSlocal local_vars)
-                   with Not_found ->  raise(Exceptions.LocalNotFound)
+                   with Not_found ->  print_endline(n); raise(Exceptions.LocalNotFound)
                        (* raise (Error "unknown variable name") *)
     in 
 
@@ -142,27 +148,49 @@ let translate (functions) =
         A.Id(s) -> lookup s 
         | _ -> raise(Exceptions.UnsupportedMatrixType) 
     in   
+    let get_string_by_id = function
+        | Ast.Id(s) -> s
+        | _ -> raise(Exceptions.UnsupportedMatrixType)  (* TODO *)
+    in
+
+    let build_matrix_access i j s rows cols builder assign =
+        if ((i >= rows) || (j >= cols)) then raise(Exceptions.MatrixOutOfBoundsAccess(""));
+        if assign
+            then L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
+        else L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
+    in
 
     (* Build instructions for apply operation, this will translate a single 
      * apply to 9 distinct llvm function calls. 
      * @fname = string of the function name
      * @mat = loaded llvalue that is a matrix *)
-    (* TODO
-    let build_apply f mat n b = 
-         let (fdef, fdecl) = StringMap.find f function_decls in
-         let actuals = List.rev (List.map (expr builder) (List.rev act)) in
-         let result = f ^ "_result" in
-         L.build_call fdef (Array.of_list actuals) result builder 
+    let build_apply f_expr mat n b = 
+		let (typ, rows, cols) = (lookupM mat) in
+        let mat_str = get_string_by_id mat in
+        let f = get_string_by_id f_expr in
+        let (fdef, fdecl) = StringMap.find f function_decls in
+        let result = f ^ "_result" in
+        (* Loop through all elements in the matrix *)
+        for i=0 to (rows-1) do
+            for j=0 to (cols-1) do
+                let entry = build_matrix_access i j mat_str rows cols builder true in
+                let arr = Array.make 9 (L.const_int i32_t 0) in
+                (* for all the nine neighbors *)
+                for m=i-1 to (i+1) do
+                    for n=j-1 to (j+1) do
+                        let index = 3 * (m - (i - 1)) + (n - (j - 1)) in
+                        if ((m < rows) && (n < cols)) then 
+                            arr.(index) <- build_matrix_access m n mat_str rows cols builder false
+                        else arr.(index) <- (L.const_int i32_t 0)
+                    done
+                done;
+            let res = L.build_call fdef arr result b in
+            L.build_store res entry b
+            done
+        done;
+        L.build_load (L.build_gep (lookup mat_str) [| L.const_int i32_t 0 |] n b) n b
     in
-    *)
 
-    let build_matrix_access i j s rows cols builder assign =
-        if ((rows < i) && (cols > j)) then raise(Exceptions.MatrixOutOfBoundsAccess(""));
-        if assign
-            then L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
-           (* FIXME: it only gets the row, not what we want. *)
-        else L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
-    in
 
     (* Construct code for an expression; return its value *)
     let rec expr builder expression =  match expression with
@@ -172,30 +200,28 @@ let translate (functions) =
       | A.StrLit s    -> L.build_global_stringptr s ("str_" ^ s) builder
       | A.MatrixLit l -> let i64Lists        = List.map (List.map (expr builder)) l in
                         let listOfArrays    = List.map Array.of_list i64Lists in
-                        let i64ListOfArrays = List.rev (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
+                        (* let i64ListOfArrays = List.rev (List.map (L.const_array (find_matrix_type l)) listOfArrays) in *)
+                       let i64ListOfArrays = (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
                         let arrayOfArrays   = Array.of_list i64ListOfArrays in
               L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
       | A.Noexpr      -> L.const_int i32_t 0
       | A.Id s        -> L.build_load (lookup s) s builder (* lookup s *)
       | A.Binop (e1, op, e2) ->
-	  let e1' = expr builder e1
-	  and e2' = expr builder e2 in
           (match op with
-            A.Add     -> L.build_add e1' e2' "tmp" builder
-          | A.Sub     -> L.build_sub e1' e2' "tmp" builder
-          | A.Mult    -> L.build_mul e1' e2' "tmp" builder
-          | A.Div     -> L.build_sdiv e1' e2' "tmp" builder
-          | A.And     -> L.build_and e1' e2' "tmp" builder
-          | A.Or      -> L.build_or e1' e2' "tmp" builder
-          | A.Equal   -> L.build_icmp L.Icmp.Eq e1' e2' "tmp" builder
-          | A.Neq     -> L.build_icmp L.Icmp.Ne e1' e2' "tmp" builder
-          | A.Less    -> L.build_icmp L.Icmp.Slt e1' e2' "tmp" builder
-          | A.Leq     -> L.build_icmp L.Icmp.Sle e1' e2' "tmp" builder
-          | A.Greater -> L.build_icmp L.Icmp.Sgt e1' e2' "tmp" builder
-          | A.Geq     -> L.build_icmp L.Icmp.Sge e1' e2' "tmp" builder
-          (*
-          | A.Apply   -> build_apply e1 e2' builder
-           TODO: EMult, EDiv, Matapply *)
+            A.Add     -> L.build_add (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Sub     -> L.build_sub (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Mult    -> L.build_mul (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Div     -> L.build_sdiv (expr builder e1) (expr builder e2) "tmp" builder
+          | A.And     -> L.build_and (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Or      -> L.build_or (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Equal   -> L.build_icmp L.Icmp.Eq (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Neq     -> L.build_icmp L.Icmp.Ne (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Less    -> L.build_icmp L.Icmp.Slt (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Leq     -> L.build_icmp L.Icmp.Sle (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Greater -> L.build_icmp L.Icmp.Sgt (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Geq     -> L.build_icmp L.Icmp.Sge (expr builder e1) (expr builder e2) "tmp" builder
+          | A.Apply   -> build_apply e1 e2 "tmp" builder
+          (* TODO: EMult, EDiv, Matapply *)
           ) 
       | A.Unop(op, e) ->
           let e' = expr builder e in
@@ -204,13 +230,8 @@ let translate (functions) =
           | A.Not     -> L.build_not) 
           e' "tmp" builder
       | A.MatrixAccess (s, i, j) ->
-      (*
-            let i = expr builder row and j = expr builder col in
-            let access_i = (match row with S.SNum_lit(SInt_lit(n)) -> n | _ -> -1)
-            and access_j = (match col with S.SNum_lit(SInt_lit(n)) -> n | _ -> -1) in
-      *)
-		let (typ, rows, cols) = MatrixMap.find s (getMlocal local_vars) in
-            (build_matrix_access i j s rows cols builder false)
+            let (typ, rows, cols) = MatrixMap.find s (getMlocal local_vars) in
+                (build_matrix_access i j s rows cols builder false)
       | A.Assign (s, e) -> let e' = expr builder e in
 	                   ignore (L.build_store e' (lookup s) builder); e'
       | A.Call ("print", [e]) | A.Call ("printb", [e]) ->
