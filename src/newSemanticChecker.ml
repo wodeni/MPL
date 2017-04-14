@@ -19,7 +19,7 @@ type symbol_table = {
 
 type translation_environment = {
     scope : symbol_table;
-    return_type: variable_type;
+    return_type: variable_type
     current_func: func_decl option;
     (*functions : func_decl list;*)
     exception_scope: exception_scope;
@@ -50,6 +50,30 @@ let requireBools tlist str =
           | _ -> raise (Failure(str))
     ) tlist in
     true
+
+let requireAllMatrices tlist str =
+    let _ = List.map(
+        fun t -> match t with
+            Mat -> true
+          | _ -> raise (Failure(str))
+    ) tlist in
+    true
+
+
+let checkAllMatrixLiterals d2list str =
+    let t = List.hd List.hd d2list in
+        let _ = match t with
+            Int -> List.Map (fun lst -> requireIntegers lst str) d2list
+          | Float -> List.Map (fun lst -> requireFloats lst str) d2list
+          | Boolean -> List.Map (fun lst -> requireBools lst str) d2list
+          | _ -> raise (Failure("First matrix literal is weird"))
+        in
+        true
+
+let checkMatrixDimensions d2list str =
+    if (List.Length (List.sort_uniq (List.Map List.length d2list)))==1 then true else raise(Failure(str))
+
+
 
 let checkNums tlist = match List.hd tlist with
 	Int -> requireIntegers tlist "All of tlist must be Integers" 
