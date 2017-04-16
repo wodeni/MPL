@@ -30,7 +30,7 @@ module StringMap = Map.Make(String)
 let requireIntegers tlist str = 
     let _ = List.map(
           fun t ->  match t with 
-            Int -> true
+            IntLit(_) -> true
           | _ -> raise (Failure(str))
     ) tlist in
     true
@@ -38,7 +38,7 @@ let requireIntegers tlist str =
 let requireFloats tlist str = 
     let _ = List.map(
         fun t ->  match t with 
-            Float -> true
+            FloatLit(_) -> true
           | _ -> raise (Failure(str))
     ) tlist in
     true
@@ -46,7 +46,7 @@ let requireFloats tlist str =
 let requireBools tlist str = 
     let _ = List.map(
         fun t ->  match t with 
-            Bool -> true
+            BoolLit(_) -> true
           | _ -> raise (Failure(str))
     ) tlist in
     true
@@ -62,25 +62,22 @@ let requireAllMatrices tlist str =
 
 let checkAllMatrixLiterals d2list str =
     let t = List.hd (List.hd d2list) in
-        let _ = match t with
-            Int -> List.map (fun lst -> requireIntegers lst str) d2list
-          | Float -> List.map (fun lst -> requireFloats lst str) d2list
-          | Bool -> List.map (fun lst -> requireBools lst str) d2list
-          | _ -> raise (Failure("First matrix literal is weird"))
-        in
-        t
+        match t with
+            IntLit(_) -> List.map (fun lst -> requireIntegers lst str) d2list; Int
+          | FloatLit(_) -> List.map (fun lst -> requireFloats lst str) d2list; Float
+          | BoolLit(_) -> List.map (fun lst -> requireBools lst str) d2list; Bool
+          | _ -> raise (Failure("Matrix literals must be of the same type"))
+
+(* let checkNums tlist = match List.hd tlist with
+  Int -> requireIntegers tlist "All of tlist must be Integers" 
+  | Float -> requireFloats tlist "All of tlist must be Floats"
+  | _ -> raise(Failure ("Invalid first type in checkNums")) *)
 
 (* let checkMatrixDimensions d2list str =
     if (List.length (checkUnique (List.map List.length d2list))==1) then true else raise(Failure(str))
 
 let checkUnique lst = 
   if (List.length lst)==1 then true else ((List.hd lst) ==(List.nth lst 1) && (checkUnique(List.tl lst))) *)
-
-
-let checkNums tlist = match List.hd tlist with
-  Int -> requireIntegers tlist "All of tlist must be Integers" 
-  | Float -> requireFloats tlist "All of tlist must be Floats"
-  | _ -> raise(Failure ("Invalid first type in checkNums"))
 
 (* find functions *)
 (* let rec find_variable (scope : symbol_table) name = 
@@ -98,35 +95,40 @@ let checkNums tlist = match List.hd tlist with
           Some(parent) -> find_variable parent name
           | _ -> raise Not_found *)
 
-let getArithBinopType t1 t2 op = function
-  (Ast.Int, Ast.Int) -> Ast.Int
-  | (Ast.Float, Ast.Float) -> Ast.Float
-  | (Ast.Mat(typ1, i1, j1), Ast.Mat(typ2, i2, j2)) ->
+let getArithBinopType t1 t2 op =
+  match(t1, t2) with
+  (Int, Int) -> Int
+  | (Float, Float) -> Float
+  | (Mat(typ1, i1, j1), Mat(typ2, i2, j2)) ->
     (match op with
-      Add | Sub -> if typ1=typ2 && i1=j1 && j1=j2 then Ast.Mat(typ1, i1, j1)
+      Add | Sub -> if typ1=typ2 && i1=j1 && j1=j2 then Mat(typ1, i1, j1)
             else raise(Failure("Matrices must be of same type and dimensions for +/-"))
-      | Mult -> if typ1=typ2 && i2=j1 then Ast.Mat(typ1, i1, j2)
+      | Mult -> if typ1=typ2 && i2=j1 then Mat(typ1, i1, j2)
             else raise(Failure("M1(a,b) and M2(c,d) must have b=c for *"))
       | _ -> raise(Failure("No matrices division")))
   | _ -> raise(Failure("Invalid type for arithmetic operand"))
 
-let getLogicalBinopType t1 t2 op = function
-  (Ast.Int, Ast.Int) -> Ast.Bool
-  | (Ast.Float, Ast.Float) -> Ast.Bool
+(* let getLogicalBinopType t1 t2 op = function *)
+let getLogicalBinopType t1 t2 op = 
+  match (t1, t2) with 
+  (Int, Int) -> Bool
+  | (Float, Float) -> Bool
   | _ -> raise(Failure("Invalid type for logical operand"))
 
-let getEqualityBinopType t1 t2 op = function
-    (Ast.Int, Ast.Int) -> Ast.Bool
-  | (Ast.Float, Ast.Float) -> Ast.Bool
+let getEqualityBinopType t1 t2 op =
+  match (t1, t2) with 
+    (Int, Int) -> Bool
+  | (Float, Float) -> Bool
   | _ -> raise(Failure("Invalid type for logical operand"))
 
-let checkBinop t1 t2 op =
-  match op with
+let checkBinop op t1 t2 =
+  begin match op with
   Add | Mult | Sub | Div -> getArithBinopType t1 t2 op
   | Equal | Neq -> getEqualityBinopType t1 t2 op
   | And | Or -> getLogicalBinopType t1 t2 op
   | Less | Leq | Greater | Geq -> getEqualityBinopType t1 t2 op
   | _ -> raise(Failure("Invalid operand in getBinopType"))
+  end
 
 let rec checkExpr env = function
   Ast.IntLit(v) -> (Ast.IntLit(v), Ast.Int)
@@ -141,20 +143,23 @@ let rec checkExpr env = function
                 let (_, t) = vdecl in
                 (Ast.Id(vname), t) *)
     | Ast.Binop(e1, op, e2) ->
-                let (e1, t1) = checkExpr env e1
-                and (e2, t2) = checkExpr env e2 in
-                (Ast.Binop(e1, op, e2), (checkBinop t1 t2 op))
+                let (e1', t1) = checkExpr env e1
+                and (e2', t2) = checkExpr env e2 in
+                let t3 = checkBinop op t1 t2 in
+                (* (Ast.Binop(e1', op, e2'), checkBinop op t1 t2) *)
+                (Ast.Binop(e1, op, e2), t3)
+
     | Ast.MatrixLit(d2list) -> 
                 let (* _ = checkMatrixDimensions "Malformed matrix" *)
-                t = checkAllMatrixLiterals "All entries must be of the same type"
+                t = checkAllMatrixLiterals d2list "All entries must be of the same type"
                   in (Ast.MatrixLit(d2list), t)
         (* assign, matrix access, call, matrix literal *)
 
 (*This returns the type of e and raises a flag if inconsistent or invalid syntax*)
- let checkType e = function
+(*  let checkType e = function
    IntLit _ -> Int
   |FloatLit _ -> Float
   |BoolLit _ -> Bool
   |MatrixLit m -> checkMatrixLiterals m   (*To be done later*)
-  |Id s -> getIDType s
+  |Id s -> getIDType s *)
 
