@@ -92,6 +92,15 @@ expr:
   | ID               { Id($1) }
   | NULL             { Null }
   | STRLIT           { StrLit($1) }
+  | CENTER           { Id("#C") }
+  | EAST             { Id("#E") }
+  | WEST             { Id("#W") }
+  | NORTH            { Id("#N") }
+  | SOUTH            { Id("#S") }
+  | NWEST            { Id("#NW") }
+  | NEAST            { Id("#NE") }
+  | SWEST            { Id("#SW") }
+  | SEAST            { Id("#SE") }
   | expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
   | expr TIMES  expr { Binop($1, Mult,  $3) }

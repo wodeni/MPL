@@ -88,10 +88,16 @@ let translate (functions) =
     let int_format_str    = L.build_global_stringptr "%d\n" "fmti" builder in
     let string_format_str = L.build_global_stringptr "%s\n" "fmts" builder in
 
-
     let get_mat_dimensions t = match t with
         A.Mat(typ, rows, cols) -> (typ, rows, cols)
         | _                    -> raise ( UnsupportedMatrixType ) 
+    in
+
+    (* An array of string representation of the 9 neighbhors *)
+    let typ = fdecl.A.typ in
+    let neighbor_names = [ "#NW"; "#N"; "#NE"; "#W"; "#C"; "#E"; "#SW"; "#S"; "#SE" ]
+    in
+    let neighbor_list = List.map (fun x -> (typ, x)) neighbor_names
     in
 
     (* Construct the function's "locals": formal arguments and locally
@@ -99,7 +105,7 @@ let translate (functions) =
        value, if appropriate, and remember their values in the "locals" map *)
     let local_vars =
         let add_formal m (t, n) p = L.set_value_name n p;
-            let local = L.build_alloca (ltype_of_typ t) n builder in
+            let local = L.build_alloca (ltype_of_typ t) ("sharp" ^ n) builder in
             ignore (L.build_store p local builder);
             StringMap.add n local m in
 	let add_local (m,mat_m) (t, n) =  
@@ -111,23 +117,28 @@ let translate (functions) =
 			| _ -> ((StringMap.add n local_var m), mat_m)) 
     in
 
+    let formals = 
+        if(fdecl.A.fname <> "main") then 
+            (List.fold_left2 add_formal StringMap.empty neighbor_list
+            (Array.to_list (L.params the_function))) 
+        else StringMap.empty in
+        
+
     (* NOTE: We do not have any argument. Might not need this
      * NOTE: For entry functions - do we put the neighbors in the formal
      * , or the matrix and the location of the entry??
-      let formals = List.fold_left2 add_formal StringMap.empty fdecl.A.formals
-          (Array.to_list (L.params the_function)) in
     *)
 
     (* Add the local variables to a new map *)
-    List.fold_left add_local (StringMap.empty,MatrixMap.empty) fdecl.A.locals in
+    List.fold_left add_local (formals,MatrixMap.empty) fdecl.A.locals in
 
     (* Return the value for a variable or formal argument *)
     (* TODO: should we dthrow exception here? *)
     let getSlocal (a,_) = a in
     let getMlocal (_,b) = b in
-    let lookup n = try StringMap.find n (getSlocal local_vars)
-                   with Not_found ->  print_endline(n); raise(Exceptions.LocalNotFound)
-                       (* raise (Error "unknown variable name") *)
+    let lookup n = try StringMap.find n (getSlocal local_vars) with Not_found ->  print_endline(n);raise(Exceptions.LocalNotFound("unknown variable name: "^n)) 
+(*  
+ *raise (Error ("unknown variable name: "^n) *)
     in 
 
     let find_matrix_type matrix =
@@ -135,8 +146,7 @@ let translate (functions) =
         A.IntLit _   -> ltype_of_typ (A.Int)
       | A.FloatLit _ -> ltype_of_typ (A.Float)
       | A.BoolLit _  -> ltype_of_typ (A.Bool)
-      | _            -> raise (UnsupportedMatrixType) in
-
+      | _            -> raise (UnsupportedMatrixType) in 
     let idx n m = [| L.const_int i32_t n; L.const_int i32_t m |] in
     let lookupM t =
         match t with 
@@ -179,7 +189,7 @@ let translate (functions) =
                 for m=i-1 to (i+1) do
                     for n=j-1 to (j+1) do
                         let index = 3 * (m - (i - 1)) + (n - (j - 1)) in
-                        if ((m < rows) && (n < cols)) then 
+                        if ((m < rows) && (n < cols) && (m >= 0) && (n >= 0)) then 
                             arr.(index) <- build_matrix_access m n mat_str rows cols builder false
                         else arr.(index) <- (L.const_int i32_t 0)
                     done
