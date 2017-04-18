@@ -63,6 +63,12 @@ let translate (functions) =
 
   let printm_float_t = L.function_type i32_t [| L.pointer_type i8_t; float_t; float_t |] in
   let printm_float_func = L.declare_function "printm_float" printm_float_t the_module in
+  let matread_int_t = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
+  let matread_int_func = L.declare_function "matread_int" matread_int_t the_module in
+  let matread_float_t = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
+  let matread_float_func = L.declare_function "matread_float" matread_float_t the_module in
+
+
 
   (* Define each function so we can call it *)
   (* NOTE: We only have one argument, and it has the same type of the return type *)
@@ -258,6 +264,15 @@ let translate (functions) =
                 in (match typ with
                             A.Int -> L.build_call printm_int_func [| mat_ptr;(L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_int" builder
                             | A.Float -> L.build_call printm_float_func [| mat_ptr; (L.const_int i32_t rows); (L.const_int i32_t cols) |] "printm_float" builder
+                            | _ -> raise(Exceptions.UnsupportedMatrixType)        )
+      | A.Call ("matread", [e1;e2]) ->
+		let (typ, rows, cols) = (lookupM e2) in
+        let id = lookup_matrixid e2 in
+        let id_ptr = L.build_in_bounds_gep id (idx 0 0) "build_in_bounds_gep" builder in 
+        let mat_ptr = L.build_bitcast id_ptr (pointer_t i8_t) "mat_ptr" builder 
+                in (match typ with
+                            A.Int -> L.build_call matread_int_func [| (expr builder e1); mat_ptr;(L.const_int i32_t rows); (L.const_int i32_t cols) |] "matread_int" builder
+                            | A.Float -> L.build_call matread_float_func [| (expr builder e1); mat_ptr; (L.const_int i32_t rows); (L.const_int i32_t cols) |] "matread_float" builder
                             | _ -> raise(Exceptions.UnsupportedMatrixType)        )
                         
       (* NOTE: we do not have any user defined functions
