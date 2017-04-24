@@ -5,15 +5,15 @@
 #  Compile, run, and check the output of each expected-to-work test
 #  Compile and check the error of each expected-to-fail test
 
-# Path to the LLVM interpreter
-LLI="lli"
-#LLI="/usr/local/opt/llvm/bin/lli"
+# Path to the LLVM interpreterLLC="llc"
+LLC="llc"
 
-# Path to the microc compiler.  Usually "./plt.native"
+# Path to the microc compiler.  Usually "./mpl.native"
 # Try "_build/microc.native" if ocamlbuild was unable to create a symbolic link.
-PLT="./plt.native"
-#PLT="_build/plt.native"
-
+PLT="./src/mpl.native"
+#PLT="_build/mpl.native"
+GCC="gcc -o"
+UTIL="utils.o"
 # Set time limit for all operations
 ulimit -t 30
 
@@ -25,7 +25,7 @@ globalerror=0
 keep=0
 
 Usage() {
-    echo "Usage: testall.sh [options] [.plt files]"
+    echo "Usage: testall.sh [options] [.mpl files]"
     echo "-k    Keep intermediate files"
     echo "-h    Print this help"
     exit 1
@@ -74,8 +74,8 @@ RunFail() {
 Check() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.plt//'`
-    reffile=`echo $1 | sed 's/.plt$//'`
+                             s/.mpl//'`
+    reffile=`echo $1 | sed 's/.mpl$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
@@ -85,11 +85,12 @@ Check() {
 
     generatedfiles=""
 
-    generatedfiles="$generatedfiles ${basename}.ll ${basename}.out" &&
-    Run "$MICROC" "<" $1 ">" "${basename}.ll" &&
-    Run "$LLI" "${basename}.ll" ">" "${basename}.out" &&
-    Compare ${basename}.out ${reffile}.out ${basename}.diff
-
+    generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.out ${basename}.out" &&
+    Run "$PLT" "<" $1 ">" "${basename}.ll" && 
+    Run "$LLC" "${basename}.ll" ">" "${basename}.s" &&
+    Run "$GCC" "${basename}.out" "${basename}.s" "src/$UTIL" &&
+    Run "$AAA""${basename}.out" > "${basename}f.out" &&
+    Compare "${basename}f.out" "test/testVer1/${reffile}.out" ${basename}.diff
     # Report the status and clean up the generated files
 
     if [ $error -eq 0 ] ; then
@@ -107,8 +108,8 @@ Check() {
 CheckFail() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.plt//'`
-    reffile=`echo $1 | sed 's/.plt$//'`
+                             s/.mpl//'`
+    reffile=`echo $1 | sed 's/.mpl$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
@@ -119,7 +120,7 @@ CheckFail() {
     generatedfiles=""
 
     generatedfiles="$generatedfiles ${basename}.err ${basename}.diff" &&
-    RunFail "$MICROC" "<" $1 "2>" "${basename}.err" ">>" $globallog &&
+    RunFail "$PLT" "<" $1 "2>" "${basename}.err" ">>" $globallog &&
     Compare ${basename}.err ${reffile}.err ${basename}.diff
 
     # Report the status and clean up the generated files
@@ -149,20 +150,20 @@ done
 
 shift `expr $OPTIND - 1`
 
-LLIFail() {
-  echo "Could not find the LLVM interpreter \"$LLI\"."
-  echo "Check your LLVM installation and/or modify the LLI variable in testall.sh"
+LLCFail() {
+  echo "Could not find the LLVM interpreter \"$LLC\"."
+  echo "Check your LLVM installation and/or modify the LLC variable in testall.sh"
   exit 1
 }
 
-which "$LLI" >> $globallog || LLIFail
+which "$LLC" >> $globallog || LLCFail
 
 
 if [ $# -ge 1 ]
 then
     files=$@
 else
-    files="tests/test-*.plt tests/fail-*.plt"
+    files="test/testVer1/test-*.mpl tests/testVer1/fail-*.mpl"
 fi
 
 for file in $files
@@ -171,13 +172,13 @@ do
 	*test-*)
 	    Check $file 2>> $globallog
 	    ;;
-	*fail-*)
-	    CheckFail $file 2>> $globallog
-	    ;;
-	*)
-	    echo "unknown file type $file"
-	    globalerror=1
-	    ;;
+#	*fail-*)
+#	    CheckFail $file 2>> $globallog
+#	    ;;
+#	*)
+#	    echo "unknown file type $file"
+#	    globalerror=1
+#	    ;;
     esac
 done
 

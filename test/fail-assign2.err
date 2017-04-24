@@ -1,1 +1,0 @@
-Fatal error: exception Failure("illegal assignment boolean cannot be int in b = 12")
