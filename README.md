@@ -4,6 +4,10 @@ Implementing a new programming language.
 
 --------
 
+## PLT Meeting Chy and Nimo 04/16
+
+- Note that when we use `printm`, ``llc` with default settings, and finally use `gcc` to link them all, there will be an error complaining about something really weird. We managed to fix that using `-relocation-model=pic`
+
 ## PLT Meeting David, Chy, and Nimo 04/07
 
 - Tasks and tentative deadlines:

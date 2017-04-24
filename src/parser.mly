@@ -100,6 +100,15 @@ expr:
   | ID               { Id($1) }
   | NULL             { Null }
   | STRLIT           { StrLit($1) }
+  | CENTER           { Id("#C") }
+  | EAST             { Id("#E") }
+  | WEST             { Id("#W") }
+  | NORTH            { Id("#N") }
+  | SOUTH            { Id("#S") }
+  | NWEST            { Id("#NW") }
+  | NEAST            { Id("#NE") }
+  | SWEST            { Id("#SW") }
+  | SEAST            { Id("#SE") }
   | expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
   | expr TIMES  expr { Binop($1, Mult,  $3) }
@@ -121,7 +130,7 @@ expr:
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
-  | LBRACKET mat_lit RBRACKET                 { MatrixLit($2) }
+  | LBRACKET mat_lit RBRACKET                 { MatrixLit(List.rev $2) }
   | ID LBRACKET INTLIT COMMA INTLIT RBRACKET      { MatrixAccess($1, $3, $5) }
 
 /*expr_opt:
@@ -146,4 +155,4 @@ mat_lit:
 
 lit_list:
     lit                             { [$1] }
-    | lit_list COMMA lit            { $3 :: $1 }
+    | lit_list COMMA lit            { $1 @ [$3] }

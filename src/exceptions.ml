@@ -64,5 +64,5 @@ exception UnsupportedMatrixType
 exception UnsupportedVectorType
 exception VectorOutOfBoundsAccess of string
 exception UnsupportedType
-exception LocalNotFound
+exception LocalNotFound of string
 exception StatementNotSuuported
