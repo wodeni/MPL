@@ -52,11 +52,13 @@ let requireAllMatrices tlist str =
 
 
 let checkAllMatrixLiterals d2list str =
+    let i = List.length d2list in
+    let j = List.length (List.hd d2list) in
     let t = List.hd (List.hd d2list) in
         match t with
-            IntLit(_) -> List.map (fun lst -> requireIntegers lst str) d2list; Int
-          | FloatLit(_) -> List.map (fun lst -> requireFloats lst str) d2list; Float
-          | BoolLit(_) -> List.map (fun lst -> requireBools lst str) d2list; Bool
+            IntLit(_) -> List.map (fun lst -> requireIntegers lst str) d2list; Mat(Int, i, j)
+          | FloatLit(_) -> List.map (fun lst -> requireFloats lst str) d2list; Mat(Float, i, j)
+          | BoolLit(_) -> List.map (fun lst -> requireBools lst str) d2list; Mat(Bool, i, j)
           | _ -> raise (Failure("Matrix literals must be of the same type"))
 
 let rec checkUnique lst = 
@@ -119,8 +121,10 @@ let check (functions) =
   
   (* Raise an exception of the given rvalue type cannot be assigned to
      the given lvalue type *)
-  let check_assign lvaluet rvaluet err =
-     if lvaluet == rvaluet then lvaluet else raise err
+  let check_assign lvaluet rvaluet err = 
+  match (lvaluet,rvaluet) with
+      Mat(t1, i1, j1), Mat(t2, i2, j2) -> if t1=t2 && i1=i2 && j1=j2 then lvaluet else raise err
+     | _-> if lvaluet == rvaluet then lvaluet else raise err
   in
    
   (**** Checking Global Variables ****)
@@ -199,18 +203,19 @@ let check (functions) =
       | Noexpr -> Void
       | Assign(var, e) as ex -> let lt = type_of_identifier var
                                 and rt = expr e in
-        check_assign (type_of_identifier var) (expr e)
-                 (Failure ("illegal assignment"))
+        check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
+             " = " ^ string_of_typ rt ))
       | Call(fname, actuals) as call -> let fd = function_decl fname in
          if List.length actuals != List.length fd.formals then
            raise (Failure ("expecting " ^ string_of_int
-             (List.length fd.formals) ^ " arguments of function call"))
+             (List.length fd.formals) ^ " arguments in " ^ string_of_expr call))
          else
            List.iter2 (fun (ft, _) e -> let et = expr e in
               ignore (check_assign ft et
-                (Failure ("illegal actual argument found"))))
+                (Failure ("illegal actual argument found " ^ string_of_typ et ^
+                " expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e))))
              fd.formals actuals;
-           fd.typ 
+           fd.typ
     in 
   
     let check_bool_expr e = if expr e != Bool

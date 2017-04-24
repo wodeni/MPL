@@ -51,15 +51,14 @@ type stmt =
 type func_decl = {
     typ : typ;
     fname : string;
-    formals : var_decl list; 
+    formals : bind list; 
     locals : bind list;
     body : stmt list;
   }
 
 type program = func_decl list
 
-(* Pretty-printing functions
-
+(* Pretty-printing functions *)
 let string_of_op = function
     Add -> "+"
   | Sub -> "-"
@@ -73,10 +72,6 @@ let string_of_op = function
   | Geq -> ">="
   | And -> "&&"
   | Or -> "||"
-  | Apply -> "@"
-  | Matapp -> ".@"
-  | Emult -> ".*"
-  | Ediv -> "./"
 
 let string_of_uop = function
     Neg -> "-"
@@ -84,6 +79,7 @@ let string_of_uop = function
 
 let rec string_of_expr = function
     IntLit(l) -> string_of_int l
+  | FloatLit(l) -> string_of_float l
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   | Id(s) -> s
@@ -103,14 +99,14 @@ let rec string_of_stmt = function
   | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ string_of_stmt s
   | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
       string_of_stmt s1 ^ "else\n" ^ string_of_stmt s2
-  | For(e1, e2, e3, s) ->
-      "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
-      string_of_expr e3  ^ ") " ^ string_of_stmt s
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
 
-let string_of_typ = function
+let rec string_of_typ = function
     Int -> "int"
+  | Float -> "float"
   | Bool -> "bool"
+  | Void -> "void"
+  | Mat(t, i1, j1) -> "Mat <"^ string_of_typ t ^ "> ("^ string_of_int i1 ^ ", " ^ string_of_int j1 ^ ")"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
@@ -125,4 +121,3 @@ let string_of_fdecl fdecl =
 let string_of_program (vars, funcs) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs)
-*)
