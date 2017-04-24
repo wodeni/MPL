@@ -17,5 +17,6 @@ int main
 	*/
 		
  	print(a);
+	print(b);
   	return 0;
 }

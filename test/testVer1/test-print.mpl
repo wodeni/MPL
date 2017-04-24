@@ -1,6 +1,5 @@
 int main
 {
-	Mat<int>[2][2] k;
 	print(41);
 /*	
 	prints("a");
