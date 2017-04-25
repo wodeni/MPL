@@ -209,14 +209,15 @@ let translate (functions) =
         done;
         L.build_load (L.build_gep (lookup mat_str) [| L.const_int i32_t 0 |] n b) n b
     in
-
-
+(*
+    let buildName s = String.sub s 1 ((String.length s)-2) 
+    in*)  
     (* Construct code for an expression; return its value *)
     let rec expr builder expression =  match expression with
 	A.IntLit(i)       -> L.const_int i32_t i
 	  | A.FloatLit(i) -> L.const_float float_t i
       | A.BoolLit b   -> L.const_int i1_t (if b then 1 else 0)
-      | A.StrLit s    -> L.build_global_stringptr s ("str_" ^ s) builder
+      | A.StrLit s    -> L.build_global_stringptr s "str_lit" builder
       | A.MatrixLit l -> let i64Lists        = List.map (List.map (expr builder)) l in
                         let listOfArrays    = List.map Array.of_list i64Lists in
                         (* let i64ListOfArrays = List.rev (List.map (L.const_array (find_matrix_type l)) listOfArrays) in *)
