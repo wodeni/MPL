@@ -98,9 +98,9 @@ let checkFunction fd s = try StringMap.find s fd
        with Not_found -> raise (Failure ("unrecognized function " ^ s))
 
 let checkApply t1 t2 op fd = 
-    let checkFunction t1 fd in
+    let func = checkFunction fd t1 in
         match t2 with
-        Mat(typ,_,_) -> if t1.typ==typ then t2 else raise(Failure("Function and Matrix Type don't match for apply"))
+        Mat(typ,_,_) -> if func.typ==typ then t2 else raise(Failure("Function and Matrix Type don't match for apply"))
         | _ -> raise(Failure("T2 must be a matrix type"))
 
 let checkBinop op t1 t2 fd=
@@ -109,7 +109,6 @@ let checkBinop op t1 t2 fd=
   | Equal | Neq -> getEqualityBinopType t1 t2 op
   | And | Or -> getLogicalBinopType t1 t2 op
   | Less | Leq | Greater | Geq -> getEqualityBinopType t1 t2 op
-  | Apply -> checkApply t1 t2 op fd
   | _ -> raise(Failure("Invalid operand in getBinopType"))
   end
 
@@ -204,8 +203,11 @@ let check (functions) =
       | BoolLit _ -> Bool
       | Id s -> type_of_identifier s
       | MatrixLit s -> checkMatrixDimensions s "Malformed matrix"; checkAllMatrixLiterals s "All matrix literals must be of the same type"; 
-      | Binop(e1, op, e2) as e -> let t1 = expr e1 and t2 = expr e2 in 
-          checkBinop op t1 t2 function_decls
+      | Binop(e1, op, e2) as e -> 
+             (match (e1,op) with
+             (Id s,Apply) -> checkApply s (expr e2) op function_decls
+            | _ -> let t1 = expr e1 and t2 = expr e2 in 
+          checkBinop op t1 t2 function_decls)
       | Unop(op, e) as ex -> let t = expr e in
    (match op with
      Neg when t = Int -> Int
