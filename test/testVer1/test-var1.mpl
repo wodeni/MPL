@@ -7,7 +7,6 @@ int main
 	Mat<float>[2][2] d;
  	Mat<int>[2][2] c;
   	a = 42;
-  	b = 4.2;
 
 
 	e =true;
@@ -17,6 +16,5 @@ int main
 	*/
 		
  	print(a);
-	print(b);
   	return 0;
 }

@@ -7,7 +7,7 @@
 
 # Path to the LLVM interpreterLLC="llc"
 LLC="llc"
-
+AAA="./"
 # Path to the microc compiler.  Usually "./mpl.native"
 # Try "_build/microc.native" if ocamlbuild was unable to create a symbolic link.
 PLT="./src/mpl.native"
@@ -43,7 +43,7 @@ SignalError() {
 # Compares the outfile with reffile.  Differences, if any, written to difffile
 Compare() {
     generatedfiles="$generatedfiles $3"
-    echo diff -b $1 $2 ">" $3 1>&2
+    echo diff -b $1 "$2" ">" $3 1>&2
     diff -b "$1" "$2" > "$3" 2>&1 || {
 	SignalError "$1 differs"
 	echo "FAILED $1 differs from $2" 1>&2
@@ -89,8 +89,8 @@ Check() {
     Run "$PLT" "<" $1 ">" "${basename}.ll" && 
     Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
     Run "$GCC" "${basename}.out" "${basename}.s" "src/$UTIL" &&
-    Run "$AAA""${basename}.out" > "${basename}f.out" &&
-    Compare "${basename}f.out" "test/testVer1/${reffile}.out" ${basename}.diff
+    Run "$AAA""${basename}.out" ">" "${basename}f.out" &&
+    Compare "${basename}f.out" "${reffile}.out" ${basename}.diff
     # Report the status and clean up the generated files
 
     if [ $error -eq 0 ] ; then
