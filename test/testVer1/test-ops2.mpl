@@ -1,8 +1,8 @@
 int main
 {
-/*
   printb(true);
   printb(false);
+ /*
   printb(true && true);
   printb(true && false);
   printb(false && true);
@@ -13,6 +13,7 @@ int main
   printb(false || false);
   printb(!false);
   printb(!true);
+
 */
   print(-10);
   print(-42);
