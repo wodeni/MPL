@@ -27,12 +27,19 @@ let translate (functions) =
   and float_t    = L.double_type context
   and array_t    = L.array_type
   and pointer_t  = L.pointer_type
-  in
 
+in
   let matrix_int_t m n   = array_t (array_t i32_t m) n 
-  and matrix_float_t m n = array_t (array_t float_t m) n in
-
-  let ltype_of_typ = function
+  and matrix_float_t m n = array_t (array_t float_t m) n 
+in
+ 
+  let rec func_ptr_t typ = 
+      let arr  = Array.make 9 (ltype_of_typ typ) in
+      let ftype = L.function_type (ltype_of_typ typ) arr in
+      pointer_t ftype 
+  and
+       
+  ltype_of_typ = function
       A.Int   -> i32_t
     | A.Float -> float_t
     | A.Bool  -> i1_t
@@ -46,6 +53,7 @@ let translate (functions) =
                 A.Int     -> array_t (array_t i32_t cols) rows
                 | A.Float -> array_t (array_t float_t cols) rows
                 | _ -> raise(Exceptions.UnsupportedMatrixType)        )
+    | A.FMat(typ, rows, cols) -> array_t (array_t   (func_ptr_t typ) cols) rows
     | _ -> raise(Exceptions.UnsupportedType)
   in
 
@@ -117,6 +125,7 @@ let translate (functions) =
             let local = L.build_alloca (ltype_of_typ t) ("sharp" ^ n) builder in
             ignore (L.build_store p local builder);
             StringMap.add n local m in
+	(*Note*)
 	let add_local (m,mat_m) (t, n) =  
 		let local_var = L.build_alloca (ltype_of_typ t) n builder in
 		(match t with
@@ -155,6 +164,8 @@ let translate (functions) =
         A.IntLit _   -> ltype_of_typ (A.Int)
       | A.FloatLit _ -> ltype_of_typ (A.Float)
       | A.BoolLit _  -> ltype_of_typ (A.Bool)
+      | A.Id s -> let func_type = L.type_of (fst (StringMap.find s function_decls))
+		in pointer_t func_type 
       | _            -> raise (UnsupportedMatrixType) in 
     let idx n m = [| L.const_int i32_t n; L.const_int i32_t m |] in
     let lookupM t =
@@ -208,7 +219,11 @@ let translate (functions) =
             done
         done;
         L.build_load (L.build_gep (lookup mat_str) [| L.const_int i32_t 0 |] n b) n b
-    in
+    in 
+let find_fptr_by_id typ builder = function
+A.Id id ->  L.build_bitcast (fst (StringMap.find id function_decls)) typ "func_ptr" builder 
+| _ -> raise(Exceptions.UnsupportedMatrixType)      
+in
 (*
     let buildName s = String.sub s 1 ((String.length s)-2) 
     in*)  
@@ -218,12 +233,22 @@ let translate (functions) =
 	  | A.FloatLit(i) -> L.const_float float_t i
       | A.BoolLit b   -> L.const_int i1_t (if b then 1 else 0)
       | A.StrLit s    -> L.build_global_stringptr s "str_lit" builder
-      | A.MatrixLit l -> let i64Lists        = List.map (List.map (expr builder)) l in
-                        let listOfArrays    = List.map Array.of_list i64Lists in
+      | A.MatrixLit l -> 
+		let element = List.hd (List.hd l) in
+		(match element with 
+			A.Id _ -> 
+			       let i64Lists        = List.map (List.map (find_fptr_by_id (find_matrix_type l) builder)) l in
+                               let listOfArrays    = List.map Array.of_list i64Lists in
                         (* let i64ListOfArrays = List.rev (List.map (L.const_array (find_matrix_type l)) listOfArrays) in *)
-                       let i64ListOfArrays = (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
-                        let arrayOfArrays   = Array.of_list i64ListOfArrays in
-              L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
+                               let i64ListOfArrays = (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
+                               let arrayOfArrays   = Array.of_list i64ListOfArrays in
+                               L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
+			|_ ->  let i64Lists        = List.map (List.map (expr builder)) l in
+                               let listOfArrays    = List.map Array.of_list i64Lists in
+                        (* let i64ListOfArrays = List.rev (List.map (L.const_array (find_matrix_type l)) listOfArrays) in *)
+                               let i64ListOfArrays = (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
+                               let arrayOfArrays   = Array.of_list i64ListOfArrays in
+                               L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays)
       | A.Noexpr      -> L.const_int i32_t 0
       | A.Id s        -> L.build_load (lookup s) s builder (* lookup s *)
       | A.Binop (e1, op, e2) ->

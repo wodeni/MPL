@@ -140,6 +140,7 @@ actuals_list:
 lit:
     INTLIT                          { IntLit($1) }
     | FLOATLIT                      { FloatLit($1) }
+    | ID			    { Id($1) }
 
 mat_lit:
     lit_list                        { [$1] }

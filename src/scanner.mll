@@ -139,7 +139,7 @@ rule token = parse
 (* Built-in Types *)
 | "Img"    { IMG }
 | "Mat"    { MAT }
-| "FMat"   { FMAT }
+| "fMat"   { FMAT }
 
 (* Integer literals, identifiers, and others *)
 | integer as lxm { INTLIT(int_of_string lxm) }
