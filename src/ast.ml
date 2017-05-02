@@ -38,7 +38,7 @@ type expr =
   | Call of string * expr list
   | Noexpr
   | Null
-  | MatrixAccess of string * int * int
+  | MatrixAccess of string * expr * expr (*changed string*int*int *)
 
 type stmt =
     Block of stmt list

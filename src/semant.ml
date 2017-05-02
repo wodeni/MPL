@@ -71,12 +71,20 @@ let getArithBinopType t1 t2 op =
   match(t1, t2) with
   (Int, Int) -> Int
   | (Float, Float) -> Float
+  | (Int, Mat(typ, i, j)) -> (match op with 
+                                Mult -> Mat(typ, i, j)
+                                | _ -> raise(Failure("Only valid operation between int and matrix is multiplication.")))
+  | (Float, Mat(typ, i, j)) -> (match op with 
+                                Mult -> Mat(typ, i, j)
+                                | _ -> raise(Failure("Only valid operation between float and matrix is multiplication.")))
   | (Mat(typ1, i1, j1), Mat(typ2, i2, j2)) ->
     (match op with
-      Add | Sub -> if typ1=typ2 && i1=j1 && j1=j2 then Mat(typ1, i1, j1)
+      Add | Sub -> if typ1=typ2 && i1=i2 && j1=j2 then Mat(typ1, i1, j1)
             else raise(Failure("Matrices must be of same type and dimensions for +/-"))
-      | Mult -> if typ1=typ2 && i2=j1 then Mat(typ1, i1, j2)
+      | Mult -> if typ1=typ2 && j1=i2 then Mat(typ1, i1, j2)
             else raise(Failure("M1(a,b) and M2(c,d) must have b=c for *"))
+      | Emult|Ediv -> if typ1=typ2 && i1=i2 && j1=j2 then Mat(typ1, i1, j2)
+            else raise(Failure("M1(a,b) and M2(c,d) must have matching dimensions .* and ./"))      
       | _ -> raise(Failure("No matrices division")))
   | _ -> raise(Failure("Invalid type for arithmetic operand"))
 
@@ -111,6 +119,21 @@ let checkBinop op t1 t2 fd=
   | Less | Leq | Greater | Geq -> getEqualityBinopType t1 t2 op
   | _ -> raise(Failure("Invalid operand in getBinopType"))
   end
+
+let checkMatIndex m i j = match(m,i,j) with
+  (Mat(typ,row,col), IntLit(i1), IntLit(j1)) -> if (i1<0)||(i1>=row)
+                                    then raise(Failure("Out of bounds access - row:"^(string_of_int row)^" i:"^(string_of_expr i))) 
+                                    else if (j1<0)||(j1>=col) 
+                                        then raise(Failure("Out of bounds access - col:"^(string_of_int col)^" j:"^(string_of_expr j))) 
+                                        else typ
+  |(Mat(typ,row,col), Id(_), Id(_)) -> typ 
+  |(Mat(typ,row,col), IntLit(i1), Id(_)) -> if (i1<0)||(i1>=row)
+                                    then raise(Failure("Out of bounds access - row:"^(string_of_int row)^" i:"^(string_of_expr i))) 
+                                    else typ
+  |(Mat(typ,row,col), Id(_), IntLit(j1)) -> if (j1<0)||(j1>=col) 
+                                            then raise(Failure("Out of bounds access - col:"^(string_of_int col)^" j:"^(string_of_expr j))) 
+                                            else typ
+  | _-> raise(Failure("Invalid arguments in accessing matrix"))
 
 
 let check (functions) =
@@ -204,6 +227,7 @@ let check (functions) =
       | BoolLit _ -> Bool
       | Id s -> type_of_identifier s
       | MatrixLit s -> checkMatrixDimensions s "Malformed matrix"; checkAllMatrixLiterals s "All matrix literals must be of the same type"; 
+      | MatrixAccess(m,i,j) -> checkMatIndex (type_of_identifier m) i j; 
       | Binop(e1, op, e2) as e -> 
              (match (e1,op) with
              (Id s,Apply) -> checkApply s (expr e2) op function_decls
