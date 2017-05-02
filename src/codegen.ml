@@ -31,6 +31,7 @@ let translate (functions) =
 in
   let matrix_int_t m n   = array_t (array_t i32_t m) n 
   and matrix_float_t m n = array_t (array_t float_t m) n 
+  and matrix_t t m n   = array_t (array_t t m) n 
 in
  
   let rec func_ptr_t typ = 
@@ -183,34 +184,51 @@ in
         | _ -> raise(Exceptions.UnsupportedMatrixType)  (* TODO *)
     in
 
-    let build_matrix_access i j s rows cols builder assign =
+    let build_matrix l expr builder =
+        let i64Lists        = List.map (List.map (expr builder)) l in
+        let listOfArrays    = List.map Array.of_list i64Lists in
+        let i64ListOfArrays = (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
+        let arrayOfArrays   = Array.of_list i64ListOfArrays in
+        L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
+    in
+
+    let build_matrix_access mat i j s rows cols builder assign =
         if ((i >= rows) || (j >= cols)) then raise(Exceptions.MatrixOutOfBoundsAccess(""));
         if assign
-            then L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
-        else L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
+            then L.build_gep mat [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
+        else L.build_load (L.build_gep mat [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
     in
 
     (* Build instructions for apply operation, this will translate a single 
      * apply to 9 distinct llvm function calls. 
      * @fname = string of the function name
      * @mat = loaded llvalue that is a matrix *)
-    let build_apply f_expr mat n b = 
+    let build_apply f_expr mat n expr b = 
 		let (typ, rows, cols) = (lookupM mat) in
         let mat_str = get_string_by_id mat in
         let f = get_string_by_id f_expr in
         let (fdef, fdecl) = StringMap.find f function_decls in
         let result = f ^ "_result" in
+        (* FIXME
+        let new_mat_l = [] in
+            for i=0 to (rows-1) do
+                new_mat_l 
+                for j=0 to (cols-1) do
+                done
+            done
+        in
+        *)
         (* Loop through all elements in the matrix *)
         for i=0 to (rows-1) do
             for j=0 to (cols-1) do
-                let entry = build_matrix_access i j mat_str rows cols builder true in
+                let entry = build_matrix_access mat i j mat_str rows cols b true in
                 let arr = Array.make 9 (L.const_int i32_t 0) in
                 (* for all the nine neighbors *)
                 for m=i-1 to (i+1) do
                     for n=j-1 to (j+1) do
                         let index = 3 * (m - (i - 1)) + (n - (j - 1)) in
                         if ((m < rows) && (n < cols) && (m >= 0) && (n >= 0)) then 
-                            arr.(index) <- build_matrix_access m n mat_str rows cols builder false
+                            arr.(index) <- build_matrix_access mat m n mat_str rows cols b false
                         else arr.(index) <- (L.const_int i32_t 0)
                     done
                 done;
@@ -229,26 +247,11 @@ in
     in*)  
     (* Construct code for an expression; return its value *)
     let rec expr builder expression =  match expression with
-	A.IntLit(i)       -> L.const_int i32_t i
+        A.IntLit(i)       -> L.const_int i32_t i
 	  | A.FloatLit(i) -> L.const_float float_t i
       | A.BoolLit b   -> L.const_int i1_t (if b then 1 else 0)
       | A.StrLit s    -> L.build_global_stringptr s "str_lit" builder
-      | A.MatrixLit l -> 
-		let element = List.hd (List.hd l) in
-		(match element with 
-			A.Id _ -> 
-			       let i64Lists        = List.map (List.map (find_fptr_by_id (find_matrix_type l) builder)) l in
-                               let listOfArrays    = List.map Array.of_list i64Lists in
-                        (* let i64ListOfArrays = List.rev (List.map (L.const_array (find_matrix_type l)) listOfArrays) in *)
-                               let i64ListOfArrays = (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
-                               let arrayOfArrays   = Array.of_list i64ListOfArrays in
-                               L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
-			|_ ->  let i64Lists        = List.map (List.map (expr builder)) l in
-                               let listOfArrays    = List.map Array.of_list i64Lists in
-                        (* let i64ListOfArrays = List.rev (List.map (L.const_array (find_matrix_type l)) listOfArrays) in *)
-                               let i64ListOfArrays = (List.map (L.const_array (find_matrix_type l)) listOfArrays) in
-                               let arrayOfArrays   = Array.of_list i64ListOfArrays in
-                               L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays)
+      | A.MatrixLit l -> build_matrix l expr builder
       | A.Noexpr      -> L.const_int i32_t 0
       | A.Id s        -> L.build_load (lookup s) s builder (* lookup s *)
       | A.Binop (e1, op, e2) ->
@@ -265,7 +268,7 @@ in
           | A.Leq     -> L.build_icmp L.Icmp.Sle (expr builder e1) (expr builder e2) "tmp" builder
           | A.Greater -> L.build_icmp L.Icmp.Sgt (expr builder e1) (expr builder e2) "tmp" builder
           | A.Geq     -> L.build_icmp L.Icmp.Sge (expr builder e1) (expr builder e2) "tmp" builder
-          | A.Apply   -> build_apply e1 e2 "tmp" builder
+          | A.Apply   -> build_apply e1 e2 "tmp" expr builder
           (* TODO: EMult, EDiv, Matapply *)
           ) 
       | A.Unop(op, e) ->
@@ -276,7 +279,7 @@ in
           e' "tmp" builder
       | A.MatrixAccess (s, i, j) ->
             let (typ, rows, cols) = MatrixMap.find s (getMlocal local_vars) in
-                (build_matrix_access i j s rows cols builder false)
+                (build_matrix_access (lookup s) i j s rows cols builder false)
       | A.Assign (s, e) -> let e' = expr builder e in
 	                   ignore (L.build_store e' (lookup s) builder); e'
       | A.Call ("print", [e]) | A.Call ("printb", [e]) ->

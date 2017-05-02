@@ -19,12 +19,12 @@
  * @n  : the height of the matrix
  */
 void printm_int(int* mat, int m, int n) {
-    printf("[");
+    printf("[\n");
     fflush(stdout);
     for(int i = 0; i < m; ++i) {
         for(int j = 0; j < n; ++j) {
             if(j == n - 1) {
-                printf("%d; ", *((mat+i*n) + j));
+                printf("%d;\n", *((mat+i*n) + j));
                 fflush(stdout);
             }
             else {

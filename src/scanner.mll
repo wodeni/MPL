@@ -99,9 +99,9 @@ rule token = parse
 | "<="     { LEQ }
 | ">"      { GT }
 | ">="     { GEQ }
-| "AND"    { AND }
-| "OR"     { OR }
-| "NOT"    { NOT }
+| "&&"    { AND }
+| "||"     { OR }
+| "!"    { NOT }
 (* | "neg"     { NEG } *)
 | "@"      { APPLY }
 | ".@"     { MATAPP }
