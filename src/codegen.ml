@@ -9,7 +9,7 @@
  * Chi Zhang         <cz2440@columbia.edu>
  * Jiangfeng Wang    <jw3107@columbia.edu>
  *)
-
+open Printf
 open Exceptions
 module L = Llvm
 module A = Ast
@@ -192,19 +192,18 @@ in
         L.const_array (array_t (find_matrix_type l)(List.length (List.hd l))) arrayOfArrays
     in
 
-    let build_matrix_access mat i j s rows cols builder assign =
+    let build_matrix_access i j s rows cols builder assign =
         if ((i >= rows) || (j >= cols)) then raise(Exceptions.MatrixOutOfBoundsAccess(""));
         if assign
-            then L.build_gep mat [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
-        else L.build_load (L.build_gep mat [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
+            then L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
+        else L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
     in
-
     (* Build instructions for apply operation, this will translate a single 
      * apply to 9 distinct llvm function calls. 
      * @fname = string of the function name
      * @mat = loaded llvalue that is a matrix *)
-    let build_apply f_expr mat n expr b = 
-		let (typ, rows, cols) = (lookupM mat) in
+    let build_apply f_expr mat n b = 
+	let (typ, rows, cols) = (lookupM mat) in
         let mat_str = get_string_by_id mat in
         let f = get_string_by_id f_expr in
         let (fdef, fdecl) = StringMap.find f function_decls in
@@ -219,23 +218,47 @@ in
         in
         *)
         (* Loop through all elements in the matrix *)
+       (* 
+	let blist = [] in
         for i=0 to (rows-1) do
             for j=0 to (cols-1) do
-                let entry = build_matrix_access mat i j mat_str rows cols b true in
-                let arr = Array.make 9 (L.const_int i32_t 0) in
+		b :: blist	
+            done
+	done;
+*)
+(*
+	let entrylist = [] in
+        for i=0 to (rows-1) do
+            for j=0 to (cols-1) do
+                let entryp = build_matrix_access i j mat_str rows cols b true in
+		entryp :: entrylist	
+            done
+	done;
+*)
+	let arrMat = Array.make (rows*cols) (L.const_int i32_t 0) in 
+	for i = 0 to (rows-1) do
+	    for j = 0 to (cols-1) do
+		arrMat.(i*cols+j) <- (build_matrix_access i j mat_str rows cols b false)
+	    done	
+	done;
+	for i=0 to (rows-1) do
+            for j=0 to (cols-1) do
+                let entry = build_matrix_access i j mat_str rows cols b true in
+		let arr = Array.make 9 (L.const_int i32_t 0) in
                 (* for all the nine neighbors *)
                 for m=i-1 to (i+1) do
                     for n=j-1 to (j+1) do
                         let index = 3 * (m - (i - 1)) + (n - (j - 1)) in
                         if ((m < rows) && (n < cols) && (m >= 0) && (n >= 0)) then 
-                            arr.(index) <- build_matrix_access mat m n mat_str rows cols b false
+                            arr.(index) <- arrMat.(m*cols+n)
                         else arr.(index) <- (L.const_int i32_t 0)
                     done
                 done;
-            let res = L.build_call fdef arr result b in
-            L.build_store res entry b
-            done
+            	let res = L.build_call fdef arr result b in
+		L.build_store res entry b
+	    done
         done;
+		
         L.build_load (L.build_gep (lookup mat_str) [| L.const_int i32_t 0 |] n b) n b
     in 
 let find_fptr_by_id typ builder = function
@@ -268,7 +291,7 @@ in
           | A.Leq     -> L.build_icmp L.Icmp.Sle (expr builder e1) (expr builder e2) "tmp" builder
           | A.Greater -> L.build_icmp L.Icmp.Sgt (expr builder e1) (expr builder e2) "tmp" builder
           | A.Geq     -> L.build_icmp L.Icmp.Sge (expr builder e1) (expr builder e2) "tmp" builder
-          | A.Apply   -> build_apply e1 e2 "tmp" expr builder
+          | A.Apply   -> build_apply e1 e2 "tmp"  builder
           (* TODO: EMult, EDiv, Matapply *)
           ) 
       | A.Unop(op, e) ->
@@ -279,7 +302,7 @@ in
           e' "tmp" builder
       | A.MatrixAccess (s, i, j) ->
             let (typ, rows, cols) = MatrixMap.find s (getMlocal local_vars) in
-                (build_matrix_access (lookup s) i j s rows cols builder false)
+                (build_matrix_access i j s rows cols builder false)
       | A.Assign (s, e) -> let e' = expr builder e in
 	                   ignore (L.build_store e' (lookup s) builder); e'
       | A.Call ("print", [e]) | A.Call ("printb", [e]) ->
