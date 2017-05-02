@@ -145,7 +145,6 @@ let check (functions) =
   report_duplicate (fun n -> "duplicate global " ^ n) (List.map snd globals);
 *)
   (**** Checking Functions ****)
-
   if List.mem "print" (List.map (fun fd -> fd.fname) functions)
   then raise (Failure ("function print may not be defined")) else ();
 
@@ -157,9 +156,11 @@ let check (functions) =
      { typ = Void; fname = "print"; formals = [(Int, "x")];
        locals = []; body = [] } (StringMap.add "printb"
      { typ = Void; fname = "printb"; formals = [(Bool, "x")];
-       locals = []; body = [] } (StringMap.singleton "printbig"
-     { typ = Void; fname = "printbig"; formals = [(Int, "x")];
-       locals = []; body = [] }))
+       locals = []; body = [] } (StringMap.add "printm"
+    { typ = Void; fname = "printm"; formals = [];
+       locals = []; body = [] } (StringMap.singleton "matread"
+    { typ = Void; fname = "matread"; formals = [];
+        locals = []; body = []} )))
    in
      
   let function_decls = List.fold_left (fun m fd -> StringMap.add fd.fname fd m)
@@ -219,6 +220,19 @@ let check (functions) =
                                 and rt = expr e in
         check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
              " = " ^ string_of_typ rt ))
+      | Call("printm", actuals) -> if (List.length actuals != 1)
+                                           then raise(Failure("Too many arguments to printm"))
+                                           else let t = expr (List.hd actuals) in (match t with
+                                           |Mat(Int,_,_) -> Void
+                                           |Mat(Float,_,_) -> Void
+                                           |_ -> raise(Failure("Wrong argument type. [Not mat<int> or mat<float>]")))
+      | Call("matread", actuals) -> if (List.length actuals != 2) 
+                                    then raise(Failure("Matread only accepts 2 arguments"))
+                                    else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
+                                        match (a1,a2) with
+                                        StrLit(_),Mat(_,_,_) -> Void
+                                        | _ -> raise(Failure("Matread takes string literal and matrix type")) 
+                                    )
       | Call(fname, actuals) as call -> let fd = function_decl fname in
          if List.length actuals != List.length fd.formals then
            raise (Failure ("expecting " ^ string_of_int
