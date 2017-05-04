@@ -119,6 +119,7 @@ rule token = parse
 | "int"    { INT }
 | "float"  { FLOAT }
 | "boolean"{ BOOL }
+| "string" { STRING }
 | "void"   { VOID }
 | "true"   { TRUE }
 | "false"  { FALSE }

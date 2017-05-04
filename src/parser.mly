@@ -17,7 +17,7 @@ open Ast
 %token PLUS MINUS TIMES DIVIDE ASSIGN NOT
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR
 %token APPLY MATAPP TRANS EMULT EDIV
-%token RETURN VOID IF ELSE ELSEIF WHILE INT BOOL FLOAT
+%token RETURN VOID IF ELSE ELSEIF WHILE INT BOOL FLOAT STRING
 %token NULL NEW FUNC
 %token CENTER NORTH SOUTH WEST EAST NWEST NEAST SWEST SEAST
 %token IMG MAT FMAT
@@ -51,14 +51,23 @@ decls:
   | decls fdecl        { $2 :: $1 }
 
 fdecl:
-  typ ID LBRACE vdecl_list stmt_list RBRACE
-    { { typ = $1; fname = $2;
-      locals = List.rev $4; body = List.rev $5 } }
+  typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+    { { typ = $1; fname = $2; formals = $4;
+      locals = List.rev $7; body = List.rev $8 } }
+      
+formals_opt:
+    /* nothing */ { [] }
+  | formal_list   { List.rev $1 }
+
+formal_list:
+    typ ID                   { [($1,$2)] }
+  | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
     INT { Int }
   | BOOL { Bool }
   | FLOAT { Float }
+  | STRING { String }
   | VOID { Void }
   | MAT LT typ GT LBRACKET INTLIT RBRACKET LBRACKET INTLIT RBRACKET { Mat($3, $6, $9) }
   | FMAT LT typ GT LBRACKET INTLIT RBRACKET LBRACKET INTLIT RBRACKET { FMat($3, $6, $9) }
@@ -123,7 +132,7 @@ expr:
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
   | LBRACKET mat_lit RBRACKET                 { MatrixLit(List.rev $2) }
-  | ID LBRACKET INTLIT COMMA INTLIT RBRACKET      { MatrixAccess($1, $3, $5) }
+  | ID LBRACKET expr RBRACKET LBRACKET expr RBRACKET      { MatrixAccess($1, $3, $6) }
 
 /*expr_opt:
     nothing                   { Noexpr }

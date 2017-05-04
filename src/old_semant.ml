@@ -11,7 +11,7 @@
  *)
 
 open Ast
-open Sast
+
 module StringMap = Map.Make(String)
 
 (* Semantic checking of a program. Returns void if successful,
@@ -107,13 +107,11 @@ let checkFunction fd s = try StringMap.find s fd
 
 let checkApply t1 t2 op fd = 
     let func = checkFunction fd t1 in
-         let t21 = Sast.get_expr_type_info t2 in
-        match t21 with
-        Mat(typ,_,_) -> if func.typ==typ then t21 else raise(Failure("Function and Matrix Type don't match for apply"))
+        match t2 with
+        Mat(typ,_,_) -> if func.typ==typ then t2 else raise(Failure("Function and Matrix Type don't match for apply"))
         | _ -> raise(Failure("T2 must be a matrix type"))
 
-let checkBinop op e1 e2 fd=
-  let t1 = Sast.get_expr_type_info e1 and t2 = Sast.get_expr_type_info e2 in
+let checkBinop op t1 t2 fd=
   begin match op with
   Add | Mult | Sub | Div -> getArithBinopType t1 t2 op
   | Equal | Neq -> getEqualityBinopType t1 t2 op
@@ -137,47 +135,7 @@ let checkMatIndex m i j = match(m,i,j) with
                                             else typ
   | _-> raise(Failure("Invalid arguments in accessing matrix"))
 
-let numlitToSlit n = match n with
-    IntLit(n) -> SIntLit(n)
-  | FloatLit(n) -> SFloatLit(n)
-let getLitType n = match n with
-    IntLit(_) -> Int
-  | FloatLit(_) -> Float
 
-let mlitToSmlit n = 
-    let t = getLitType(List.hd (List.hd n)) in
-    let slit = (List.map (fun nl -> (List.map numlitToSlit nl)) n) in
-    let r = List.length n and c = List.length (List.hd n) in
-    SMatrixLit(slit, Mat(t,r,c))
-(*
-let get_expr_type_info sexpr = match sexpr with
-    |SIntLit _ ->                Int
-    |SFloatLit _ ->              Float
-    |SBoolLit _ ->               Bool
-    |SMatrixLit (_,x) ->         x
-    |SId (_,x) ->                x
-    |SStrLit _ ->                String
-    |SBinop (_,_,_,x) ->         x
-    |SUnop (_,_,x) ->            x
-    |SAssign (_,_,x) ->          x
-    |SCall (_,_,x) ->            x
-    |SNull ->                    Void
-    |SMatrixAccess (_,_,_,x) ->  x
-
-let exprToSexpr expr = match expr with
-    | IntLit(n)  ->              SIntLit(IntLit(n))
-    | FloatLit(n) ->             SFloatLit(FloatLit(n))
-    | BoolLit(n) ->              SBoolLit(BoolLit(n))
-    | MatrixLit(n) ->            checkMatrixLit n
-    | Id(n) ->                   SId(n, getIdType n)
-    | StrLit(n) ->               StrLit(n)
-    | Binop(e1, op, e2) ->       checkBinop e1 op e2
-    | Unop(op, e) ->             checkUnop op e
-    | Assign(s, e) ->            checkAssign s e
-    | Call(s, e) ->              SCall(s, (List.map exprToSexpr e), )
-    | Null ->                    SNull
-    | MatrixAccess(s, e1, e2) -> checkMatrixAccess s e1 e2
-*)
 let check (functions) =
 
   (* Raise an exception if the given list has a duplicate *)
@@ -264,94 +222,78 @@ let check (functions) =
 
     (* Return the type of an expression or throw an exception *)
     let rec expr = function
-       IntLit(n) -> SIntLit(n)
-      | FloatLit(n)  -> SFloatLit(n)
-      | BoolLit(n) -> SBoolLit(n)
-      | StrLit(n) -> SStrLit(n)
-      | Id(s) -> SId(s, type_of_identifier s)
-      | MatrixLit s ->  ((checkMatrixDimensions s "Malformed matrix"; checkAllMatrixLiterals s "All matrix literals must be of the same type")); (mlitToSmlit s)
-      | MatrixAccess(m,i,j) -> let t = checkMatIndex (type_of_identifier m) i j in
-            SMatrixAccess(m, numlitToSlit i, numlitToSlit j, t)
+       IntLit _ -> Int
+      | FloatLit _ -> Float
+      | BoolLit _ -> Bool
+      | Id s -> type_of_identifier s
+      | MatrixLit s -> checkMatrixDimensions s "Malformed matrix"; checkAllMatrixLiterals s "All matrix literals must be of the same type"; 
+      | MatrixAccess(m,i,j) -> checkMatIndex (type_of_identifier m) i j; 
       | Binop(e1, op, e2) as e -> 
              (match (e1,op) with
-             (Id s,Apply) -> SBinop(SId(s,get_expr_type_info (expr e2)), op, (expr e2), checkApply s (expr e2) op function_decls)
+             (Id s,Apply) -> checkApply s (expr e2) op function_decls
             | _ -> let t1 = expr e1 and t2 = expr e2 in 
-          SBinop(t1, op, t2, checkBinop op t1 t2 function_decls))
-      | Unop(op, e) as ex -> SUnop(op, (expr e), (let t1 = expr e in
-                                                  let t = Sast.get_expr_type_info t1 in
+          checkBinop op t1 t2 function_decls)
+      | Unop(op, e) as ex -> let t = expr e in
    (match op with
      Neg when t = Int -> Int
    | Neg when t = Float -> Float
    | Not when t = Bool -> Bool
-         | _ -> raise (Failure ("illegal unary operator"))) ))
-      (*| Noexpr -> Void*)
-      | Assign(var, e) as ex -> SAssign(var, (expr e), (let lt = type_of_identifier var
-                                and rt1 = (expr e) in 
-                                let  rt = (Sast.get_expr_type_info rt1) in
+         | _ -> raise (Failure ("illegal unary operator")))
+      | Noexpr -> Void
+      | Assign(var, e) as ex -> let lt = type_of_identifier var
+                                and rt = expr e in
         check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
-             " = " ^ string_of_typ rt )) ))
-      | Call("printm", actuals) -> let a = (List.map expr actuals) in
-              SCall("printm", a, (if (List.length actuals != 1)
+             " = " ^ string_of_typ rt ))
+      | Call("printm", actuals) -> if (List.length actuals != 1)
                                            then raise(Failure("Too many arguments to printm"))
-                                           else let t1 = expr (List.hd actuals) in
-                                           let t = Sast.get_expr_type_info t1 in
-                                           (match t with
+                                           else let t = expr (List.hd actuals) in (match t with
                                            |Mat(Int,_,_) -> Void
                                            |Mat(Float,_,_) -> Void
                                            |_ -> raise(Failure("Wrong argument type. [Not mat<int> or mat<float>]")))
-                                    )) (*match scall*)
-      | Call("matread", actuals) -> let a = (List.map expr actuals) in 
-              SCall("matread", a,    (if (List.length actuals != 2) 
+      | Call("matread", actuals) -> if (List.length actuals != 2) 
                                     then raise(Failure("Matread only accepts 2 arguments"))
                                     else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
-                                    let t2 = Sast.get_expr_type_info a2 in
-                                        match (a1,t2) with
+                                        match (a1,a2) with
                                         StrLit(_),Mat(_,_,_) -> Void
                                         | _ -> raise(Failure("Matread takes string literal and matrix type")) 
-                                     ) ))
-      | Call(fname, actuals) as call -> let a = (List.map expr actuals) in
-              SCall(fname, a, (let fd = function_decl fname in
+                                    )
+      | Call(fname, actuals) as call -> let fd = function_decl fname in
          if List.length actuals != List.length fd.formals then
            raise (Failure ("expecting " ^ string_of_int
              (List.length fd.formals) ^ " arguments in " ^ string_of_expr call))
          else
-           List.iter2 (fun (ft, _) e -> let et1 = expr e in
-              let et = Sast.get_expr_type_info et1 in
+           List.iter2 (fun (ft, _) e -> let et = expr e in
               ignore (check_assign ft et
                 (Failure ("illegal actual argument found " ^ string_of_typ et ^
                 " expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e))))
              fd.formals actuals;
-           fd.typ))
+           fd.typ
     in 
   
-    let check_bool_expr e = if (Sast.get_expr_type_info (expr e)) != Bool
-    then raise (Failure ("expected Boolean expression"))
-     else (expr e) in
-    
+    let check_bool_expr e = if expr e != Bool
+     then raise (Failure ("expected Boolean expression"))
+     else () in
+
     (* Verify a statement or throw an exception *)
     let rec stmt = function
-  Block sl ->(* SBlock(let rec check_block = function
+  Block sl -> let rec check_block = function
            [Return _ as s] -> stmt s
          | Return _ :: _ -> raise (Failure "nothing may follow a return")
          | Block sl :: ss -> check_block (sl @ ss)
          | s :: ss -> stmt s ; check_block ss
-         | [] -> (expr ())
-        in check_block sl)*)
-        SBlock(convertStmtToSStmt sl)
-      | Expr e -> SExpr (expr e)
-      | Return e -> SReturn(let t = expr e in 
-                            let t1 = Sast.get_expr_type_info t in
-                            if t1 = func.typ then expr e else
-         raise (Failure ("return gives invalid type")))
+         | [] -> ()
+        in check_block sl
+      | Expr e -> ignore (expr e)
+      | Return e -> let t = expr e in if t = func.typ then () else
+         raise (Failure ("return gives invalid type"))
            
-      | If(p, b1, b2) -> SIf((check_bool_expr p),(stmt b1), (stmt b2))
+      | If(p, b1, b2) -> check_bool_expr p; stmt b1; stmt b2
       (*| For(e1, e2, e3, st) -> ignore (expr e1); check_bool_expr e2;
                                ignore (expr e3); stmt st*)
-      | While(p, s) -> SWhile((check_bool_expr p), stmt s)
-    
-    and convertStmtToSStmt sl = List.map stmt sl in
+      | While(p, s) -> check_bool_expr p; stmt s
+    in
 
-    (ignore (stmt (Block func.body)))
+    stmt (Block func.body)
    
   in
   List.iter check_function functions
