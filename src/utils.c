@@ -9,8 +9,41 @@
  * Chi Zhang         <cz2440@columbia.edu>
  * Jiangfeng Wang    <jw3107@columbia.edu>
  */
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+// #define LIVE 254 // a black square
+#define LIVE "\u2588\u2588" // a black square
+#define DEAD "  "     // a space
+#define clear() printf("\033[H\033[J")
+#define get_symbol(i) (i == 0 ? DEAD : LIVE)
+#define mat_entry(mat, n, i, j) (*((mat + i * n) + j))
+
+// #define DEBUG
+
+/* Given a board of Conway's Game of life, pretty print it. 
+ * @mat: the board
+ * @m  : the width of the matrix
+ * @n  : the height of the matrix
+ * @sleep: The time interval between updates, in milliseconds
+ */
+void print_board(int* mat, int m, int n, int sleep) {
+    fflush(stdout);
+    clear();
+    
+    for(int i = 0; i < m; ++i) {
+        for(int j = 0; j < n; ++j) {
+            int entry = mat_entry(mat, n, i, j);
+            if(j == n - 1) 
+                printf("%s\n", get_symbol(entry));
+            else 
+                printf("%s", get_symbol(entry));
+            fflush(stdout);
+        }
+    }
+    usleep(sleep * 1000); // Sleep for 0.5s
+}
 
 
 /* Pretty-print out an integer matrix to stdout
@@ -154,3 +187,16 @@ int matwrite_float (char *path, double *mat, int row, int col) {
     fclose(fd);
     return 0;
 }
+
+
+#ifdef DEBUG
+int main() {
+    int mat[3][3] = {
+        {0, 0, 1},
+        {0, 1, 0},
+        {1, 0, 0},
+    };
+    print_board((int *)mat, 3, 3);
+    return 0;
+}
+#endif

@@ -3,13 +3,8 @@
 }
 */
 int main {
-    Mat<int>[3][3] m;
-    matread("matexample.txt",m);
-    printm(m);
-/*    
-    entryf @ m;
-    printm(m);
-*/
+    Mat<int>[100][100] m;
+    matread("gun.txt",m);
+    print_board(m);
     return 0;
-}
 }

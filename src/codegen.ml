@@ -9,7 +9,6 @@
  * Chi Zhang         <cz2440@columbia.edu>
  * Jiangfeng Wang    <jw3107@columbia.edu>
  *)
-open Printf
 open Exceptions
 module L = Llvm
 module A = Ast
@@ -29,10 +28,12 @@ let translate (functions) =
   and pointer_t  = L.pointer_type
 
 in
+(*
   let matrix_int_t m n   = array_t (array_t i32_t m) n 
   and matrix_float_t m n = array_t (array_t float_t m) n 
   and matrix_t t m n   = array_t (array_t t m) n 
 in
+*)
  
   let rec func_ptr_t typ = 
       let arr  = Array.make 9 (ltype_of_typ typ) in
@@ -60,27 +61,26 @@ in
 
   
   (* Declare printf(), which the print built-in function will call *)
-  let printf_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
-  let printf_func = L.declare_function "printf" printf_t the_module in
+  let printf_t            = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
+  let printf_func         = L.declare_function "printf" printf_t the_module in
 
-  let printbig_t = L.function_type i32_t [| i32_t |] in
-  let printbig_func = L.declare_function "printbig" printbig_t the_module in
+  let printm_int_t        = L.function_type i32_t [| L.pointer_type i8_t; i32_t; i32_t |] in
+  let printm_int_func     = L.declare_function "printm_int" printm_int_t the_module in
+  let printm_float_t      = L.function_type i32_t [| L.pointer_type i8_t; float_t; float_t |] in
+  let printm_float_func   = L.declare_function "printm_float" printm_float_t the_module in
 
-  let printm_int_t = L.function_type i32_t [| L.pointer_type i8_t; i32_t; i32_t |] in
-  let printm_int_func = L.declare_function "printm_int" printm_int_t the_module in
-  let printm_float_t = L.function_type i32_t [| L.pointer_type i8_t; float_t; float_t |] in
-  let printm_float_func = L.declare_function "printm_float" printm_float_t the_module in
+  let matrw_int_t         = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
+  let matrw_float_t       = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
+  let matread_int_func    = L.declare_function "matread_int" matrw_int_t the_module in
+  let matread_float_func  = L.declare_function "matread_float" matrw_float_t the_module in
+  let matwrite_int_func   = L.declare_function "matwrite_int" matrw_int_t the_module in
+  let matwrite_float_func = L.declare_function "matwrite_float" matrw_float_t the_module in
 
-  let matread_int_t = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
-  let matread_int_func = L.declare_function "matread_int" matread_int_t the_module in
-  let matread_float_t = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
-  let matread_float_func = L.declare_function "matread_float" matread_float_t the_module in
+  let memcpy_t            = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t|] in
+  let memcpy_func         = L.declare_function "memcpy" memcpy_t the_module in
 
-  let matwrite_int_t = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
-  let matwrite_int_func = L.declare_function "matwrite_int" matread_int_t the_module in
-  let matwrite_float_t = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
-  let matwrite_float_func = L.declare_function "matwrite_float" matread_float_t the_module in
-
+  let print_board_t       = L.function_type i32_t [| L.pointer_type i8_t; i32_t; i32_t; i32_t |] in
+  let print_board_func    = L.declare_function "print_board" print_board_t the_module in 
 
   (* Define each function so we can call it *)
   (* NOTE: We only have one argument, and it has the same type of the return type *)
@@ -198,69 +198,140 @@ in
             then L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
         else L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
     in
+
+    let get_builder bb = L.builder_at_end context bb in
+    let get_neighbor mat i j ix iy row col b = 
+        let x = if (ix == -1) then 
+            L.build_srem (L.build_add (L.build_srem 
+                (L.build_add i (L.const_int i32_t ix) "tmp" b) row "tmp" b) row "tmp" b) row "tmp" b
+            else 
+                L.build_srem (L.build_add i  (L.const_int i32_t ix) "tmp" b) row "tmp" b
+        in
+        let y = if (iy == -1) then 
+            L.build_srem (L.build_add (L.build_srem 
+                (L.build_add j (L.const_int i32_t iy) "tmp" b) col "tmp" b) col "tmp" b) col "tmp" b
+            else 
+                L.build_srem (L.build_add j  (L.const_int i32_t iy) "tmp" b) col "tmp" b
+        in 
+        (*
+        ignore(L.build_call printf_func [| int_format_str ; x |] "printf" b);
+        ignore(L.build_call printf_func [| int_format_str ; y |] "printf" b);
+        *)
+        L.build_load (L.build_gep mat [| L.const_int i32_t 0; x; y|] "build_gep"  b) "build_load" b
+    in
+
     (* Build instructions for apply operation, this will translate a single 
      * apply to 9 distinct llvm function calls. 
      * @fname = string of the function name
      * @mat = loaded llvalue that is a matrix *)
     let build_apply f_expr mat n b = 
-	let (typ, rows, cols) = (lookupM mat) in
+	    let (typ, rows, cols) = (lookupM mat) in
+        let dim = L.const_int i32_t (4 * rows * cols) in
         let mat_str = get_string_by_id mat in
         let f = get_string_by_id f_expr in
         let (fdef, fdecl) = StringMap.find f function_decls in
         let result = f ^ "_result" in
-        (* FIXME
-        let new_mat_l = [] in
-            for i=0 to (rows-1) do
-                new_mat_l 
-                for j=0 to (cols-1) do
-                done
-            done
-        in
+        
+        (* Declare outter counter *) 
+        let id_ptr      = L.build_in_bounds_gep (lookup mat_str) (idx 0 0) "build_in_bounds_gep" b in
+        let mat_ptr     = L.build_bitcast id_ptr (pointer_t i8_t) "mat_ptr" b in
+        let arr         = Array.make 9 (L.const_int i32_t 0) in
+        let old_mat     = L.build_alloca (array_t (array_t i32_t cols) rows) "old_mat" b in
+        let old_mat_ptr = L.build_bitcast old_mat (pointer_t i8_t) "old_mat_ptr" b in
+        let iptr        = L.build_alloca i32_t "outter_count" b in
+        let jptr        = L.build_alloca i32_t "inner_count" b in
+        ignore(L.build_store (L.const_int i32_t 0) iptr b);
+        ignore(L.build_call memcpy_func [|  old_mat_ptr; mat_ptr; dim  |] "memcpy" b);
+        (*
+        ignore(L.build_call printm_int_func [| old_mat_ptr; (L.const_int i32_t rows); 
+                                (L.const_int i32_t cols) |] "printm_int" b);
         *)
-        (* Loop through all elements in the matrix *)
-       (* 
-	let blist = [] in
-        for i=0 to (rows-1) do
-            for j=0 to (cols-1) do
-		b :: blist	
+
+        let outter_pred_bb = L.append_block context "outter" the_function in
+        ignore (L.build_br outter_pred_bb b);
+
+        let outter_builder = L.builder_at_end context outter_pred_bb in
+        let i = L.build_load iptr "outter_countv" outter_builder in
+        let outter_bool_val = L.build_icmp L.Icmp.Slt i (L.const_int i32_t rows) "outter_bool_val" outter_builder in
+
+        let outter_body_bb = L.append_block context "outter_body" the_function in
+
+        (* Declare inner counter *) 
+        let outter_body_builder = L.builder_at_end context outter_body_bb in
+        ignore(L.build_store (L.const_int i32_t 0) jptr outter_body_builder);
+
+          let inner_pred_bb = L.append_block context "inner" the_function in
+          ignore (L.build_br inner_pred_bb outter_body_builder);
+          let inner_builder = L.builder_at_end context inner_pred_bb in
+
+          let j = L.build_load jptr "inner_countv" inner_builder in
+          let inner_bool_val = L.build_icmp L.Icmp.Slt j (L.const_int i32_t cols) "inner_bool_val" inner_builder in
+
+          let inner_body_bb = L.append_block context "inner_body" the_function in
+          let inner_body_builder = L.builder_at_end context inner_body_bb in
+
+          (* The actual code for function application *)
+          let entry = L.build_gep (lookup mat_str) [| L.const_int i32_t 0; i; j |] mat_str inner_body_builder in
+
+          (* for all the nine neighbors *)
+          let arr = Array.make 9 (L.const_int i32_t 0) in 
+          for n = -1 to 1 do
+              for m = -1 to 1 do 
+                  let index  = 3 * (m + 1) + (n + 1) in
+                  arr.(index) <- get_neighbor old_mat i j m n 
+                        (L.const_int i32_t rows) (L.const_int i32_t cols) inner_body_builder;
             done
-	done;
-*)
-(*
-	let entrylist = [] in
-        for i=0 to (rows-1) do
-            for j=0 to (cols-1) do
-                let entryp = build_matrix_access i j mat_str rows cols b true in
-		entryp :: entrylist	
+          done;
+
+          (*
+          for m=-1 to 1 do
+              for n=-1 to 1 do
+                  let index = 3 * (m - (i - 1)) + (n - (j - 1)) in
+                  if ((m < rows) && (n < cols) && (m >= 0) && (n >= 0)) then 
+                      arr.(index)  <- L.build_load (L.build_gep old_mat [| L.const_int i32_t 0; 
+                        i; j |] "build_gep" inner_body_builder) "tmp_ptr_mat" inner_body_builder
+                  else arr.(index) <- (L.const_int i32_t 0)
             done
-	done;
-*)
-	let arrMat = Array.make (rows*cols) (L.const_int i32_t 0) in 
-	for i = 0 to (rows-1) do
-	    for j = 0 to (cols-1) do
-		arrMat.(i*cols+j) <- (build_matrix_access i j mat_str rows cols b false)
-	    done	
-	done;
-	for i=0 to (rows-1) do
-            for j=0 to (cols-1) do
-                let entry = build_matrix_access i j mat_str rows cols b true in
-		let arr = Array.make 9 (L.const_int i32_t 0) in
-                (* for all the nine neighbors *)
-                for m=i-1 to (i+1) do
-                    for n=j-1 to (j+1) do
-                        let index = 3 * (m - (i - 1)) + (n - (j - 1)) in
-                        if ((m < rows) && (n < cols) && (m >= 0) && (n >= 0)) then 
-                            arr.(index) <- arrMat.(m*cols+n)
-                        else arr.(index) <- (L.const_int i32_t 0)
-                    done
-                done;
-            	let res = L.build_call fdef arr result b in
-		L.build_store res entry b
-	    done
-        done;
-		
-        L.build_load (L.build_gep (lookup mat_str) [| L.const_int i32_t 0 |] n b) n b
-    in 
+          done;
+          *)
+          
+          let res = L.build_call fdef arr result inner_body_builder in
+          ignore(L.build_store res entry inner_body_builder);
+          ignore(L.build_store (L.build_add j (L.const_int i32_t 1) "tmp" inner_body_builder) jptr inner_body_builder); (* j++ *)
+          ignore(L.build_br inner_pred_bb inner_body_builder);
+
+          let inner_merge_bb = L.append_block context "inner_merge" the_function in
+          ignore(L.build_cond_br inner_bool_val inner_body_bb inner_merge_bb inner_builder);
+          ignore(L.build_store (L.build_add i (L.const_int i32_t 1) "tmp" 
+            (get_builder inner_merge_bb)) iptr (get_builder inner_merge_bb)); (* i++ *)
+          ignore(L.build_br outter_pred_bb (get_builder inner_merge_bb));
+        
+          
+        let outter_merge_bb = L.append_block context "outter_merge" the_function in
+        ignore (L.build_cond_br outter_bool_val outter_body_bb outter_merge_bb outter_builder);
+        let outter_merge_builder = get_builder outter_merge_bb in
+        let ret = L.build_load (L.build_gep (lookup mat_str) [| L.const_int i32_t 0 |] 
+            n outter_merge_builder) n outter_merge_builder in
+        (ret, outter_merge_builder)
+        
+in 
+     (*
+	 (* add_terminal (stmt (L.builder_at_end context body_bb) body)
+	    (L.build_br outter_pred_bb); *)
+	  let pred_builder = L.builder_at_end context pred_bb in
+	  let bool_val = expr pred_builder predicate in
+
+	  let merge_bb = L.append_block context "merge" the_function in
+	  ignore (L.build_cond_br bool_val body_bb merge_bb pred_builder);
+	  L.builder_at_end context merge_bb
+      | A.For (e1, e2, e3, body) -> stmt builder
+	    ( A.Block [A.Expr e1 ; A.While (e2, A.Block [body ; A.Expr e3]) ] )
+      let entry = build_matrix_access i j mat_str rows cols b true in
+      let arr = Array.make 9 (L.const_int i32_t 0) in
+    *)
+    (*  
+	*)	
+
 let find_fptr_by_id typ builder = function
 A.Id id ->  L.build_bitcast (fst (StringMap.find id function_decls)) typ "func_ptr" builder 
 | _ -> raise(Exceptions.UnsupportedMatrixType)      
@@ -291,7 +362,8 @@ in
           | A.Leq     -> L.build_icmp L.Icmp.Sle (expr builder e1) (expr builder e2) "tmp" builder
           | A.Greater -> L.build_icmp L.Icmp.Sgt (expr builder e1) (expr builder e2) "tmp" builder
           | A.Geq     -> L.build_icmp L.Icmp.Sge (expr builder e1) (expr builder e2) "tmp" builder
-          | A.Apply   -> build_apply e1 e2 "tmp"  builder
+          | A.Apply   -> fst (build_apply e1 e2 "tmp"  builder)
+          | _         -> raise(Exceptions.InvalidUnaryOperation) 
           (* TODO: EMult, EDiv, Matapply *)
           ) 
       | A.Unop(op, e) ->
@@ -309,8 +381,15 @@ in
 	    L.build_call printf_func [| int_format_str ; (expr builder e) |] "printf" builder
       | A.Call ("prints", [e]) -> 
 	    L.build_call printf_func [| string_format_str ; (expr builder e) |] "printf" builder
-      | A.Call ("printbig", [e]) ->
-	  L.build_call printbig_func [| (expr builder e) |] "printbig" builder
+      | A.Call ("print_board", [e1; e2]) ->
+		let (typ, rows, cols) = (lookupM e1) in
+        let id = lookup_matrixid e1 in
+        let id_ptr = L.build_in_bounds_gep id (idx 0 0) "build_in_bounds_gep" builder in 
+        let mat_ptr = L.build_bitcast id_ptr (pointer_t i8_t) "mat_ptr" builder 
+                in (match typ with
+                            A.Int -> L.build_call print_board_func [| mat_ptr; (L.const_int i32_t rows); 
+                                (L.const_int i32_t cols); (expr builder e2) |] "print_board" builder
+                            | _ -> raise(Exceptions.UnsupportedMatrixType))
       | A.Call ("printm", [e]) ->
 		let (typ, rows, cols) = (lookupM e) in
         let id = lookup_matrixid e in
@@ -344,7 +423,7 @@ in
                 | A.Float -> L.build_call matread_float_func [| (expr builder e1); mat_ptr;
                     (L.const_int i32_t rows); (L.const_int i32_t cols) |] "matread_float" builder
                 | _ -> raise(Exceptions.UnsupportedMatrixType)        )
-                        
+                   
       (* NOTE: we do not have any user defined functions
        *       Will use this code once we implement "@"
       | A.Call (f, act) ->
@@ -369,7 +448,11 @@ in
        the statement's successor *)
     let rec stmt builder = function
 	A.Block sl -> List.fold_left stmt builder sl
-      | A.Expr e -> ignore (expr builder e); builder
+      | A.Expr e -> (match e with
+          A.Binop(e1, op, e2) -> (match op with
+              A.Apply -> snd (build_apply e1 e2 "tmp"  builder)
+              |_ -> ignore (expr builder e); builder)
+          | _ -> ignore (expr builder e); builder)
       | A.Return e -> ignore (match fdecl.A.typ with
 	  A.Void -> L.build_ret_void builder
 	| _ -> L.build_ret (expr builder e) builder); builder
@@ -402,7 +485,9 @@ in
 	  let merge_bb = L.append_block context "merge" the_function in
 	  ignore (L.build_cond_br bool_val body_bb merge_bb pred_builder);
 	  L.builder_at_end context merge_bb
-
+      (*| A.For (e1, e2, e3, body) -> stmt builder
+	    ( A.Block [A.Expr e1 ; A.While (e2, A.Block [body ; A.Expr e3]) ] )
+      *)
     in
 
     (* Build the code for each statement in the function *)
