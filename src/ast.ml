@@ -15,7 +15,7 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-type typ = Int | Bool | Float | Void
+type typ = Int | Bool | Float | Void | String (*Sorry Nimo*)
                   | Mat of typ * int * int
                   | FMat of typ * int * int
                   | Img
@@ -30,8 +30,8 @@ type expr =
   | FloatLit of float
   | BoolLit of bool
   | MatrixLit of expr list list
-  | Id of string
   | StrLit of string
+  | Id of string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr

@@ -4,8 +4,10 @@ int entryf() {
 
 int main() {
     Mat<int>[2][2] m;
+    int i;
     m = [1,2;3,4];
-    /*matread("matexample.txt",m);*/
+    i = m[1][0];    
+    matread("matexample.txt",m);
     printm(m);
     
     entryf @ m;
