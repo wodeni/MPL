@@ -9,6 +9,7 @@ opam init -y
 opam install llvm.3.4 ocamlfind -y
 eval `opam config env`
 
+
 # compile & run tests (here assuming OASIS DevFiles)
 cd src
 make clean
