@@ -7,7 +7,7 @@ sudo apt-get update
 sudo apt-get install -y ocaml m4 llvm opam
 opam init -y
 opam install  ocamlfind -y
-# opam install  llvm.3.4 -y
+opam install  llvm.3.4 -y
 eval `opam config env`
 
 # compile & run tests (here assuming OASIS DevFiles)
