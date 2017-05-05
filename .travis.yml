@@ -1,14 +1,4 @@
-language: mpl
-
-before_install: 
-
-install:
-    - bash -ex travis-ci.sh
-
-script: 
-    - cd src
-    - make clean && make
-
-after_script: 
-
-sudo: required
+language: c
+script: bash -ex .travis-ci.sh
+env:
+  - OCAML_VERSION=4.02.3 OPAM_VERSION=1.2.2
