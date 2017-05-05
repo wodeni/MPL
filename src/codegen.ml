@@ -193,10 +193,9 @@ in
     in
 
     let build_matrix_access i j s rows cols builder assign =
-        if ((i >= rows) || (j >= cols)) then raise(Exceptions.MatrixOutOfBoundsAccess(""));
         if assign
-            then L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|] s builder
-        else L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t i;L.const_int i32_t j|]  s builder) s builder
+            then L.build_gep (lookup s) [| L.const_int i32_t 0; i; j|] s builder
+        else L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; i; j|]  s builder) s builder
     in
 
     let get_builder bb = L.builder_at_end context bb in
@@ -372,9 +371,9 @@ in
             A.Neg     -> L.build_neg
           | A.Not     -> L.build_not) 
           e' "tmp" builder
-      | A.MatrixAccess (s, i, j) ->
+      | A.MatrixAccess (s, e1, e2) ->
             let (typ, rows, cols) = MatrixMap.find s (getMlocal local_vars) in
-                (build_matrix_access i j s rows cols builder false)
+                (build_matrix_access (expr builder e1) (expr builder e2) s rows cols builder false)
       | A.Assign (s, e) -> let e' = expr builder e in
 	                   ignore (L.build_store e' (lookup s) builder); e'
       | A.Call ("print", [e]) | A.Call ("printb", [e]) ->

@@ -1,4 +1,4 @@
-int evolve {
+int evolve() {
     int i;
     int sum;
     i = 0;
@@ -16,7 +16,7 @@ int evolve {
             return 0;
 }
 
-int main {
+int main() {
     int rounds;
     Mat<int>[100][100] board;
     matread("gun.txt", board);
