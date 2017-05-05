@@ -4,7 +4,7 @@ int entry {
 
 int main {
     Mat<int>[3][3] m;
-    Mat<int>[10][10] n;
+    Mat<int>[100][100] n;
 
     int i;
     i = 0;

@@ -2,6 +2,7 @@ int evolve {
     int i;
     int sum;
     i = 0;
+
     sum = #NW + #N + #NE + #W + #E + #SW + #S + #SE;
 
     if(#C == 1)
@@ -22,21 +23,10 @@ int main {
     matread("gun.txt", board);
     rounds = 0;
     while(true) {
-        print_board(board, 20);
+        print_board(board, 100);
         evolve @ board;
         rounds = rounds + 1;
+        print(rounds);
     }
 }
 
-/*
-        printm(board);
-        evolve @ board;
-Mat<int>[8, 1] neighbors;
-neighbors = {}
-while(i < 8) {
-    n = neighbors[i];
-    if(n == 1)
-        sum++;
-}
-    while(true) 
-*/

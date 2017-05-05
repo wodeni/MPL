@@ -9,7 +9,9 @@ sfilename="${filename}.s"
 make clean && make 
 ./mpl.native < $1 > $llfilename
 llc -relocation-model=pic $llfilename
-gcc -o main utils.o $sfilename
+# llc  $llfilename
+# gcc -o main utils.o $sfilename
+clang -o main utils.o $sfilename
 ./main
 
 set -e
