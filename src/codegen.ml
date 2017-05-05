@@ -235,7 +235,8 @@ in
         let id_ptr      = L.build_in_bounds_gep (lookup mat_str) (idx 0 0) "build_in_bounds_gep" b in
         let mat_ptr     = L.build_bitcast id_ptr (pointer_t i8_t) "mat_ptr" b in
         let arr         = Array.make 9 (L.const_int i32_t 0) in
-        let old_mat     = L.build_alloca (array_t (array_t i32_t cols) rows) "old_mat" b in
+        (* let old_mat     = L.build_alloca (array_t (array_t i32_t cols) rows) "old_mat" b in *)
+        let old_mat     = L.build_malloc (array_t (array_t i32_t cols) rows) "old_mat" b in 
         let old_mat_ptr = L.build_bitcast old_mat (pointer_t i8_t) "old_mat_ptr" b in
         let iptr        = L.build_alloca i32_t "outter_count" b in
         let jptr        = L.build_alloca i32_t "inner_count" b in
@@ -271,6 +272,10 @@ in
 
           (* The actual code for function application *)
           let entry = L.build_gep (lookup mat_str) [| L.const_int i32_t 0; i; j |] mat_str inner_body_builder in
+          (*
+            ignore(L.build_call printf_func [| int_format_str ; i |] "printf" inner_body_builder);
+            ignore(L.build_call printf_func [| int_format_str ; j |] "printf" inner_body_builder);
+           *)
 
           (* for all the nine neighbors *)
           let arr = Array.make 9 (L.const_int i32_t 0) in 
@@ -309,8 +314,9 @@ in
         let outter_merge_bb = L.append_block context "outter_merge" the_function in
         ignore (L.build_cond_br outter_bool_val outter_body_bb outter_merge_bb outter_builder);
         let outter_merge_builder = get_builder outter_merge_bb in
-        let ret = L.build_load (L.build_gep (lookup mat_str) [| L.const_int i32_t 0 |] 
-            n outter_merge_builder) n outter_merge_builder in
+        let ret = L.build_load (L.build_gep (lookup mat_str) [| L.const_int i32_t 0
+            ; L.const_int i32_t 0; L.const_int i32_t 0 |] n outter_merge_builder) n outter_merge_builder in
+        ignore(L.build_free old_mat outter_merge_builder);
         (ret, outter_merge_builder)
         
 in 
