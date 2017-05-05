@@ -2,6 +2,7 @@
 export OPAM_VERSION=1.2.2
 
 # install ocaml from apt
+sudo add-apt-repository ppa:avsm/ocaml41+opam11 y
 sudo apt-get update
 sudo apt-get install -y ocaml m4 llvm opam
 opam init

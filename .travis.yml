@@ -3,3 +3,14 @@ sudo: required
 script: bash -ex .travis-ci.sh
 env:
   - OCAML_VERSION=4.02.3 OPAM_VERSION=1.2.2
+
+notifications: email:
+    ­ wn2155@columbia.edu
+install:
+    ­ sudo add­apt­repository ppa:avsm/ocaml41+opam11 ­y
+    ­ sudo apt­get update ­q
+    ­ sudo apt­get install ocaml ocaml­native­compilers camlp4­extra opam ­ sudo apt­get install rubygems
+    ­ npm install
+    ­ gem install rake
+script:
+    ­ rake all
