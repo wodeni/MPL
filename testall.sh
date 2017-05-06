@@ -86,7 +86,7 @@ Check() {
     generatedfiles=""
 
     generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.out ${basename}.out" &&
-    Run "$PLT" "<" $1 ">" "${basename}.ll" && 
+    Run "$PLT" "<" $1 ">" "${basename}.ll" &&
     Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
     Run "$GCC" "${basename}.out" "${basename}.s" "src/$UTIL" &&
     Run "$AAA""${basename}.out" ">" "${basename}f.out" &&
@@ -119,9 +119,12 @@ CheckFail() {
 
     generatedfiles=""
 
-    generatedfiles="$generatedfiles ${basename}.err ${basename}.diff" &&
-    RunFail "$PLT" "<" $1 "2>" "${basename}.err" ">>" $globallog &&
-    Compare ${basename}.err ${reffile}.err ${basename}.diff
+    generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.out ${basename}.out" &&
+    Run "$PLT" "<" $1 ">" "${basename}.ll" &&
+    Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
+    Run "$GCC" "${basename}.out" "${basename}.s" "src/$UTIL" &&
+    Run "$AAA""${basename}.out" ">" "${basename}f.err" &&
+    Compare "${basename}f.err" "${reffile}.err" ${basename}.diff
 
     # Report the status and clean up the generated files
 
@@ -163,7 +166,7 @@ if [ $# -ge 1 ]
 then
     files=$@
 else
-    files="test/testVer1/test-*.mpl tests/testVer1/fail-*.mpl"
+    files="test/testVer1/test-*.mpl tests/testVer2/fail-*.mpl"
 fi
 
 for file in $files
@@ -172,9 +175,9 @@ do
 	*test-*)
 	    Check $file 2>> $globallog
 	    ;;
-#	*fail-*)
-#	    CheckFail $file 2>> $globallog
-#	    ;;
+	*fail-*)
+	    CheckFail $file 2>> $globallog
+	    ;;
 #	*)
 #	    echo "unknown file type $file"
 #	    globalerror=1
