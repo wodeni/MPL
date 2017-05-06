@@ -217,7 +217,7 @@ in
         in
         let y = if (xj == -1) then 
             rem (add (rem (add j xj_l) row) row) row
-            else rem (add i xj_l) row
+            else rem (add j xj_l) row
         in 
         (*
         ignore(L.build_call printf_func [| int_format_str ; x |] "printf" b);
@@ -359,13 +359,13 @@ in
    |               Expression Builder                  |
    * ------------------------------------------------- *)
     let rec expr builder expression =  match expression with
-        S.SIntLit(i)          -> L.const_int i32_t i
-	  | S.SFloatLit(i)        -> L.const_float float_t i
-      | S.SBoolLit b          -> L.const_int i1_t (if b then 1 else 0)
-      | S.SStrLit s           -> L.build_global_stringptr s "str_lit" builder
-      | S.SMatrixLit (l, t)   -> build_matrix t l expr builder
-      (* | S.SNoexpr             -> L.const_int i32_t 0 *)
-      | S.SId (s, t)          -> L.build_load (lookup s) s builder (* lookup s *)
+        S.SIntLit(i)                  -> L.const_int i32_t i
+	  | S.SFloatLit(i)                -> L.const_float float_t i
+      | S.SBoolLit b                  -> L.const_int i1_t (if b then 1 else 0)
+      | S.SStrLit s                   -> L.build_global_stringptr s "str_lit" builder
+      | S.SMatrixLit(l, Mat(t, r, c)) -> build_matrix t l expr builder
+      (* | S.SNoexpr                  -> L.const_int i32_t 0 *)
+      | S.SId (s, t)                  -> L.build_load (lookup s) s builder (* lookup s *)
       | S.SBinop (e1, op, e2, t) ->
           (match op with
             A.Add     -> L.build_add  (expr builder e1) (expr builder e2) "tmp" builder
