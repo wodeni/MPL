@@ -99,6 +99,7 @@ let getLogicalBinopType t1 t2 op =
   match (t1, t2) with 
   (Int, Int) -> Bool
   | (Float, Float) -> Bool
+  | (Bool, Bool) -> Bool
   | _ -> raise(Failure("Invalid type for logical operand"))
 
 let getEqualityBinopType t1 t2 op =
@@ -282,16 +283,14 @@ let check_function func =
 
     report_duplicate (fun n -> "duplicate local " ^ n ^ " in " ^ func.fname)
       (List.map snd func.locals);
-
-    (* Type of each variable (global, formal, or local *)
-    let symbols = List.fold_left (fun m (t, n) -> StringMap.add n t m)
-  StringMap.empty (func.locals )
+    
+    let neighbor_names = [ "#NW"; "#N"; "#NE"; "#W"; "#C"; "#E"; "#SW"; "#S"; "#SE" ] 
     in
 
-    
-    let _ = (StringMap.iter (fun x y -> Printf.printf "[%s]%s - %s\n" func.fname x (string_of_typ (StringMap.find x symbols))
-  ) symbols) in
-   
+    (* Type of each variable (global, formal, or local *)
+    let symbols = List.fold_left (fun m s -> StringMap.add s func.typ m) (List.fold_left (fun m (t, n) -> StringMap.add n t m)
+  StringMap.empty (func.locals )) neighbor_names
+    in
 
     let initSyms = ref( List.fold_left (fun m (t, n) -> StringMap.add n false m) StringMap.empty (func.locals))
     in

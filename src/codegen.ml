@@ -93,8 +93,8 @@ in
   let function_decls =
     let function_decl m fdecl =
       let name  = fdecl.S.sfname in 
-      let lltyp = (ltype_of_typ fdecl.S.styp)
-      let arr   = Array.make 9 lltypi n
+      let lltyp = (ltype_of_typ fdecl.S.styp) in
+      let arr   = Array.make 9 lltyp in
       let ftype = 
           if(name = "main") then 
               L.function_type lltyp [| lltyp |]
@@ -171,7 +171,7 @@ in
 		                    in pointer_t func_type 
       | _             -> raise (UnsupportedMatrixType) in 
 
-    let idx_inbounds n m = [| L.const_int i32_t n; L.const_int i32_t m |] in
+    let idx n m          = [| L.const_int i32_t n; L.const_int i32_t m |] in
     let idx_gep      n m = [| L.const_int i32_t 0; L.const_int i32_t n; L.const_int i32_t m |] in
 
     let lookupM = function
@@ -189,7 +189,8 @@ in
         | _ -> raise(Exceptions.UnsupportedMatrixType)  (* TODO *)
     in
 
-    let build_matrix typ l jexpr builder =
+    let build_matrix ast_typ l expr builder =
+        let typ           = ltype_of_typ ast_typ in
         let i32_list      = List.map (List.map (expr builder)) l in
         let list_of_arrs  = List.map Array.of_list i32_list in
         let arrs_of_arrs  = Array.of_list (List.map (L.const_array typ) list_of_arrs) in
@@ -222,7 +223,7 @@ in
         ignore(L.build_call printf_func [| int_format_str ; x |] "printf" b);
         ignore(L.build_call printf_func [| int_format_str ; y |] "printf" b);
         *)
-        L.build_load (L.build_gep mat (idx_gep x y) "build_gep"  b) "build_load" b
+        L.build_load (L.build_gep mat [| L.const_int i32_t 0; x; y |] "build_gep"  b) "build_load" b
     in
 
     (*
@@ -348,6 +349,7 @@ in
     let get_mptr m b = 
         let arr_ptr = L.build_in_bounds_gep m (idx 0 0) "build_in_bounds_gep" b in 
          L.build_bitcast arr_ptr (pointer_t i8_t) "mat_ptr" b 
+    in
 
     (* TODO: what is this?
     let buildName s = String.sub s 1 ((String.length s)-2) 
@@ -361,7 +363,7 @@ in
 	  | S.SFloatLit(i)        -> L.const_float float_t i
       | S.SBoolLit b          -> L.const_int i1_t (if b then 1 else 0)
       | S.SStrLit s           -> L.build_global_stringptr s "str_lit" builder
-      | S.SMatrixLit (l, t)   -> build_matrix l t expr builder
+      | S.SMatrixLit (l, t)   -> build_matrix t l expr builder
       (* | S.SNoexpr             -> L.const_int i32_t 0 *)
       | S.SId (s, t)          -> L.build_load (lookup s) s builder (* lookup s *)
       | S.SBinop (e1, op, e2, t) ->
@@ -406,7 +408,7 @@ in
             | _ -> raise(Exceptions.UnsupportedMatrixType))
       | S.SCall ("printm", [e], t) ->
 		let (typ, rows, cols) = (lookupM e) in
-        let id = lookup_matrixid e in
+        let id = lookup_matrixid e 
                 in (match typ with
                             A.Int -> L.build_call printm_int_func [| (get_mptr id builder); (L.const_int i32_t rows); 
                                 (L.const_int i32_t cols) |] "printm_int" builder
@@ -415,7 +417,7 @@ in
                             | _ -> raise(Exceptions.UnsupportedMatrixType)        )
       | S.SCall ("matwrite", [e1; e2], t) ->
 		let (typ, rows, cols) = (lookupM e2) in
-        let id = lookup_matrixid e2 in
+        let id = lookup_matrixid e2 
         in (match typ with
             A.Int -> L.build_call matwrite_int_func [| (expr builder e1); (get_mptr id builder);
                 (L.const_int i32_t rows); (L.const_int i32_t cols) |] "matwrite_int" builder
@@ -424,7 +426,7 @@ in
             | _ -> raise(Exceptions.UnsupportedMatrixType)        )
       | S.SCall ("matread", [e1; e2], t)  ->
 		let (typ, rows, cols) = (lookupM e2) in
-        let id = lookup_matrixid e2 in
+        let id = lookup_matrixid e2
         in (match typ with
             A.Int -> L.build_call matread_int_func [| (expr builder e1); (get_mptr id builder);
                 (L.const_int i32_t rows); (L.const_int i32_t cols) |] "matread_int" builder
