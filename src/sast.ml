@@ -18,6 +18,7 @@ type sexpr =
   | SBoolLit of bool
   | SStrLit of string
   | SMatrixLit of sexpr list list * typ
+  | SFMatrixLit of string list list * typ
   | SId of string * typ
   | SBinop of sexpr * op * sexpr * typ
   | SUnop of uop * sexpr * typ
@@ -31,6 +32,7 @@ let get_expr_type_info sexpr = match sexpr with
    |SFloatLit _ ->              Float
    |SBoolLit _ ->               Bool
    |SMatrixLit (_,x) ->         x
+   |SFMatrixLit(_,x) ->         x
    |SId (_,x) ->                x
    |SStrLit _ ->                String
    |SBinop (_,_,_,x) ->         x
@@ -50,7 +52,7 @@ type sstmt =
 	| SReturn of sexpr
 
 type sfunc_decl = {
-	sreturn_type 	: typ;
+	styp         	: typ;
 	sfname 			: string;
 	sformals 		: bind list;
 	slocals  		: bind list;
