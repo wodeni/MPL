@@ -1,4 +1,4 @@
-int foo(int a, boolean b)
+int foo()
 {
 	Mat<int> [3][3] m;
 	m = [1,1,1;1,1,1;1,1,1];
@@ -13,7 +13,5 @@ int bar()
 
 int main()
 {
-  	foo(42, true);
-
 	return 1;
 }

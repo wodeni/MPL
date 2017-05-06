@@ -9,5 +9,5 @@ int main()
   while (true) {
     foo(); /* foo undefined */
   }
-
+  return 1;
 }
