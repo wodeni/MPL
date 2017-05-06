@@ -12,7 +12,8 @@
 
 open Ast
 open Sast
-module StringMap = Map.Make(String)
+(*module StringMap = Map.Make(String)*)
+module FuncMap = Map.Make(String)
 
 (* Semantic checking of a program. Returns void if successful,
    throws an exception if something is wrong.
@@ -50,7 +51,6 @@ let requireAllMatrices tlist str =
     ) tlist in
     true
 
-
 let checkAllMatrixLiterals d2list str =
     let i = List.length d2list in
     let j = List.length (List.hd d2list) in
@@ -77,6 +77,12 @@ let getArithBinopType t1 t2 op =
   | (Float, Mat(typ, i, j)) -> (match op with 
                                 Mult -> Mat(typ, i, j)
                                 | _ -> raise(Failure("Only valid operation between float and matrix is multiplication.")))
+  | (Mat(typ, i, j),Int) -> (match op with 
+                                Mult -> Mat(typ, i, j)
+                                | _ -> raise(Failure("Only valid operation between int and matrix is multiplication.")))
+  | (Mat(typ, i, j),Float) -> (match op with 
+                                Mult -> Mat(typ, i, j)
+                                | _ -> raise(Failure("Only valid operation between float and matrix is multiplication.")))
   | (Mat(typ1, i1, j1), Mat(typ2, i2, j2)) ->
     (match op with
       Add | Sub -> if typ1=typ2 && i1=i2 && j1=j2 then Mat(typ1, i1, j1)
@@ -101,8 +107,9 @@ let getEqualityBinopType t1 t2 op =
   | (Float, Float) -> Bool
   | _ -> raise(Failure("Invalid type for logical operand"))
 
+
 (*fd is where you feed function_decls*)
-let checkFunction fd s = try StringMap.find s fd 
+let checkFunction fd s = try FuncMap.find s fd 
        with Not_found -> raise (Failure ("unrecognized function " ^ s))
 
 let checkApply t1 t2 op fd = 
@@ -112,15 +119,29 @@ let checkApply t1 t2 op fd =
         Mat(typ,_,_) -> if func.typ==typ then t21 else raise(Failure("Function and Matrix Type don't match for apply"))
         | _ -> raise(Failure("T2 must be a matrix type"))
 
+(*Checks that a list of strings are functions with a specific type*)
+let requireFunctionsWithType tlist fd typ = 
+    let _ = List.map (fun func -> if func.typ==typ then () else raise(Failure(""^func.fname^" has wrong type: "^(string_of_typ typ)))) (List.map (fun s -> checkFunction fd s) tlist)
+    in true
+
+(*Checks that a Fmatrix of functions is homogeneous*)
+let checkFMatFunctions d2list fd =
+    let i = List.length d2list in
+    let j = List.length (List.hd d2list) in
+    let func = checkFunction fd (List.hd (List.hd d2list)) in
+    let typ = func.typ in
+    let _ = List.map (fun lst -> requireFunctionsWithType lst fd typ) d2list in FMat(typ,i,j)
+
+
 let checkBinop op e1 e2 fd=
   let t1 = Sast.get_expr_type_info e1 and t2 = Sast.get_expr_type_info e2 in
-  begin match op with
+  match op with
   Add | Mult | Sub | Div -> getArithBinopType t1 t2 op
   | Equal | Neq -> getEqualityBinopType t1 t2 op
   | And | Or -> getLogicalBinopType t1 t2 op
   | Less | Leq | Greater | Geq -> getEqualityBinopType t1 t2 op
   | _ -> raise(Failure("Invalid operand in getBinopType"))
-  end
+
 
 let checkMatIndex m i j = match(m,i,j) with
   (Mat(typ,row,col), IntLit(i1), IntLit(j1)) -> if (i1<0)||(i1>=row)
@@ -143,6 +164,11 @@ let numlitToSlit n = match n with
 let getLitType n = match n with
     IntLit(_) -> Int
   | FloatLit(_) -> Float
+  | _ -> raise(Failure("Must be int or float type"))
+
+let getString s = match s with
+    SId(n, _) -> n
+  | _ -> raise(Failure("Cannot find symbol"))
 
 let mlitToSmlit n = 
     let t = getLitType(List.hd (List.hd n)) in
@@ -217,28 +243,33 @@ let check (functions) =
     (List.map (fun fd -> fd.fname) functions);
 
   (* Function declaration for a named function *)
-  let built_in_decls =  StringMap.add "print"
+  let built_in_decls =  FuncMap.add "print"
      { typ = Void; fname = "print"; formals = [(Int, "x")];
-       locals = []; body = [] } (StringMap.add "printb"
+       locals = []; body = [] } (FuncMap.add "printb"
      { typ = Void; fname = "printb"; formals = [(Bool, "x")];
-       locals = []; body = [] } (StringMap.add "printm"
+       locals = []; body = [] } (FuncMap.add "printm"
     { typ = Void; fname = "printm"; formals = [];
-       locals = []; body = [] } (StringMap.singleton "matread"
+       locals = []; body = [] } (FuncMap.add "matread"
     { typ = Void; fname = "matread"; formals = [];
-        locals = []; body = []} )))
+        locals = []; body = []} (FuncMap.add "matwrite"
+    { typ = Void; fname = "matread"; formals = [];
+        locals = []; body = []} (FuncMap.singleton "print_board"
+    { typ = Void; fname = "matread"; formals = [];
+        locals = []; body = []} )))))
    in
      
-  let function_decls = List.fold_left (fun m fd -> StringMap.add fd.fname fd m)
+  let function_decls = List.fold_left (fun m fd -> FuncMap.add fd.fname fd m)
                          built_in_decls functions
   in
 
-  let function_decl s = try StringMap.find s function_decls
+  let function_decl s = try FuncMap.find s function_decls
        with Not_found -> raise (Failure ("unrecognized function " ^ s))
   in
 
   let _ = function_decl "main" in (* Ensure "main" is defined *)
 
-  let check_function func =
+let check_function func =
+    let module StringMap = Map.Make(String) in
 (*
     List.iter (check_not_void (fun n -> "illegal void formal " ^ n ^
       " in " ^ func.fname)) func.formals;
@@ -257,11 +288,28 @@ let check (functions) =
   StringMap.empty (func.locals )
     in
 
+    
+    let _ = (StringMap.iter (fun x y -> Printf.printf "[%s]%s - %s\n" func.fname x (string_of_typ (StringMap.find x symbols))
+  ) symbols) in
+   
+
+    let initSyms = ref( List.fold_left (fun m (t, n) -> StringMap.add n false m) StringMap.empty (func.locals))
+    in
+
     let type_of_identifier s =
       try StringMap.find s symbols
       with Not_found -> raise (Failure ("undeclared identifier " ^ s))
     in
-
+    
+    let updateInitSyms var = 
+        initSyms := StringMap.add var true !initSyms
+    in
+    let checkInitSyms n = 
+        let i = StringMap.find n !initSyms in
+        if i == false then raise(Failure("The variable " ^ n ^ " has not been initialized"))
+        else true
+     in
+    
     (* Return the type of an expression or throw an exception *)
     let rec expr = function
        IntLit(n) -> SIntLit(n)
@@ -288,27 +336,67 @@ let check (functions) =
       | Assign(var, e) as ex -> SAssign(var, (expr e), (let lt = type_of_identifier var
                                 and rt1 = (expr e) in 
                                 let  rt = (Sast.get_expr_type_info rt1) in
-        check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
-             " = " ^ string_of_typ rt )) ))
+                                let  ret = check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
+             " = " ^ string_of_typ rt )) in
+                                let _ = updateInitSyms var in
+                                ret ))
       | Call("printm", actuals) -> let a = (List.map expr actuals) in
-              SCall("printm", a, (if (List.length actuals != 1)
+                        let s = getString (List.hd a) in
+                        SCall("printm", a, (if (List.length actuals != 1)
                                            then raise(Failure("Too many arguments to printm"))
                                            else let t1 = expr (List.hd actuals) in
+                                           let _ = checkInitSyms s in
                                            let t = Sast.get_expr_type_info t1 in
                                            (match t with
                                            |Mat(Int,_,_) -> Void
                                            |Mat(Float,_,_) -> Void
                                            |_ -> raise(Failure("Wrong argument type. [Not mat<int> or mat<float>]")))
                                     )) (*match scall*)
+      | Call("print", actuals) -> let a = (List.map expr actuals) in
+                        let s = getString (List.hd a) in
+                        SCall("print", a, (if (List.length actuals != 1)
+                                           then raise(Failure("Too many arguments to print"))
+                                           else let t1 = expr (List.hd actuals) in
+                                           let _ = checkInitSyms s in
+                                           let t = Sast.get_expr_type_info t1 in
+                                           (match t with
+                                           |Int -> Void
+                                           |Float -> Void
+                                           |_ -> raise(Failure("Wrong argument type. [int or float]")))
+                                    )) (*match scall*)
       | Call("matread", actuals) -> let a = (List.map expr actuals) in 
               SCall("matread", a,    (if (List.length actuals != 2) 
                                     then raise(Failure("Matread only accepts 2 arguments"))
                                     else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
                                     let t2 = Sast.get_expr_type_info a2 in
+                                    let var = getString a2 in
                                         match (a1,t2) with
-                                        StrLit(_),Mat(_,_,_) -> Void
+                                        StrLit(_),Mat(_,_,_) -> updateInitSyms var; Void
                                         | _ -> raise(Failure("Matread takes string literal and matrix type")) 
                                      ) ))
+     | Call("matwrite", actuals) -> let a = (List.map expr actuals) in 
+              SCall("matwrite", a,    (if (List.length actuals != 2) 
+                                    then raise(Failure("Matread only accepts 2 arguments"))
+                                    else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
+                                    let t2 = Sast.get_expr_type_info a2 in
+                                    let var = getString a2 in
+                                        match (a1,t2) with
+                                        StrLit(_),Mat(_,_,_) -> updateInitSyms var; Void
+                                        | _ -> raise(Failure("Matread takes string literal and matrix type")) 
+                                     ) ))
+ 
+     | Call("print_board", actuals) -> let a = (List.map expr actuals) in 
+              SCall("print_board", a,    (if (List.length actuals != 2) 
+                                    then raise(Failure("Matread only accepts 2 arguments"))
+                                    else ( let a1 = expr(List.hd actuals) and a2 = expr (List.nth actuals 1) in
+                                    let t1 = Sast.get_expr_type_info a1 in
+                                    let t2 = Sast.get_expr_type_info a2 in
+                                    let var = getString a1 in    
+                                    match (t1, t2) with
+                                        (Mat(_,_,_), Int) -> updateInitSyms var; Void
+                                        | _ -> raise(Failure("Matread takes string literal and matrix type")) 
+                                     ) ))
+
       | Call(fname, actuals) as call -> let a = (List.map expr actuals) in
               SCall(fname, a, (let fd = function_decl fname in
          if List.length actuals != List.length fd.formals then
@@ -349,10 +437,25 @@ let check (functions) =
                                ignore (expr e3); stmt st*)
       | While(p, s) -> SWhile((check_bool_expr p), stmt s)
     
-    and convertStmtToSStmt sl = List.map stmt sl in
+  and convertStmtToSStmt sl = List.map stmt sl in
+   let convertFdeclToSFdecl function_decls fdecl = 
+    {
+        sfname = fdecl.fname;
+        styp   = fdecl.typ;
+        sformals = fdecl.formals;
+        slocals = fdecl.locals;
+        sbody = (convertStmtToSStmt fdecl.body);
+    }
+   in
+    let sast = convertFdeclToSFdecl function_decls func
+    in
 
-    (ignore (stmt (Block func.body)))
+    (ignore(stmt (Block func.body)));sast
+
+    in
    
-  in
-  List.iter check_function functions
-
+    (List.map check_function functions)    
+    (*
+     List.map (fun x -> if ((List.length x.locals)==0) then raise(Failure("No Locals:"^x.fname)) 
+     else check_function x) functions
+    *)

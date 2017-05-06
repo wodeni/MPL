@@ -30,6 +30,7 @@ type expr =
   | FloatLit of float
   | BoolLit of bool
   | MatrixLit of expr list list
+  | FMatrixLit of string list list
   | StrLit of string
   | Id of string
   | Binop of expr * op * expr
@@ -107,6 +108,7 @@ let rec string_of_typ = function
   | Bool -> "bool"
   | Void -> "void"
   | Mat(t, i1, j1) -> "Mat <"^ string_of_typ t ^ "> ("^ string_of_int i1 ^ ", " ^ string_of_int j1 ^ ")"
+  | FMat(t, i1, j1) -> "FMat <"^ string_of_typ t ^ "> ("^ string_of_int i1 ^ ", " ^ string_of_int j1 ^ ")"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

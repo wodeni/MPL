@@ -18,6 +18,7 @@ type sexpr =
   | SBoolLit of bool
   | SStrLit of string
   | SMatrixLit of sexpr list list * typ
+  | SFMatrixLit of string list list * typ
   | SId of string * typ
   | SBinop of sexpr * op * sexpr * typ
   | SUnop of uop * sexpr * typ
@@ -27,18 +28,19 @@ type sexpr =
   | SMatrixAccess of string * sexpr * sexpr * typ
 
 let get_expr_type_info sexpr = match sexpr with
-   | SIntLit _ ->                Int
-   | SFloatLit _ ->              Float
-   | SBoolLit _ ->               Bool
-   | SMatrixLit (_,x) ->         x
-   | SId (_,x) ->                x
-   | SStrLit _ ->                String
-   | SBinop (_,_,_,x) ->         x
-   | SUnop (_,_,x) ->            x
-   | SAssign (_,_,x) ->          x
-   | SCall (_,_,x) ->            x
-   | SNull x ->                  x
-   | SMatrixAccess (_,_,_,x) ->  x
+   |SIntLit _ ->                Int
+   |SFloatLit _ ->              Float
+   |SBoolLit _ ->               Bool
+   |SMatrixLit (_,x) ->         x
+   |SFMatrixLit(_,x) ->         x
+   |SId (_,x) ->                x
+   |SStrLit _ ->                String
+   |SBinop (_,_,_,x) ->         x
+   |SUnop (_,_,x) ->            x
+   |SAssign (_,_,x) ->          x
+   |SCall (_,_,x) ->            x
+   |SNull x ->                  x
+   |SMatrixAccess (_,_,_,x) ->  x
 
 
 type sstmt =
@@ -50,7 +52,7 @@ type sstmt =
 	| SReturn of sexpr
 
 type sfunc_decl = {
-	styp 	        : typ;
+	styp         	: typ;
 	sfname 			: string;
 	sformals 		: bind list;
 	slocals  		: bind list;
