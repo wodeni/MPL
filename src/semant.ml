@@ -245,18 +245,21 @@ let check (functions) =
 
   (* Function declaration for a named function *)
   let built_in_decls =  FuncMap.add "print"
-     { typ = Void; fname = "print"; formals = [(Int, "x")];
-       locals = []; body = [] } (FuncMap.add "printb"
-     { typ = Void; fname = "printb"; formals = [(Bool, "x")];
-       locals = []; body = [] } (FuncMap.add "printm"
-    { typ = Void; fname = "printm"; formals = [];
-       locals = []; body = [] } (FuncMap.add "matread"
-    { typ = Void; fname = "matread"; formals = [];
-        locals = []; body = []} (FuncMap.add "matwrite"
-    { typ = Void; fname = "matread"; formals = [];
-        locals = []; body = []} (FuncMap.singleton "print_board"
-    { typ = Void; fname = "matread"; formals = [];
-        locals = []; body = []} )))))
+     { typ = Void; fname = "print"; formals = [];
+       locals = []; body = [] } 
+     (FuncMap.add "printb" { typ = Void; fname = "printb"; formals = [(Bool, "x")];
+       locals = []; body = [] } 
+     (FuncMap.add "prints" { typ = Void; fname = "prints"; formals = [(String, "x")];
+       locals = []; body = [] } 
+     (FuncMap.add "printm" { typ = Void; fname = "printm"; formals = [];
+       locals = []; body = [] } 
+     (FuncMap.add "matread"{ typ = Void; fname = "matread"; formals = [];
+        locals = []; body = []} 
+     (FuncMap.add "matwrite"{ typ = Void; fname = "matwrite"; formals = [];
+        locals = []; body = []} 
+     (FuncMap.singleton "print_board"{ typ = Void; fname = "print_board"; formals = [];
+        locals = []; body = []} 
+     ))))))
    in
      
   let function_decls = List.fold_left (fun m fd -> FuncMap.add fd.fname fd m)
@@ -352,17 +355,44 @@ let check_function func =
                                            |_ -> raise(Failure("Wrong argument type. [Not mat<int> or mat<float>]")))
                                     )) (*match scall*)
       | Call("print", actuals) -> let a = (List.map expr actuals) in
-                        let s = getString (List.hd a) in
-                        SCall("print", a, (if (List.length actuals != 1)
+                                        if (List.length actuals != 1)
                                            then raise(Failure("Too many arguments to print"))
-                                           else let t1 = expr (List.hd actuals) in
-                                           let _ = checkInitSyms s in
+                                           else (
+                                           let l = List.hd a in
+                                           (match l with
+                                           SIntLit(_) -> SCall("print", a, Int)
+                                           | SFloatLit(_) ->  SCall("print", a, Float)
+                                           | SBoolLit(_) -> SCall("print",a,Bool)
+                                           | SBinop(_,_,_,x) -> SCall("print", a, x)
+                                           | _ -> SCall("print", a,
+                                           (let t1 = expr (List.hd actuals) in
+                                           (*let s = getString (List.hd a) in*)
+                                           (*let _ = checkInitSyms s in*)
                                            let t = Sast.get_expr_type_info t1 in
+                                           let _ = Printf.printf "%s" (string_of_typ t) in
                                            (match t with
-                                           |Int -> Void
-                                           |Float -> Void
-                                           |_ -> raise(Failure("Wrong argument type. [int or float]")))
-                                    )) (*match scall*)
+                                           |Int -> Int
+                                           |Float -> Float
+                                           |Bool -> Bool
+                                           |_ -> raise(Failure("Wrong argument type. [int or float or bool]")))
+                                    )))) (*match scall*)
+      | Call("prints", actuals) -> let a = (List.map expr actuals) in
+                                         
+                                        if (List.length actuals != 1)
+                                           then raise(Failure("Too many arguments to prints"))
+                                           else( 
+                                              let str = List.hd actuals in
+                                              (match str with
+                                              StrLit(_)->SCall("prints", a, String)
+                                            | _ -> (SCall("prints", a,
+                                                (let t1 = expr (List.hd actuals) in
+                                                let s = getString (List.hd a) in
+                                                let _ = checkInitSyms s in
+                                                let t = Sast.get_expr_type_info t1 in
+                                                    (match t with
+                                                    |String -> String
+                                                    |_ -> raise(Failure("Wrong argument type. [String]")))
+                                    ))))) (*match scall*)
       | Call("matread", actuals) -> let a = (List.map expr actuals) in 
               SCall("matread", a,    (if (List.length actuals != 2) 
                                     then raise(Failure("Matread only accepts 2 arguments"))
@@ -375,25 +405,25 @@ let check_function func =
                                      ) ))
      | Call("matwrite", actuals) -> let a = (List.map expr actuals) in 
               SCall("matwrite", a,    (if (List.length actuals != 2) 
-                                    then raise(Failure("Matread only accepts 2 arguments"))
+                                    then raise(Failure("Matwrite only accepts 2 arguments"))
                                     else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
                                     let t2 = Sast.get_expr_type_info a2 in
                                     let var = getString a2 in
                                         match (a1,t2) with
                                         StrLit(_),Mat(_,_,_) -> updateInitSyms var; Void
-                                        | _ -> raise(Failure("Matread takes string literal and matrix type")) 
+                                        | _ -> raise(Failure("Matwrite takes string literal and matrix type")) 
                                      ) ))
  
      | Call("print_board", actuals) -> let a = (List.map expr actuals) in 
               SCall("print_board", a,    (if (List.length actuals != 2) 
-                                    then raise(Failure("Matread only accepts 2 arguments"))
+                                    then raise(Failure("Print_board only accepts 2 arguments"))
                                     else ( let a1 = expr(List.hd actuals) and a2 = expr (List.nth actuals 1) in
                                     let t1 = Sast.get_expr_type_info a1 in
                                     let t2 = Sast.get_expr_type_info a2 in
                                     let var = getString a1 in    
                                     match (t1, t2) with
                                         (Mat(_,_,_), Int) -> updateInitSyms var; Void
-                                        | _ -> raise(Failure("Matread takes string literal and matrix type")) 
+                                        | _ -> raise(Failure("Print_board takes string literal and matrix type")) 
                                      ) ))
 
       | Call(fname, actuals) as call -> let a = (List.map expr actuals) in
