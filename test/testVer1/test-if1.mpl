@@ -1,4 +1,4 @@
-int main
+int main()
 {
   if (true) prints("succeed");
   prints("finish");

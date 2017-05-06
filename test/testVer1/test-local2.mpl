@@ -1,4 +1,4 @@
-int foo
+int foo()
 {	
     int c;
     int e;
@@ -40,7 +40,7 @@ int foo
     return c;
 }
 
-int main
+int main()
 {
     Mat<int>[3][3] m;
     m = [1,2,3;4,5,6;7,8,9];

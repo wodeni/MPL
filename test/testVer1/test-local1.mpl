@@ -1,4 +1,4 @@
-int foo
+int foo()
 {
     int i; 
 /* Should hide the formal i */
@@ -8,7 +8,7 @@ int foo
     return 42;
 }
 
-int main
+int main()
 {
     Mat<int>[3][3] m;
     int i;

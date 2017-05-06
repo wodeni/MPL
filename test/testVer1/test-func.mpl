@@ -1,9 +1,9 @@
 
-int reset{
+int reset() {
   return 1;
 }
 
-int main
+int main()
 {
   Mat<int>[2][2] k;
   int q;

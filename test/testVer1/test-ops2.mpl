@@ -1,4 +1,4 @@
-int main
+int main()
 {
   printb(true);
   printb(false);
