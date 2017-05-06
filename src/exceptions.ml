@@ -1,11 +1,13 @@
 (*
- * COMS4115: CMAT Exceptions
+ * File: exceptions.ml
+ * Date: 2017-03-13
  *
- * Authors:
- *  - Marissa Ojeda
- *  - Daniel Rojas
- *  - Mike Berkowitz
- *  - Frank Cabada
+ * PLT Spring 2017
+ * MPL Project
+ * Wode "Nimo" Ni    <wn2155@columbia.edu>
+ * David Rincon-Cruz <dr2884@columbia.edu>
+ * Chi Zhang         <cz2440@columbia.edu>
+ * Jiangfeng Wang    <jw3107@columbia.edu>
  *)
 
 (* Compiler Exceptions *)

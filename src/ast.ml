@@ -49,11 +49,11 @@ type stmt =
   | While of expr * stmt
 
 type func_decl = {
-    typ : typ;
-    fname : string;
-    formals : bind list; 
-    locals : bind list;
-    body : stmt list;
+    typ     : typ;
+    fname   : string;
+    formals : bind list;
+    locals  : bind list;
+    body    : stmt list;
   }
 
 type program = func_decl list
