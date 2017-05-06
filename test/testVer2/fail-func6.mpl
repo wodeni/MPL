@@ -1,5 +1,6 @@
-void foo(int a, bool b)
+int foo(int a, boolean b)
 {
+	return 1;
 }
 
 int main()

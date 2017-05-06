@@ -1,14 +1,14 @@
-int foo
+int foo()
 {
   int dd;
-  bool e;
-  e + k; /* Error: bool + int */
+  boolean e;
+  e + dd; /* Error: bool + int */
   return 1;
 }
 
-int main
+int main()
 {
   int a;
-  bool b;
+  boolean b;
   return 0;
 }

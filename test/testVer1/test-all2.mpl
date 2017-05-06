@@ -5,8 +5,10 @@ int entryf(int a) {
 int main() {
     Mat<int>[2][2] m;
     int p;
+    int k;
+    k = 1;
     m = [1,2;3,4];
-    entryf(1) @ m;
+    entryf @ m;
     p = m[0][0];
     print(p);
     return 0;

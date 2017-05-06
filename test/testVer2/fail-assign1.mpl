@@ -1,7 +1,7 @@
 int main()
 {
   int i;
-  bool b;
+  boolean b;
 
   i = 42;
   i = 10;

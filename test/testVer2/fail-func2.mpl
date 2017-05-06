@@ -1,6 +1,10 @@
-int foo(int a, bool b, int c) { }
+int foo(int a, boolean b, int c) { 
+	return 1;
+}
 
-void bar(int a, bool b, int a) {} /* Error: duplicate formal a in bar */
+int bar(int a, boolean b, int a) { 
+	return 1;
+} /* Error: duplicate formal a in bar */
 
 int main()
 {

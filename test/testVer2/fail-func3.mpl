@@ -1,6 +1,10 @@
-int foo(int a, bool b, int c) { }
+int foo(int a, boolean b, int c) { 
+	return 1;
+}
 
-void bar(int a, void b, int c) {} /* Error: illegal void formal b */
+int bar(int a, void b, int c) {
+	return 1;
+} /* Error: illegal void formal b */
 
 int main()
 {

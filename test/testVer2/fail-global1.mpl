@@ -1,5 +1,5 @@
 int c;
-bool b;
+boolean b;
 void a; /* global variables should not be void */
 
 
