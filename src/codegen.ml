@@ -216,8 +216,8 @@ in
             else rem (add i xi_l) row
         in
         let y = if (xj == -1) then 
-            rem (add (rem (add j xj_l) row) row) row
-            else rem (add j xj_l) row
+            rem (add (rem (add j xj_l) col) col) col
+            else rem (add j xj_l) col
         in 
         (*
         ignore(L.build_call printf_func [| int_format_str ; x |] "printf" b);
@@ -395,8 +395,18 @@ in
                 (build_matrix_access (expr builder e1) (expr builder e2) s rows cols builder false)
       | S.SAssign (s, e, t) -> let e' = expr builder e in
                 ignore (L.build_store e' (lookup s) builder); e'
-      | S.SCall ("print", [e], t)  ->
-	    L.build_call printf_func [| int_format_str ; (expr builder e) |] "printf" builder
+      | S.SCall ("print", [e], t)  -> (match t with
+          A.Int  -> L.build_call printf_func [| int_format_str ; (expr builder e) |] "printf" builder
+        | A.Bool -> L.build_call printf_func [| int_format_str ; (expr builder e) |] "printf" builder
+        | A.Mat(typ, rows, cols) -> let (typ, rows, cols) = (lookupM e) in
+            let id = lookup_matrixid e 
+            in (match typ with
+            A.Int -> L.build_call printm_int_func [| (get_mptr id builder); (L.const_int i32_t rows); 
+                (L.const_int i32_t cols) |] "printm_int" builder
+            | A.Float -> L.build_call printm_float_func [| (get_mptr id builder); (L.const_int i32_t rows); 
+                (L.const_int i32_t cols) |] "printm_float" builder
+            | _ -> raise(Exceptions.UnsupportedMatrixType) )
+        | _      -> raise(Exceptions.IllegalArgument("from print")))
       | S.SCall ("prints", [e], t) -> 
 	    L.build_call printf_func [| string_format_str ; (expr builder e) |] "printf" builder
       | S.SCall ("print_board", [e1; e2], t) ->

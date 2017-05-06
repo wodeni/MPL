@@ -359,7 +359,7 @@ let check_function func =
                                            let _ = checkInitSyms s in
                                            let t = Sast.get_expr_type_info t1 in
                                            (match t with
-                                           |Int -> Void
+                                           |Int -> Int
                                            |Float -> Void
                                            |_ -> raise(Failure("Wrong argument type. [int or float]")))
                                     )) (*match scall*)
