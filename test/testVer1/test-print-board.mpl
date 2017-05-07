@@ -19,8 +19,13 @@ int evolve() {
 
 int main() {
     Mat<int>[100][100] board;
-    matread("gun.txt", board);
-    print_board(board, 100);
+    int i;
+
+    i = matread("test/testVer1/gun.bin", board);
+    if(i == 0)
+        print_board(board, 100);
+    else
+        prints("File not found");
 }
 
 
