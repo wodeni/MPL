@@ -38,9 +38,9 @@ void print_board(int* mat, int m, int n, int sleep) {
         for(int j = 0; j < n; ++j) {
             int entry = mat_entry(mat, n, i, j);
             if(j == n - 1) 
-                fprintf(stderr, "%s\n", get_symbol(entry));
+                printf("%s\n", get_symbol(entry));
             else 
-                fprintf(stderr, "%s", get_symbol(entry));
+                printf("%s", get_symbol(entry));
             fflush(stdout);
         }
     }

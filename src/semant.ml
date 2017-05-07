@@ -369,7 +369,6 @@ let check_function func =
                                            (*let s = getString (List.hd a) in*)
                                            (*let _ = checkInitSyms s in*)
                                            let t = Sast.get_expr_type_info t1 in
-                                           let _ = Printf.printf "%s" (string_of_typ t) in
                                            (match t with
                                            |Int -> Int
                                            |Float -> Float
@@ -400,7 +399,7 @@ let check_function func =
                                     let t2 = Sast.get_expr_type_info a2 in
                                     let var = getString a2 in
                                         match (a1,t2) with
-                                        StrLit(_),Mat(_,_,_) -> updateInitSyms var; Void
+                                        StrLit(_),Mat(_,_,_) -> updateInitSyms var; Int
                                         | _ -> raise(Failure("Matread takes string literal and matrix type")) 
                                      ) ))
      | Call("matwrite", actuals) -> let a = (List.map expr actuals) in 
