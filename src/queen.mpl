@@ -19,7 +19,7 @@ int evolve() {
 }
 
 int main() {
-    Mat<int>[100][100] board;
+    Mat<int>[13][28] board;
     matread("queen.bin", board);
 
     while(true) {

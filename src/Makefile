@@ -9,7 +9,7 @@ all : mpl.native utils.o
 .PHONY : mpl.native
 
 mpl.native :
-	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 \
+	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,-a-4-27 \
 		mpl.native
 
 # "make clean" removes all generated files

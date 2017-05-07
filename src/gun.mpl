@@ -19,11 +19,11 @@ int evolve() {
 }
 
 int main() {
-    Mat<int>[100][100] board;
+    Mat<int>[30][150] board;
     matread("gun.bin", board);
 
     while(true) {
-        print_board(board, 100);
+        print_board(board, 70);
         evolve @ board;
     }
 }

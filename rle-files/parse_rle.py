@@ -194,7 +194,7 @@ obo$10bo5bo7bo$11bo3bo$12b2o! """
     raw_arr = rle_parser.get_pattern_2d_array()
     print("writing to: " + argv[2])
     # output_rle(argv[1], raw_arr, 100, 100, 30)
-    output_rle(argv[2], raw_arr, width, height, 30)
+    output_rle(argv[2], raw_arr, width, height, 6)
 
 if(__name__ == "__main__"):
     print (sys.argv)

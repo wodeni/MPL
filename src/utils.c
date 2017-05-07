@@ -33,19 +33,27 @@
  * @sleep: The time interval between updates, in milliseconds
  */
 void print_board(int* mat, int m, int n, int sleep) {
-    fflush(stdout);
-    clear();
+    int len = m * (n + 1) + 1;
+    char buf[len];
+    char *bp = buf;
+    buf[len - 1] = 0;
     
     for(int i = 0; i < m; ++i) {
         for(int j = 0; j < n; ++j) {
             int entry = mat_entry(mat, n, i, j);
-            if(j == n - 1) 
-                printf("%s\n", get_symbol(entry));
-            else 
-                printf("%s", get_symbol(entry));
-            fflush(stdout);
+            if(j == n - 1) {
+                sprintf(bp, "%s\n", get_symbol(entry));
+                bp += 2;
+            }
+            else {
+                sprintf(bp, "%s", get_symbol(entry));
+                bp++;
+            }
         }
     }
+    clear();
+    printf("%s", buf);
+    fflush(stdout);
     usleep(sleep * 1000); // Sleep for 0.5s
 }
 
