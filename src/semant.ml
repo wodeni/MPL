@@ -255,11 +255,15 @@ let check (functions) =
        locals = []; body = [] } 
      (FuncMap.add "matread"{ typ = Void; fname = "matread"; formals = [];
         locals = []; body = []} 
+     (FuncMap.add "pgmread"{ typ = Void; fname = "pgmread"; formals = [];
+        locals = []; body = []} 
      (FuncMap.add "matwrite"{ typ = Void; fname = "matwrite"; formals = [];
+        locals = []; body = []} 
+     (FuncMap.add "pgmwrite"{ typ = Void; fname = "pgmwrite"; formals = [];
         locals = []; body = []} 
      (FuncMap.singleton "print_board"{ typ = Void; fname = "print_board"; formals = [];
         locals = []; body = []} 
-     ))))))
+     ))))))))
    in
      
   let function_decls = List.fold_left (fun m fd -> FuncMap.add fd.fname fd m)
@@ -394,25 +398,44 @@ let check_function func =
                                     ))))) (*match scall*)
       | Call("matread", actuals) -> let a = (List.map expr actuals) in 
               SCall("matread", a,    (if (List.length actuals != 2) 
-                                    then raise(Failure("Matread only accepts 2 arguments"))
+                                    then raise(Failure("matread only accepts 2 arguments"))
                                     else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
                                     let t2 = Sast.get_expr_type_info a2 in
                                     let var = getString a2 in
                                         match (a1,t2) with
                                         StrLit(_),Mat(_,_,_) -> updateInitSyms var; Int
-                                        | _ -> raise(Failure("Matread takes string literal and matrix type")) 
+                                        | _ -> raise(Failure("matread takes string literal and matrix type")) 
                                      ) ))
      | Call("matwrite", actuals) -> let a = (List.map expr actuals) in 
               SCall("matwrite", a,    (if (List.length actuals != 2) 
-                                    then raise(Failure("Matwrite only accepts 2 arguments"))
+                                    then raise(Failure("matwrite only accepts 2 arguments"))
                                     else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
                                     let t2 = Sast.get_expr_type_info a2 in
                                     let var = getString a2 in
                                         match (a1,t2) with
                                         StrLit(_),Mat(_,_,_) -> updateInitSyms var; Void
-                                        | _ -> raise(Failure("Matwrite takes string literal and matrix type")) 
+                                        | _ -> raise(Failure("matwrite takes string literal and matrix type")) 
                                      ) ))
- 
+      | Call("pgmread", actuals) -> let a = (List.map expr actuals) in 
+              SCall("pgmread", a,    (if (List.length actuals != 2) 
+                                    then raise(Failure("pgmread only accepts 2 arguments"))
+                                    else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
+                                    let t2 = Sast.get_expr_type_info a2 in
+                                    let var = getString a2 in
+                                        match (a1,t2) with
+                                        StrLit(_),Mat(_,_,_) -> updateInitSyms var; Int
+                                        | _ -> raise(Failure("pgmread takes string literal and matrix type")) 
+                                     ) ))
+     | Call("pgmwrite", actuals) -> let a = (List.map expr actuals) in 
+              SCall("pgmwrite", a,    (if (List.length actuals != 2) 
+                                    then raise(Failure("pgmwrite only accepts 2 arguments"))
+                                    else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) in
+                                    let t2 = Sast.get_expr_type_info a2 in
+                                    let var = getString a2 in
+                                        match (a1,t2) with
+                                        StrLit(_),Mat(_,_,_) -> updateInitSyms var; Void
+                                        | _ -> raise(Failure("pgmwrite takes string literal and matrix type")) 
+                                     ) ))
      | Call("print_board", actuals) -> let a = (List.map expr actuals) in 
               SCall("print_board", a,    (if (List.length actuals != 2) 
                                     then raise(Failure("Print_board only accepts 2 arguments"))
