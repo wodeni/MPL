@@ -68,3 +68,4 @@ exception VectorOutOfBoundsAccess of string
 exception UnsupportedType
 exception LocalNotFound of string
 exception StatementNotSuuported
+exception IllegalArgument of string
