@@ -2,8 +2,9 @@ int foo()
 {
 	Mat<int> [3][3] m;
 	m = [1,1,1;1,1,1;1,1,1];
-	bar() @ m; /* entry function can not call another entry function*/
-	return 1; 
+	bar @ m; /* entry function can not call another entry function*/
+	printm(m);
+	return 1;
 }
 
 int bar()
