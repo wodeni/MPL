@@ -88,8 +88,8 @@ Check() {
     generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.out ${basename}.out" &&
     Run "$PLT" "<" $1 ">" "${basename}.ll" &&
     Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
-    Run "$GCC" "${basename}.out" "${basename}.s" "src/$UTIL" &&
-    Run "$AAA""${basename}.out" ">" "${basename}f.out" &&
+    Run "$GCC" "${basename}" "${basename}.s" "src/$UTIL" &&
+    Run "$AAA""${basename}" ">" "${basename}f.out" &&
     Compare "${basename}f.out" "${reffile}.out" ${basename}.diff
     # Report the status and clean up the generated files
 

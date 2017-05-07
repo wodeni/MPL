@@ -1,8 +1,8 @@
 int foo()
 {
 	Mat<int> [3][3] m;
-	m = [1,1,1;1,1,1;1,1,1];
-	bar @ m; /* entry function can not call another entry function*/
+	m = [2,2,2;2,2,2;2,2,2];
+	bar @ m; 
 	printm(m);
 	return 1;
 }
@@ -14,5 +14,8 @@ int bar()
 
 int main()
 {
+	Mat<int> [3][3] k;
+	k = [1,1,1;1,1,1;1,1,1];
+	foo @ k;
 	return 1;
 }
