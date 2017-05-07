@@ -85,7 +85,7 @@ Check() {
 
     generatedfiles=""
 
-    generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.out ${basename}.out" &&
+    generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.out ${basename}" &&
     Run "$PLT" "<" $1 ">" "${basename}.ll" &&
     Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
     Run "$GCC" "${basename}" "${basename}.s" "src/$UTIL" &&
@@ -119,7 +119,7 @@ CheckFail() {
 
     generatedfiles=""
 
-    generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.out ${basename}.out" &&
+    generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.err ${basename}.out" &&
     RunFail "$PLT" "<" $1 "2>" "${basename}f.err" ">>" $globallog &&
     Compare "${basename}f.err" "${reffile}.err" ${basename}.diff
 
