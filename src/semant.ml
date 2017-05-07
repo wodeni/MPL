@@ -366,8 +366,8 @@ let check_function func =
                                            | SBinop(_,_,_,x) -> SCall("print", a, x)
                                            | _ -> SCall("print", a,
                                            (let t1 = expr (List.hd actuals) in
-                                           (*let s = getString (List.hd a) in*)
-                                           (*let _ = checkInitSyms s in*)
+                                           let s = getString (List.hd a) in
+                                           let _ = checkInitSyms s in
                                            let t = Sast.get_expr_type_info t1 in
                                            (match t with
                                            |Int -> Int
