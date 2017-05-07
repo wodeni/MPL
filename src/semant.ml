@@ -257,13 +257,17 @@ let check (functions) =
         locals = []; body = []} 
      (FuncMap.add "pgmread"{ typ = Void; fname = "pgmread"; formals = [];
         locals = []; body = []} 
+     (FuncMap.add "ppmread"{ typ = Void; fname = "pgmread"; formals = [];
+        locals = []; body = []} 
      (FuncMap.add "matwrite"{ typ = Void; fname = "matwrite"; formals = [];
         locals = []; body = []} 
      (FuncMap.add "pgmwrite"{ typ = Void; fname = "pgmwrite"; formals = [];
         locals = []; body = []} 
+     (FuncMap.add "ppmwrite"{ typ = Void; fname = "pgmwrite"; formals = [];
+        locals = []; body = []} 
      (FuncMap.singleton "print_board"{ typ = Void; fname = "print_board"; formals = [];
         locals = []; body = []} 
-     ))))))))
+     ))))))))))
    in
      
   let function_decls = List.fold_left (fun m fd -> FuncMap.add fd.fname fd m)
@@ -426,6 +430,22 @@ let check_function func =
                                         StrLit(_),Mat(_,_,_) -> updateInitSyms var; Int
                                         | _ -> raise(Failure("pgmread takes string literal and matrix type")) 
                                      ) ))
+      | Call("ppmread", actuals) -> let a = (List.map expr actuals) in 
+              SCall("ppmread", a,    (if (List.length actuals != 4) 
+                                    then raise(Failure("ppmread only accepts 4 arguments"))
+                                    else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) 
+                                    and a3 = expr(List.nth actuals 2) and a4 = expr(List.nth actuals 3)
+                                    in
+                                    let t2 = Sast.get_expr_type_info a2 and t3 = Sast.get_expr_type_info a3
+                                    and t4 = Sast.get_expr_type_info a4
+                                    in
+                                    let var2 = getString a2 and var3 = getString a3 and var4 = getString a4 in
+                                        match (a1,t2,t3,t4) with
+                                        StrLit(_),Mat(_,x2,y2),Mat(_,x3,y3),Mat(_,x4,y4) -> 
+                                            if (x2!=x3)||(x3!=x4)||(y2!=y3)||(y3!=y4) then raise(Failure("All matrices must have the same dimensions")) else (); updateInitSyms var2; 
+                                        updateInitSyms var3; updateInitSyms var4; Int
+                                        | _ -> raise(Failure("ppmread takes string literal and 3 matrix types")) 
+                                     ) ))
      | Call("pgmwrite", actuals) -> let a = (List.map expr actuals) in 
               SCall("pgmwrite", a,    (if (List.length actuals != 2) 
                                     then raise(Failure("pgmwrite only accepts 2 arguments"))
@@ -435,6 +455,22 @@ let check_function func =
                                         match (a1,t2) with
                                         StrLit(_),Mat(_,_,_) -> updateInitSyms var; Void
                                         | _ -> raise(Failure("pgmwrite takes string literal and matrix type")) 
+                                     ) ))
+      | Call("ppmwrite", actuals) -> let a = (List.map expr actuals) in 
+              SCall("ppmwrite", a,    (if (List.length actuals != 4) 
+                                    then raise(Failure("ppmwrite only accepts 4 arguments"))
+                                    else ( let a1 = List.hd actuals and a2 = expr (List.nth actuals 1) 
+                                    and a3 = expr(List.nth actuals 2) and a4 = expr(List.nth actuals 3)
+                                    in
+                                    let t2 = Sast.get_expr_type_info a2 and t3 = Sast.get_expr_type_info a3
+                                    and t4 = Sast.get_expr_type_info a4
+                                    in
+                                    let var2 = getString a2 and var3 = getString a3 and var4 = getString a4 in
+                                        match (a1,t2,t3,t4) with
+                                        StrLit(_),Mat(_,x2,y2),Mat(_,x3,y3),Mat(_,x4,y4) -> 
+                                            if (x2!=x3)||(x3!=x4)||(y2!=y3)||(y3!=y4) then raise(Failure("All matrices must have the same dimensions")) else (); updateInitSyms var2; 
+                                        updateInitSyms var3; updateInitSyms var4; Int
+                                        | _ -> raise(Failure("ppmwrite takes string literal and 3 matrix types")) 
                                      ) ))
      | Call("print_board", actuals) -> let a = (List.map expr actuals) in 
               SCall("print_board", a,    (if (List.length actuals != 2) 
