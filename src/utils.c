@@ -56,7 +56,7 @@ void print_board(int* mat, int m, int n, int sleep) {
  * @n  : the height of the matrix
  */
 void printm_int(int* mat, int m, int n) {
-    printf("[");
+    printf("[\n");
     fflush(stdout);
     for(int i = 0; i < m; ++i) {
         for(int j = 0; j < n; ++j) {
