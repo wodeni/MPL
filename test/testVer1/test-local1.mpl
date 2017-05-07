@@ -1,10 +1,11 @@
 int foo()
 {
-    int i; 
+    int j; 
 /* Should hide the formal i */
-
-    i = 42; 
-    print(i + i);
+    int k;
+    j = 42; 
+    k = j + j;
+    print(k);
     return 42;
 }
 

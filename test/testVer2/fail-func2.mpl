@@ -1,10 +1,10 @@
-int foo(int a, boolean b, int c) { 
+int foo() { 
 	return 1;
 }
 
-int bar(int a, boolean b, int a) { 
+int bar(int a) { 
 	return 1;
-} /* Error: duplicate formal a in bar */
+} /* Error: entry function shouldn not take any parameters */
 
 int main()
 {

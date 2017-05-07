@@ -120,10 +120,7 @@ CheckFail() {
     generatedfiles=""
 
     generatedfiles="$generatedfiles ${basename}.ll ${basename}.s ${basename}f.out ${basename}.out" &&
-    Run "$PLT" "<" $1 ">" "${basename}.ll" &&
-    Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
-    Run "$GCC" "${basename}.out" "${basename}.s" "src/$UTIL" &&
-    Run "$AAA""${basename}.out" ">" "${basename}f.err" &&
+    RunFail "$PLT" "<" $1 "2>" "${basename}f.err" ">>" $globallog &&
     Compare "${basename}f.err" "${reffile}.err" ${basename}.diff
 
     # Report the status and clean up the generated files

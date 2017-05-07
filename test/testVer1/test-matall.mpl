@@ -9,7 +9,7 @@ int main() {
     p = m[1][1];
     print(p);
     printm(m);
-    entryf() @ m;
+    entryf @ m;
     p = m[1][1];
     print(p);
     printm(m);

@@ -1,5 +1,5 @@
-int entryf(int a) {
-    return a+1;
+int entryf() {
+    return #C;
 }
 
 int main() {
@@ -9,7 +9,7 @@ int main() {
     k = 1;
     m = [1,2;3,4];
     entryf @ m;
-    p = m[0][0];
+    p = m[0][1];
     print(p);
     return 0;
 }

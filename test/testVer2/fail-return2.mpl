@@ -1,7 +1,7 @@
-void foo()
+float foo()
 {
   if (true) return 42; /* Should return void */
-  else return;
+  else return 1;
 }
 
 int main()
