@@ -2,7 +2,7 @@ int foo()
 {
   int dd;
   boolean e;
-  d + e; /* Error: bool + int */
+  dd + e; /* Error: bool + int */
   return 1;
 }
 
