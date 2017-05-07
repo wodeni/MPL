@@ -41,7 +41,7 @@ dev :
 OBJS = ast.cmx codegen.cmx parser.cmx scanner.cmx semant.cmx mpl.cmx
 
 mpl : $(OBJS)
-	ocamlfind ocamlopt -linkpkg -package llvm -package llvm.analysis $(OBJS) -o mpl
+	ocamlfind ocamlopt -linkpkg -package llvm -package llvm.analysis  $(OBJS) -o mpl
 
 scanner.ml : scanner.mll
 	ocamllex scanner.mll

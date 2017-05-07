@@ -113,7 +113,6 @@ int pgmread(char* path, int *mat, int row, int col){
 			fclose(fd);
 			return 0;
 		}
-        printf("Count:%d\n",count);
 	} 
 	fclose(fd);
 	return -2;	    
@@ -213,7 +212,6 @@ int pbmwrite(char* path, int *mat, int row, int col){
         }
         count++;
         mat++;
-        printf("Count:%d\n", count);		
         if(count==row*col){
 			fclose(fd);
 			return 0;
@@ -254,7 +252,6 @@ int pgmwrite(char* path, int *mat, int row, int col){
         }
         count++;
         mat++;
-        printf("Count:%d\n", count);		
         if(count==row*col){
 			fclose(fd);
 			return 0;
@@ -303,7 +300,6 @@ int ppmwrite(char* path, int *mr, int *mg, int *mb, int row, int col){
         mr++;
         mg++;
         mb++;
-        printf("Count:%d\n", count);		
         if(count==row*col){
 			fclose(fd);
 			return 0;
@@ -314,12 +310,19 @@ int ppmwrite(char* path, int *mr, int *mg, int *mb, int row, int col){
 }
 
 int main(){
-    int height = 360;
-    int width = 250;
+    int height = 512;
+    int width = 512;
     //int mat[height][width];
     int *mat = malloc(height*width*4);
-    pgmread("hello.pgm", mat, height, width);
-    pgmwrite("output.pgm", mat, height, width);
-    pgmread("output.pgm", mat, height, width);
-    pgmwrite("output2.pgm", mat, height, width);
+    int *matr = malloc(height*width*4);
+    int *matg = malloc(height*width*4);
+    int *matb = malloc(height*width*4);
+    pgmread("lena.pgm", mat, height, width);
+    ppmread("lena.ppm", matr, matg, matb, height, width);
+    pgmwrite("lena-out.pgm", mat, height, width);
+    pgmwrite("lena-out-red.pgm", matr, height, width);
+    pgmwrite("lena-out-green.pgm", matg, height, width);
+    pgmwrite("lena-out-blue.pgm", matb, height, width);
+    ppmwrite("lena-out.ppm", matr, matg, matb, height, width);
+
 }

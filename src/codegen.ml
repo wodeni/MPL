@@ -86,7 +86,14 @@ in
   let memcpy_func         = L.declare_function "memcpy" memcpy_t the_module in
 
   let print_board_t       = L.function_type i32_t [| L.pointer_type i8_t; i32_t; i32_t; i32_t |] in
-  let print_board_func    = L.declare_function "print_board" print_board_t the_module in 
+  let print_board_func    = L.declare_function "print_board" print_board_t the_module in
+
+  let pgmread_func        = L.declare_function "pgmread" matrw_int_t the_module in
+  let pgmwrite_func       = L.declare_function "pgmwrite" matrw_int_t the_module in
+  let ppmrw_int_t         = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t;
+                            L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
+  let ppmread_func        = L.declare_function "ppmread" ppmrw_int_t the_module in
+  let ppmwrite_func        = L.declare_function "ppmwrite" ppmrw_int_t the_module in
 
   (* Define each function so we can call it *)
   (* FIXME: now that we take in some arguments, the number 9 is wrong *)
@@ -442,6 +449,40 @@ in
                 (L.const_int i32_t rows); (L.const_int i32_t cols) |] "matread_int" builder
             | A.Float -> L.build_call matread_float_func [| (expr builder e1); (get_mptr id builder);
                 (L.const_int i32_t rows); (L.const_int i32_t cols) |] "matread_float" builder
+            | _ -> raise(Exceptions.UnsupportedMatrixType)        )
+      | S.SCall ("ppmwrite", [e1; e2; e3; e4], t) ->
+		let (typ, rows, cols) = (lookupM e2) in
+        let mat1 = lookup_matrixid e2 in
+        let mat2 = lookup_matrixid e3 in
+        let mat3 = lookup_matrixid e4 
+        in (match typ with
+            A.Int -> L.build_call ppmwrite_func [| (expr builder e1); (get_mptr mat1 builder);
+                (get_mptr mat2 builder); (get_mptr mat3 builder); (L.const_int i32_t rows); 
+                (L.const_int i32_t cols) |] "ppmwrite" builder
+            | _ -> raise(Exceptions.UnsupportedMatrixType)        )
+      | S.SCall ("ppmread", [e1; e2; e3; e4], t) ->
+		let (typ, rows, cols) = (lookupM e2) in
+        let mat1 = lookup_matrixid e2 in
+        let mat2 = lookup_matrixid e3 in
+        let mat3 = lookup_matrixid e4 
+        in (match typ with
+            A.Int -> L.build_call ppmread_func [| (expr builder e1); (get_mptr mat1 builder);
+                (get_mptr mat2 builder); (get_mptr mat3 builder); (L.const_int i32_t rows); 
+                (L.const_int i32_t cols) |] "ppmread" builder
+            | _ -> raise(Exceptions.UnsupportedMatrixType)        )
+      | S.SCall ("pgmwrite", [e1; e2], t)  ->
+		let (typ, rows, cols) = (lookupM e2) in
+        let id = lookup_matrixid e2
+        in (match typ with
+            A.Int -> L.build_call pgmwrite_func [| (expr builder e1); (get_mptr id builder);
+                (L.const_int i32_t rows); (L.const_int i32_t cols) |] "pgmwrite" builder
+            | _ -> raise(Exceptions.UnsupportedMatrixType)        )
+      | S.SCall ("pgmread", [e1; e2], t)  ->
+		let (typ, rows, cols) = (lookupM e2) in
+        let id = lookup_matrixid e2
+        in (match typ with
+            A.Int -> L.build_call pgmread_func [| (expr builder e1); (get_mptr id builder);
+                (L.const_int i32_t rows); (L.const_int i32_t cols) |] "pgmread" builder
             | _ -> raise(Exceptions.UnsupportedMatrixType)        )
                    
       (* NOTE: we do not have any user defined functions
