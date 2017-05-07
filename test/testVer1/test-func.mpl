@@ -9,7 +9,7 @@ int main()
   k = [1,2;3,4];
   q = k[1][1];
   print(q);
-  reset() @ k;
+  reset @ k;
   q = k[1][1];
   print(q);
   return 0;

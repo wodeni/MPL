@@ -1,4 +1,4 @@
-int foo(int c)    
+int foo()    
 {
  	return 1;
 }
@@ -6,6 +6,6 @@ int foo(int c)
 int main()
 {
  	int a;
-	foo(a); /*error: not initialize a*/ 
+	print(a);	
 	return 0;
 }
