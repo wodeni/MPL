@@ -1,0 +1,113 @@
+\begin{center}
+\begin{longtabu} to \textwidth {|
+    X[4,l]|
+    X[3,c]|
+    X[8,l]|}
+    \hline
+    \textbf{Author} & \textbf{Date} & \textbf{Message} \ \hline
+DRC9702 & 2017-01-25 & Initial commit \\ \hline
+wodeni & 2017-01-26 & Meeting notes until Spring break and related documents. \\ \hline
+wodeni & 2017-03-14 & Compiled Scanner and parser with new tokens added \\ \hline
+Jiangfeng Wang & 2017-03-15 & Edited parser to enable matrix initialization \\ \hline
+ZhangChi & 2017-03-15 & skeleton for test, modified first 3 test \\ \hline
+wodeni & 2017-03-15 & Added floating point numberin scanner and parser. \\ \hline
+Jiangfeng Wang & 2017-03-15 & Added brackets to scanner; added matrix initialization and access to parser and ast. \\ \hline
+Jiangfeng Wang & 2017-03-15 & Replace FloatLit with num type \\ \hline
+Jiangfeng Wang & 2017-03-20 & fixed shift/reduct conflicts \\ \hline
+Nimo Wode Ni & 2017-04-03 & Hello world version \\ \hline
+wodeni & 2017-04-03 & {[}Sement{]} Added skeleton code for sement checker \\ \hline
+Jiangfeng Wang & 2017-04-03 & Revising semantic checker \\ \hline
+wodeni & 2017-04-04 & {[}Codegen{]} Trying to add printm \\ \hline
+wodeni & 2017-04-04 & Merge branch `matrix' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
+chyzhang & 2017-04-04 & fixed bugs about matrix and printm builder \\ \hline
+wodeni & 2017-04-05 & {[}Codegen{]} matrix print needs to be fixed \\ \hline
+wodeni & 2017-04-05 & {[}Codegen{]} printm now works \\ \hline
+wodeni & 2017-04-10 & {[}README{]} added the plan for the next 3 weeks \\ \hline
+chyzhang & 2017-04-10 & Merge branch `matrix' of http://github.com/wodeni/PLTproject into matrix \\ \hline
+chyzhang & 2017-04-10 & testall modified \\ \hline
+DRC9702 & 2017-04-10 & Refactor from scratch. Please don't kill me Nimo \\ \hline
+wodeni & 2017-04-10 & {[}Bug fix{]} float declaration error \\ \hline
+wodeni & 2017-04-10 & Merge branch `develop' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
+wodeni & 2017-04-10 & Merge branch `matrix' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
+chyzhang & 2017-04-10 & fix codegen.ml \\ \hline
+chyzhang & 2017-04-11 & test:1)if pass 2)varpass 3)while fail \\ \hline
+wodeni & 2017-04-11 & {[}FIXME{]} single grp not enough \\ \hline
+wodeni & 2017-04-11 & Merge branch `matrix' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
+Jiangfeng Wang & 2017-04-11 & Modified semantchecker & sast file \\ \hline
+Jiangfeng Wang & 2017-04-11 & Merge branch `matrix' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
+chyzhang & 2017-04-11 & matrix access fixed \\ \hline
+chyzhang & 2017-04-11 & Merge branch `matrix' of http://github.com/wodeni/PLTproject into matrix \\ \hline
+Jiangfeng Wang & 2017-04-12 & Revised semantic checker binop \\ \hline
+wodeni & 2017-04-12 & {[}Apply{]} Apply operator now works! \\ \hline
+DRC9702 & 2017-04-13 & Adding the functions Jane wants. What's good Nimo? \\ \hline
+chyzhang & 2017-04-13 & add @ test \\ \hline
+Jiangfeng Wang & 2017-04-14 & revised semant helperfunction and binop \\ \hline
+Jiangfeng Wang & 2017-04-14 & added sample exception test case \\ \hline
+Jiangfeng Wang & 2017-04-16 & semant checker fixed error ast.typ \\ \hline
+Jiangfeng Wang & 2017-04-16 & first working version of semant.ml \\ \hline
+wodeni & 2017-04-16 & {[}Entry function{]} Now have \# variables work \\ \hline
+wodeni & 2017-04-16 & Merge branch `backend' of https://github.com/DRC9702/PLTProject into backend \\ \hline
+chyzhang & 2017-04-18 & ``04/18/2017 Implement matread function. We implemented matread function by calling C function successfully. It works like printm and take 2 parameters, path and the destination matrix. Users are assumed to know the size of the matrix they want to read.'' \\ \hline
+Jiangfeng Wang & 2017-04-23 & working version of semant \\ \hline
+DRC9702 & 2017-04-23 & Merge branch `backend' of https://github.com/wodeni/PLTProject into matrix \\ \hline
+DRC9702 & 2017-04-23 & Compilation doesn't work because i haven't setup here \\ \hline
+wodeni & 2017-04-23 & {[}matwrite{]} working version with one test case \\ \hline
+wodeni & 2017-04-24 & {[}matwrite{]} added utils.c \\ \hline
+chyzhang & 2017-04-24 & test committed and testall.sh modified. Problem now:1:if a mpl file is all commented, it cannot be compiled. 2:Something wrong with prints when tested invalid character \\ \hline
+chyzhang & 2017-04-24 & upload golden ref and do some cleaning \\ \hline
+chyzhang & 2017-04-24 & prints works now \\ \hline
+chyzhang & 2017-04-25 & TEST REFINED \\ \hline
+chyzhang & 2017-04-25 & golden ref local2 renew \\ \hline
+DRC9702 & 2017-04-25 & Semantic Checker now accepts the apply operator \\ \hline
+chyzhang & 2017-04-26 & changes for test \\ \hline
+chyzhang & 2017-04-28 & basic fmat can be formed now \\ \hline
+DRC9702 & 2017-05-01 & Added in matread and printm into the semantic checker \\ \hline
+DRC9702 & 2017-05-01 & matrix access now supports {[}int{]}{[}variable{]} things but doesn't check if the variable is an int \\ \hline
+wodeni & 2017-05-01 & In progress: fix build\_apply \\ \hline
+wodeni & 2017-05-02 & added demo.mpl \\ \hline
+chyzhang & 2017-05-02 & modified the apply, now it can first read the matrix and remember all the entries, then store all changes \\ \hline
+chyzhang & 2017-05-02 & modify golden ref because of changes made in printm. Now all test pass \\ \hline
+DRC9702 & 2017-05-03 & Made an sast and also added string literals. \\ \hline
+wodeni & 2017-05-04 & {[}Demo{]} First version of demo \\ \hline
+wodeni & 2017-05-04 & Starting the merge \\ \hline
+wodeni & 2017-05-04 & {[}BUG{]} Apply: segfault when run too many times \\ \hline
+wodeni & 2017-05-05 & {[}BUG FIX{]} The segfault is now fixed \\ \hline
+wodeni & 2017-05-05 & preping for merge from backend \\ \hline
+wodeni & 2017-05-05 & Merge branch `backend' into merge-sast \\ \hline
+ZhangChi & 2017-05-05 & add test err case \\ \hline
+ZhangChi & 2017-05-05 & related testall.sh updated \\ \hline
+Jiangfeng Wang & 2017-05-05 & added success tests \\ \hline
+DRC9702 & 2017-05-06 & Fixed some stuff regarding scopes \\ \hline
+wodeni & 2017-05-06 & Preping for merge from matrix \\ \hline
+wodeni & 2017-05-06 & Merge remote-tracking branch `origin/matrix' into merge-sast \\ \hline
+wodeni & 2017-05-06 & Fixed merged bugs \\ \hline
+chyzhang & 2017-05-06 & test refined for new sast \\ \hline
+chyzhang & 2017-05-06 & testall.sh \\ \hline
+wodeni & 2017-05-06 & Successfully merged the SAST version of semantic checker \\ \hline
+wodeni & 2017-05-06 & {[}BUG FIX{]} neighbor computation \\ \hline
+DRC9702 & 2017-05-06 & Fixed i+i issue \\ \hline
+DRC9702 & 2017-05-06 & Finishing merging \\ \hline
+ZhangChi & 2017-05-06 & test merged from merge-sast \\ \hline
+DRC9702 & 2017-05-06 & Merge branch `develop' of https://github.com/wodeni/PLTProject into develop Merging again because Chi pushes right before I was about to push our changes. \\ \hline
+ZhangChi & 2017-05-06 & test for demo \\ \hline
+ZhangChi & 2017-05-06 & Merge branch `develop' of http://github.com/wodeni/MPL into develop \\ \hline
+wodeni & 2017-05-06 & {[}Clean up{]} unneccessary files \\ \hline
+wodeni & 2017-05-06 & {[}Demo{]} added binary files \\ \hline
+DRC9702 & 2017-05-06 & Dumping work onto Nimo for p*m read and writes \\ \hline
+DRC9702 & 2017-05-06 & Merge branch `develop' of https://github.com/wodeni/PLTProject into develop How many merges does one man have to do in his lifespan? \\ \hline
+DRC9702 & 2017-05-06 & pmlib now works and Jane did something to semant.ml \\ \hline
+chyzhang & 2017-05-06 & changes in test for demo \\ \hline
+chyzhang & 2017-05-06 & changes in test for demo 2 \\ \hline
+DRC9702 & 2017-05-07 & Semant checker can now recognizer pgmread and pgmwrite \\ \hline
+DRC9702 & 2017-05-07 & Merge branch `develop' of https://github.com/wodeni/PLTProject into develop Who keeps pushing when I'm pushing? \\ \hline
+wodeni & 2017-05-07 & {[}Demo{]} Now the convolution demo works. \\ \hline
+DRC9702 & 2017-05-07 & Added support for ppmread and ppmwrite. Still waiting on whether or not to include pbmread and pbmwrite \\ \hline
+chyzhang & 2017-05-07 & test + gcd demo file \\ \hline
+chyzhang & 2017-05-07 & for test read \\ \hline
+chyzhang & 2017-05-07 & for matwrite test \\ \hline
+wodeni & 2017-05-07 & {[}Test{]} matread/write small problem with file input \\ \hline
+chyzhang & 2017-05-07 & fixed matread write test \\ \hline
+wodeni & 2017-05-07 & {[}Demo{]} Added rle files \\ \hline
+wodeni & 2017-05-07 & {[}Demo{]} Clean up and better pics \\ \hline
+\end{longtabu}
+\end{center}

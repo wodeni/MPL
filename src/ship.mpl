@@ -19,7 +19,7 @@ int evolve() {
 }
 
 int main() {
-    Mat<int>[210][306] board;
+    Mat<int>[220][900] board;
     matread("ship.bin", board);
 
     while(true) {
