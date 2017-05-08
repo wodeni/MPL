@@ -1,113 +1,1580 @@
-\begin{center}
-\begin{longtabu} to \textwidth {|
-    X[4,l]|
-    X[3,c]|
-    X[8,l]|}
-    \hline
-    \textbf{Author} & \textbf{Date} & \textbf{Message} \ \hline
-DRC9702 & 2017-01-25 & Initial commit \\ \hline
-wodeni & 2017-01-26 & Meeting notes until Spring break and related documents. \\ \hline
-wodeni & 2017-03-14 & Compiled Scanner and parser with new tokens added \\ \hline
-Jiangfeng Wang & 2017-03-15 & Edited parser to enable matrix initialization \\ \hline
-ZhangChi & 2017-03-15 & skeleton for test, modified first 3 test \\ \hline
-wodeni & 2017-03-15 & Added floating point numberin scanner and parser. \\ \hline
-Jiangfeng Wang & 2017-03-15 & Added brackets to scanner; added matrix initialization and access to parser and ast. \\ \hline
-Jiangfeng Wang & 2017-03-15 & Replace FloatLit with num type \\ \hline
-Jiangfeng Wang & 2017-03-20 & fixed shift/reduct conflicts \\ \hline
-Nimo Wode Ni & 2017-04-03 & Hello world version \\ \hline
-wodeni & 2017-04-03 & {[}Sement{]} Added skeleton code for sement checker \\ \hline
-Jiangfeng Wang & 2017-04-03 & Revising semantic checker \\ \hline
-wodeni & 2017-04-04 & {[}Codegen{]} Trying to add printm \\ \hline
-wodeni & 2017-04-04 & Merge branch `matrix' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
-chyzhang & 2017-04-04 & fixed bugs about matrix and printm builder \\ \hline
-wodeni & 2017-04-05 & {[}Codegen{]} matrix print needs to be fixed \\ \hline
-wodeni & 2017-04-05 & {[}Codegen{]} printm now works \\ \hline
-wodeni & 2017-04-10 & {[}README{]} added the plan for the next 3 weeks \\ \hline
-chyzhang & 2017-04-10 & Merge branch `matrix' of http://github.com/wodeni/PLTproject into matrix \\ \hline
-chyzhang & 2017-04-10 & testall modified \\ \hline
-DRC9702 & 2017-04-10 & Refactor from scratch. Please don't kill me Nimo \\ \hline
-wodeni & 2017-04-10 & {[}Bug fix{]} float declaration error \\ \hline
-wodeni & 2017-04-10 & Merge branch `develop' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
-wodeni & 2017-04-10 & Merge branch `matrix' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
-chyzhang & 2017-04-10 & fix codegen.ml \\ \hline
-chyzhang & 2017-04-11 & test:1)if pass 2)varpass 3)while fail \\ \hline
-wodeni & 2017-04-11 & {[}FIXME{]} single grp not enough \\ \hline
-wodeni & 2017-04-11 & Merge branch `matrix' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
-Jiangfeng Wang & 2017-04-11 & Modified semantchecker & sast file \\ \hline
-Jiangfeng Wang & 2017-04-11 & Merge branch `matrix' of https://github.com/DRC9702/PLTProject into matrix \\ \hline
-chyzhang & 2017-04-11 & matrix access fixed \\ \hline
-chyzhang & 2017-04-11 & Merge branch `matrix' of http://github.com/wodeni/PLTproject into matrix \\ \hline
-Jiangfeng Wang & 2017-04-12 & Revised semantic checker binop \\ \hline
-wodeni & 2017-04-12 & {[}Apply{]} Apply operator now works! \\ \hline
-DRC9702 & 2017-04-13 & Adding the functions Jane wants. What's good Nimo? \\ \hline
-chyzhang & 2017-04-13 & add @ test \\ \hline
-Jiangfeng Wang & 2017-04-14 & revised semant helperfunction and binop \\ \hline
-Jiangfeng Wang & 2017-04-14 & added sample exception test case \\ \hline
-Jiangfeng Wang & 2017-04-16 & semant checker fixed error ast.typ \\ \hline
-Jiangfeng Wang & 2017-04-16 & first working version of semant.ml \\ \hline
-wodeni & 2017-04-16 & {[}Entry function{]} Now have \# variables work \\ \hline
-wodeni & 2017-04-16 & Merge branch `backend' of https://github.com/DRC9702/PLTProject into backend \\ \hline
-chyzhang & 2017-04-18 & ``04/18/2017 Implement matread function. We implemented matread function by calling C function successfully. It works like printm and take 2 parameters, path and the destination matrix. Users are assumed to know the size of the matrix they want to read.'' \\ \hline
-Jiangfeng Wang & 2017-04-23 & working version of semant \\ \hline
-DRC9702 & 2017-04-23 & Merge branch `backend' of https://github.com/wodeni/PLTProject into matrix \\ \hline
-DRC9702 & 2017-04-23 & Compilation doesn't work because i haven't setup here \\ \hline
-wodeni & 2017-04-23 & {[}matwrite{]} working version with one test case \\ \hline
-wodeni & 2017-04-24 & {[}matwrite{]} added utils.c \\ \hline
-chyzhang & 2017-04-24 & test committed and testall.sh modified. Problem now:1:if a mpl file is all commented, it cannot be compiled. 2:Something wrong with prints when tested invalid character \\ \hline
-chyzhang & 2017-04-24 & upload golden ref and do some cleaning \\ \hline
-chyzhang & 2017-04-24 & prints works now \\ \hline
-chyzhang & 2017-04-25 & TEST REFINED \\ \hline
-chyzhang & 2017-04-25 & golden ref local2 renew \\ \hline
-DRC9702 & 2017-04-25 & Semantic Checker now accepts the apply operator \\ \hline
-chyzhang & 2017-04-26 & changes for test \\ \hline
-chyzhang & 2017-04-28 & basic fmat can be formed now \\ \hline
-DRC9702 & 2017-05-01 & Added in matread and printm into the semantic checker \\ \hline
-DRC9702 & 2017-05-01 & matrix access now supports {[}int{]}{[}variable{]} things but doesn't check if the variable is an int \\ \hline
-wodeni & 2017-05-01 & In progress: fix build\_apply \\ \hline
-wodeni & 2017-05-02 & added demo.mpl \\ \hline
-chyzhang & 2017-05-02 & modified the apply, now it can first read the matrix and remember all the entries, then store all changes \\ \hline
-chyzhang & 2017-05-02 & modify golden ref because of changes made in printm. Now all test pass \\ \hline
-DRC9702 & 2017-05-03 & Made an sast and also added string literals. \\ \hline
-wodeni & 2017-05-04 & {[}Demo{]} First version of demo \\ \hline
-wodeni & 2017-05-04 & Starting the merge \\ \hline
-wodeni & 2017-05-04 & {[}BUG{]} Apply: segfault when run too many times \\ \hline
-wodeni & 2017-05-05 & {[}BUG FIX{]} The segfault is now fixed \\ \hline
-wodeni & 2017-05-05 & preping for merge from backend \\ \hline
-wodeni & 2017-05-05 & Merge branch `backend' into merge-sast \\ \hline
-ZhangChi & 2017-05-05 & add test err case \\ \hline
-ZhangChi & 2017-05-05 & related testall.sh updated \\ \hline
-Jiangfeng Wang & 2017-05-05 & added success tests \\ \hline
-DRC9702 & 2017-05-06 & Fixed some stuff regarding scopes \\ \hline
-wodeni & 2017-05-06 & Preping for merge from matrix \\ \hline
-wodeni & 2017-05-06 & Merge remote-tracking branch `origin/matrix' into merge-sast \\ \hline
-wodeni & 2017-05-06 & Fixed merged bugs \\ \hline
-chyzhang & 2017-05-06 & test refined for new sast \\ \hline
-chyzhang & 2017-05-06 & testall.sh \\ \hline
-wodeni & 2017-05-06 & Successfully merged the SAST version of semantic checker \\ \hline
-wodeni & 2017-05-06 & {[}BUG FIX{]} neighbor computation \\ \hline
-DRC9702 & 2017-05-06 & Fixed i+i issue \\ \hline
-DRC9702 & 2017-05-06 & Finishing merging \\ \hline
-ZhangChi & 2017-05-06 & test merged from merge-sast \\ \hline
-DRC9702 & 2017-05-06 & Merge branch `develop' of https://github.com/wodeni/PLTProject into develop Merging again because Chi pushes right before I was about to push our changes. \\ \hline
-ZhangChi & 2017-05-06 & test for demo \\ \hline
-ZhangChi & 2017-05-06 & Merge branch `develop' of http://github.com/wodeni/MPL into develop \\ \hline
-wodeni & 2017-05-06 & {[}Clean up{]} unneccessary files \\ \hline
-wodeni & 2017-05-06 & {[}Demo{]} added binary files \\ \hline
-DRC9702 & 2017-05-06 & Dumping work onto Nimo for p*m read and writes \\ \hline
-DRC9702 & 2017-05-06 & Merge branch `develop' of https://github.com/wodeni/PLTProject into develop How many merges does one man have to do in his lifespan? \\ \hline
-DRC9702 & 2017-05-06 & pmlib now works and Jane did something to semant.ml \\ \hline
-chyzhang & 2017-05-06 & changes in test for demo \\ \hline
-chyzhang & 2017-05-06 & changes in test for demo 2 \\ \hline
-DRC9702 & 2017-05-07 & Semant checker can now recognizer pgmread and pgmwrite \\ \hline
-DRC9702 & 2017-05-07 & Merge branch `develop' of https://github.com/wodeni/PLTProject into develop Who keeps pushing when I'm pushing? \\ \hline
-wodeni & 2017-05-07 & {[}Demo{]} Now the convolution demo works. \\ \hline
-DRC9702 & 2017-05-07 & Added support for ppmread and ppmwrite. Still waiting on whether or not to include pbmread and pbmwrite \\ \hline
-chyzhang & 2017-05-07 & test + gcd demo file \\ \hline
-chyzhang & 2017-05-07 & for test read \\ \hline
-chyzhang & 2017-05-07 & for matwrite test \\ \hline
-wodeni & 2017-05-07 & {[}Test{]} matread/write small problem with file input \\ \hline
-chyzhang & 2017-05-07 & fixed matread write test \\ \hline
-wodeni & 2017-05-07 & {[}Demo{]} Added rle files \\ \hline
-wodeni & 2017-05-07 & {[}Demo{]} Clean up and better pics \\ \hline
-\end{longtabu}
-\end{center}
+\section{Project Repository \texttt{git} 'shortlog'}
+\lstset{numbers=none,frame=none}
+\begin{lstlisting}
+wodeni <wn2155@columbia.edu> (33):
+      Meeting notes until Spring break and related documents.
+      Compiled Scanner and parser with new tokens added
+      Added floating point numberin scanner and parser.
+      [Sement] Added skeleton code for sement checker
+      [Codegen] Trying to add printm
+      [Codegen] matrix print needs to be fixed
+      [Codegen] printm now works
+      [README] added the plan for the next 3 weeks
+      [Bug fix] float declaration error
+      [FIXME] single grp not enough
+      [Apply] Apply operator now works!
+      [Entry function] Now have # variables work
+      [matwrite] working version with one test case
+      [matwrite] added utils.c
+      In progress: fix build_apply
+      added demo.mpl
+      [Demo] First version of demo
+      Starting the merge
+      [BUG] Apply: segfault when run too many times
+      [BUG FIX] The segfault is now fixed
+      preping for merge from backend
+      Preping for merge from matrix
+      Merge remote-tracking branch 'origin/matrix' into merge-sast
+      Fixed merged bugs
+      Successfully merged the SAST version of semantic checker
+      [BUG FIX] neighbor computation
+      [Clean up] unneccessary files
+      [Demo] added binary files
+      [Demo] Now the convolution demo works.
+      [Test] matread/write small problem with file input
+      [Demo] Added rle files
+      [Demo] Clean up and better pics
+      [Report] Added git log history tex file
+
+
+chyzhang <chyzhang@brandeis.edu> (24):
+      fixed bugs about matrix and printm builder
+      testall modified
+      fix codegen.ml
+      test:1)if pass 2)varpass 3)while fail
+      matrix access fixed
+      add @ test
+      "04/18/2017 Implement matread function. We implemented matread function by calling C function successfully. It works like printm and take 2 parameters, path and the destination matrix. Users are assumed to know the size of the matrix they want to read."
+      test committed and testall.sh modified. Problem now:1:if a mpl file is all commented, it cannot be compiled. 2:Something wrong with prints when tested invalid character
+      upload golden ref and do some cleaning
+      prints works now
+      TEST REFINED
+      golden ref local2 renew
+      changes for test
+      basic fmat can be formed now
+      modified the apply, now it can first read the matrix and remember all the entries, then store all changes
+      modify golden ref because of changes made in printm. Now all test pass
+      test refined for new sast
+      testall.sh
+      changes in test for demo
+      changes in test for demo 2
+      test + gcd demo file
+      for test read
+      for matwrite test
+      fixed matread write test
+
+
+DRC9702 <drinconcruz@knox.edu> (14):
+      Refactor from scratch. Please don't kill me Nimo
+      Adding the functions Jane wants. What's good Nimo?
+      Compilation doesn't work because i haven't setup here
+      Semantic Checker now accepts the apply operator
+      Added in matread and printm into the semantic checker
+      matrix access now supports [int][variable] things but doesn't check if the variable is an int
+      Made an sast and also added string literals.
+      Fixed some stuff regarding scopes
+      Fixed i+i issue
+      Finishing merging
+      Dumping work onto Nimo for p*m read and writes
+      pmlib now works and Jane did something to semant.ml
+      Semant checker can now recognizer pgmread and pgmwrite
+      Added support for ppmread and ppmwrite. Still waiting on whether or not to include pbmread and pbmwrite
+
+
+Jiangfeng Wang <jw3107@columbia.edu> (13):
+      Edited parser to enable matrix initialization
+      Added brackets to scanner; added matrix initialization and access to parser and ast.
+      Replace FloatLit with num type
+      fixed shift/reduct conflicts
+      Revising semantic checker
+      Modified semantchecker & sast file
+      Revised semantic checker binop
+      revised semant helperfunction and binop
+      added sample exception test case
+      semant checker fixed error ast.typ
+      first working version of semant.ml
+      working version of semant
+      added success tests
+
+
+Nimo Wode Ni <wodeni@users.noreply.github.com> (8):
+      Hello world version
+      Added MPL-arch
+      Added MPL-arch.svg
+      Update MPL-arch
+      Update README.md
+      Create meeting-notes.md
+      Update README.md
+      Update MPL-arch
+
+
+ZhangChi <ChyZin@dyn-160-39-144-79.dyn.columbia.edu> (4):
+      add test err case
+      related testall.sh updated
+      test merged from merge-sast
+      test for demo
+
+
+DRC9702 <david.rincon.cruz@gmail.com> (1):
+      Initial commit
+
+
+ZhangChi <ChyZin@ZhangChideMacBook-Pro.local> (1):
+      skeleton for test, modified first 3 test
+
+
+\end{lstlisting}
+
+\clearpage
+\section{Full \texttt{git} Log}
+The following log was generated using the command:
+\begin{lstlisting}
+git log --color --stat --no-merges --pretty=format:"%h: %Cblue%aN <%aE>%Creset%nDate: %aD%nSubject: %s%nContent: %b"
+\end{lstlisting}
+\lstset{escapeinside=`'}
+\begin{lstlisting}
+1dfd79b: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Mon, 8 May 2017 05:24:12 -0400
+Subject: [Report] Added git log history tex file
+Content: 
+ doc/gitlog.tex | 113 `{\color{green}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++}'
+ src/ship.bin   | Bin `{\color{red}257040}' -> `{\color{green}792000}' bytes
+ src/ship.mpl   |   2 `{\color{green}+}'`{\color{red}-}'
+ 3 files changed, 114 insertions(+), 1 deletion(-)
+
+7b6c411: `{\color{blue}Nimo Wode Ni <wodeni@users.noreply.github.com>}'
+Date: Mon, 8 May 2017 05:08:49 -0400
+Subject: Update MPL-arch
+Content: 
+ doc/MPL-arch | 2 `{\color{green}+}'`{\color{red}-}'
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+76343dd: `{\color{blue}Nimo Wode Ni <wodeni@users.noreply.github.com>}'
+Date: Sun, 7 May 2017 22:25:18 -0400
+Subject: Update README.md
+Content: 
+ README.md | 253 `{\color{red}--------------------------------------------------------------}'
+ 1 file changed, 253 deletions(-)
+
+b8952dd: `{\color{blue}Nimo Wode Ni <wodeni@users.noreply.github.com>}'
+Date: Sun, 7 May 2017 22:25:07 -0400
+Subject: Create meeting-notes.md
+Content: 
+ meeting-notes.md | 254 `{\color{green}+++++++++++++++++++++++++++++++++++++++++++++++++++++++}'
+ 1 file changed, 254 insertions(+)
+
+80331d2: `{\color{blue}Nimo Wode Ni <wodeni@users.noreply.github.com>}'
+Date: Sun, 7 May 2017 22:23:39 -0400
+Subject: Update README.md
+Content: 
+ README.md | 6 `{\color{green}++++}'`{\color{red}--}'
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+e39c1a5: `{\color{blue}Nimo Wode Ni <wodeni@users.noreply.github.com>}'
+Date: Sun, 7 May 2017 17:40:34 -0400
+Subject: Update MPL-arch
+Content: 
+ doc/MPL-arch | 2 `{\color{green}+}'`{\color{red}-}'
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+829b569: `{\color{blue}Nimo Wode Ni <wodeni@users.noreply.github.com>}'
+Date: Sun, 7 May 2017 17:40:29 -0400
+Subject: Added MPL-arch.svg
+Content: 
+ doc/MPL-arch.svg | 2 `{\color{green}++}'
+ 1 file changed, 2 insertions(+)
+
+7805579: `{\color{blue}Nimo Wode Ni <wodeni@users.noreply.github.com>}'
+Date: Sun, 7 May 2017 16:57:04 -0400
+Subject: Added MPL-arch
+Content: 
+ doc/MPL-arch | 1 `{\color{green}+}'
+ 1 file changed, 1 insertion(+)
+
+c465fb7: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sun, 7 May 2017 15:53:05 -0400
+Subject: [Demo] Clean up and better pics
+Content: 
+ rle-files/gun-long.bin |   Bin `{\color{red}200000}' -> `{\color{green}0}' bytes
+ rle-files/gun.txt      |   Bin `{\color{red}40000}' -> `{\color{green}0}' bytes
+ rle-files/line.txt     |   Bin `{\color{red}40000}' -> `{\color{green}0}' bytes
+ rle-files/parse_rle.py |     2 `{\color{green}+}'`{\color{red}-}'
+ rle-files/queen.txt    |   Bin `{\color{red}40000}' -> `{\color{green}0}' bytes
+ rle-files/ship.bin     |   Bin `{\color{red}282240}' -> `{\color{green}0}' bytes
+ src/Makefile           |     2 `{\color{green}+}'`{\color{red}-}'
+ src/blur.mpl           |    13 `{\color{green}+}'
+ src/edge.mpl           |    15 `{\color{green}+}'
+ src/gun-long.mpl       |    29 `{\color{green}+}'
+ src/gun.bin            |   Bin `{\color{red}40000}' -> `{\color{green}18000}' bytes
+ src/gun.mpl            |     4 `{\color{green}+}'`{\color{red}-}'
+ src/img.sh             |    17 `{\color{green}+}'
+ src/lena.pgm           | 22191 `{\color{green}+++++++++++++++++++++++++++++++++++++++++++++++}'
+ src/line.bin           |   Bin `{\color{red}40000}' -> `{\color{green}800}' bytes
+ src/line.mpl           |     2 `{\color{green}+}'`{\color{red}-}'
+ src/queen.bin          |   Bin `{\color{red}40000}' -> `{\color{green}1456}' bytes
+ src/queen.mpl          |     2 `{\color{green}+}'`{\color{red}-}'
+ src/run.sh             |     4 `{\color{green}+}'`{\color{red}-}'
+ src/sharpen.mpl        |    13 `{\color{green}+}'
+ src/ship.mpl           |    29 `{\color{green}+}'
+ src/utils.c            |    22 `{\color{green}+}'`{\color{red}-}'
+ 22 files changed, 22330 insertions(+), 15 deletions(-)
+
+b98ab43: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sun, 7 May 2017 14:29:28 -0400
+Subject: [Demo] Added rle files
+Content: 
+ rle-files/gun-long.bin        | Bin `{\color{red}0}' -> `{\color{green}200000}' bytes
+ rle-files/gun.rle             |   7 `{\color{green}++}'
+ rle-files/gun.txt             | Bin `{\color{red}0}' -> `{\color{green}40000}' bytes
+ rle-files/line.rle            |   5 `{\color{green}++}'
+ rle-files/line.txt            | Bin `{\color{red}0}' -> `{\color{green}40000}' bytes
+ rle-files/parse_rle.py        | 201 `{\color{green}++++++++++++++++++++++++++++++++++++++++++}'
+ rle-files/queen.txt           | Bin `{\color{red}0}' -> `{\color{green}40000}' bytes
+ rle-files/queenbeeshuttle.rle |   6 `{\color{green}++}'
+ rle-files/ship.bin            | Bin `{\color{red}0}' -> `{\color{green}282240}' bytes
+ rle-files/ship.rle            | 145 `{\color{green}++++++++++++++++++++++++++++++}'
+ 10 files changed, 364 insertions(+)
+
+1cf3239: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Sun, 7 May 2017 01:57:41 -0400
+Subject: fixed matread write test
+Content: 
+ test/testVer1/test-matread.mpl  | 2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-matwrite.mpl | 4 `{\color{green}++}'`{\color{red}--}'
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+86b2e8a: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sun, 7 May 2017 01:53:55 -0400
+Subject: [Test] matread/write small problem with file input
+Content: 
+ src/utils.c                        |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-print-board.out | 200 `{\color{green}++++++++++++++++++}'`{\color{red}-------------------}'
+ 2 files changed, 101 insertions(+), 101 deletions(-)
+
+936e42e: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Sun, 7 May 2017 01:44:56 -0400
+Subject: for matwrite test
+Content: 
+ test/testVer1/{matexample.txt => matoutput.bin} | Bin
+ test/testVer1/test-matread.mpl                  |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-matwrite.mpl                 |   4 `{\color{green}++}'`{\color{red}--}'
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+478bc27: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Sun, 7 May 2017 01:39:26 -0400
+Subject: for test read
+Content: 
+ test/testVer1/gun.bin | Bin `{\color{red}0}' -> `{\color{green}40000}' bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+02f690c: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Sun, 7 May 2017 01:38:34 -0400
+Subject: test + gcd demo file
+Content: 
+ src/test-gcd.mpl                     | 19 `{\color{green}+++++++++++++++++++}'
+ test/testVer1/test-matwrite.mpl      |  4 `{\color{green}++}'`{\color{red}--}'
+ test/{testVer1 => tmp}/test-ops2.mpl |  0
+ test/{testVer1 => tmp}/test-ops2.out |  0
+ testall.sh                           |  4 `{\color{green}++}'`{\color{red}--}'
+ 5 files changed, 23 insertions(+), 4 deletions(-)
+
+072edba: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Sun, 7 May 2017 01:04:31 -0400
+Subject: Added support for ppmread and ppmwrite. Still waiting on whether or not to include pbmread and pbmwrite
+Content: 
+ src/semant.ml | 38 `{\color{green}+++++++++++++++++++++++++++++++++++++}'`{\color{red}-}'
+ 1 file changed, 37 insertions(+), 1 deletion(-)
+
+2eff7bf: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sun, 7 May 2017 00:58:54 -0400
+Subject: [Demo] Now the convolution demo works.
+Content: 
+ src/Makefile   |   2 `{\color{green}+}'`{\color{red}-}'
+ src/codegen.ml |  43 `{\color{green}+++++++}'`{\color{red}-}'
+ src/gol.mpl    |   2 `{\color{green}+}'`{\color{red}-}'
+ src/pmlib.c    |  23 `{\color{green}+++}'`{\color{red}--}'
+ src/ship.bin   | Bin `{\color{red}332336}' -> `{\color{green}257040}' bytes
+ src/utils.c    | 315 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++++++++++++++}'`{\color{red}-}'
+ 6 files changed, 369 insertions(+), 16 deletions(-)
+
+f04a818: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Sun, 7 May 2017 00:16:07 -0400
+Subject: Semant checker can now recognizer pgmread and pgmwrite
+Content: 
+ src/semant.ml | 35 `{\color{green}+++++++++++++++++++++++++++++}'`{\color{red}------}'
+ 1 file changed, 29 insertions(+), 6 deletions(-)
+
+4088ea7: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Sat, 6 May 2017 23:38:16 -0400
+Subject: changes in test for demo 2
+Content: 
+ test/tmp/fail-func2.err    |  1 `{\color{green}+}'
+ test/tmp/fail-func2.mpl    | 12 `{\color{green}++++++++++++}'
+ test/tmp/fail-func3.err    |  1 `{\color{green}+}'
+ test/tmp/fail-func3.mpl    | 12 `{\color{green}++++++++++++}'
+ test/tmp/fail-funcheck.err |  1 `{\color{green}+}'
+ test/tmp/fail-funcheck.mpl | 11 `{\color{green}+++++++++++}'
+ test/tmp/test-entry.mpl    | 21 `{\color{green}+++++++++++++++++++++}'
+ test/tmp/test-entry.out    | 45 `{\color{green}+++++++++++++++++++++++++++++++++++++++++++++}'
+ test/tmp/test-mat-ops.mpl  |  9 `{\color{green}+++++++++}'
+ test/tmp/test-mat-ops.out  |  4 `{\color{green}++++}'
+ 10 files changed, 117 insertions(+)
+
+78c3017: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Sat, 6 May 2017 23:37:06 -0400
+Subject: changes in test for demo
+Content: 
+ test/scanner/scripts/ScannerTest.ml             |  3 `{\color{green}++}'`{\color{red}-}'
+ test/scanner/scripts/pass/_assignment.out       |  2 `{\color{green}+}'`{\color{red}-}'
+ test/scanner/scripts/pass/_base_scanner.out     | 10 `{\color{green}++++}'`{\color{red}-----}'
+ test/scanner/scripts/pass/_conditionals.out     |  6 `{\color{green}+++}'`{\color{red}---}'
+ test/scanner/scripts/pass/_function.out         |  2 `{\color{green}+}'`{\color{red}-}'
+ test/scanner/scripts/pass/_literal.out          |  4 `{\color{green}++}'`{\color{red}--}'
+ test/scanner/scripts/pass/_main_function.out    |  2 `{\color{green}+}'`{\color{red}-}'
+ test/scanner/scripts/pass/_mixed_arithmetic.out | 10 `{\color{green}++++}'`{\color{red}-----}'
+ test/testVer1/test-entry.mpl                    | 18 `{\color{red}----------------}'
+ test/testVer1/test-entry.out                    |  5 `{\color{red}-----}'
+ test/testVer1/test-mat-ops.mpl                  |  9 `{\color{red}--------}'
+ test/testVer1/test-mat-ops.out                  |  4 `{\color{red}----}'
+ test/testVer1/test-ops1.mpl                     | 28 `{\color{green}++++++++++++}'`{\color{red}-------------}'
+ test/testVer2/fail-expr1.err                    |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-expr1.mpl                    |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-func2.err                    |  1 `{\color{red}-}'
+ test/testVer2/fail-func2.mpl                    | 12 `{\color{red}-----------}'
+ test/testVer2/fail-func3.err                    |  1 `{\color{red}-}'
+ test/testVer2/fail-func3.mpl                    | 12 `{\color{red}-----------}'
+ test/testVer2/fail-funcheck.err                 |  1 `{\color{red}-}'
+ test/testVer2/fail-funcheck.mpl                 | 11 `{\color{red}----------}'
+ testall.sh                                      |  4 `{\color{green}++}'`{\color{red}--}'
+ 22 files changed, 38 insertions(+), 111 deletions(-)
+
+47fd16f: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Sat, 6 May 2017 23:24:30 -0400
+Subject: pmlib now works and Jane did something to semant.ml
+Content: 
+ src/pmlib.c   | 71 `{\color{green}++++++++++++++++++++++++++++++++}'`{\color{red}---------------------------}'
+ src/semant.ml |  4 `{\color{green}++}'`{\color{red}--}'
+ 2 files changed, 41 insertions(+), 34 deletions(-)
+
+5d58803: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Sat, 6 May 2017 22:38:08 -0400
+Subject: Dumping work onto Nimo for p*m read and writes
+Content: 
+ src/pmlib.c | 318 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++}'
+ 1 file changed, 318 insertions(+)
+
+4371d23: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sat, 6 May 2017 22:29:57 -0400
+Subject: [Demo] added binary files
+Content: 
+ src/gol.mpl   |  29 `{\color{green}+++++++++++++++++++++++++++++}'
+ src/gun.bin   | Bin `{\color{red}0}' -> `{\color{green}40000}' bytes
+ src/gun.mpl   |  29 `{\color{green}+++++++++++++++++++++++++++++}'
+ src/line.bin  | Bin `{\color{red}0}' -> `{\color{green}40000}' bytes
+ src/line.mpl  |  29 `{\color{green}+++++++++++++++++++++++++++++}'
+ src/queen.bin | Bin `{\color{red}0}' -> `{\color{green}40000}' bytes
+ src/queen.mpl |  29 `{\color{green}+++++++++++++++++++++++++++++}'
+ src/ship.bin  | Bin `{\color{red}0}' -> `{\color{green}332336}' bytes
+ 8 files changed, 116 insertions(+)
+
+c7569d9: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sat, 6 May 2017 22:11:14 -0400
+Subject: [Clean up] unneccessary files
+Content: 
+ src/buildmat.c                     |  20 `{\color{red}---}'
+ src/demo.mpl                       |  54 `{\color{red}-------}'
+ src/fmat.c                         |  14 `{\color{red}--}'
+ src/matread.c                      |  38 `{\color{red}-----}'
+ src/old_semant.ml                  | 300 `{\color{red}-------------------------------------}'
+ src/printbig.c                     |  75 `{\color{red}----------}'
+ src/printm.c                       |  50 `{\color{red}-------}'
+ src/rle-files/gun.txt              | Bin `{\color{red}40000}' -> `{\color{green}0}' bytes
+ src/semant.ml                      |   3 `{\color{green}+}'`{\color{red}-}'
+ src/test-mat.mpl                   |  15 `{\color{red}--}'
+ src/test-matrix-exception.mpl      |   6 `{\color{red}-}'
+ src/test-printm.mpl                |   5 `{\color{red}-}'
+ src/test-wrap1.mpl                 |  18 `{\color{red}---}'
+ src/tokenize.ml                    |  54 `{\color{red}-------}'
+ src/utils.c                        |   4 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-print-board.mpl |   9 `{\color{green}+}'`{\color{red}-}'
+ 16 files changed, 10 insertions(+), 655 deletions(-)
+
+f0e79b4: `{\color{blue}ZhangChi <ChyZin@dyn-160-39-144-79.dyn.columbia.edu>}'
+Date: Sat, 6 May 2017 22:06:40 -0400
+Subject: test for demo
+Content: 
+ test/{testVer2/fail-func8.mpl => testVer1/test-entry.mpl} | 5 `{\color{green}+++}'`{\color{red}--}'
+ test/testVer1/test-entry.out                              | 5 `{\color{green}+++++}'
+ test/testVer2/fail-func8.err                              | 1 `{\color{red}-}'
+ test/{testVer2 => tmp}/fail-dead1.err                     | 0
+ test/{testVer2 => tmp}/fail-dead1.mpl                     | 0
+ test/{testVer2 => tmp}/fail-dead2.err                     | 0
+ test/{testVer2 => tmp}/fail-dead2.mpl                     | 0
+ test/{testVer1 => tmp}/test-mat-ops1.mpl                  | 0
+ test/{testVer1 => tmp}/test-mat-ops1.out                  | 0
+ test/{testVer1 => tmp}/test-mat-ops2.mpl                  | 0
+ test/{testVer1 => tmp}/test-mat-ops2.out                  | 0
+ test/{testVer1 => tmp}/test-mat-ops3.mpl                  | 0
+ test/{testVer1 => tmp}/test-mat-ops3.out                  | 0
+ test/{testVer1 => tmp}/test-mat-ops4.mpl                  | 0
+ test/{testVer1 => tmp}/test-mat-ops4.out                  | 0
+ test/{testVer1 => tmp}/test-mat-ops5.mpl                  | 0
+ test/{testVer1 => tmp}/test-mat-ops5.out                  | 0
+ test/{testVer1 => tmp}/test-mat-ops6.mpl                  | 0
+ test/{testVer1 => tmp}/test-mat-ops6.out                  | 0
+ 19 files changed, 8 insertions(+), 3 deletions(-)
+
+f0f86ce: `{\color{blue}ZhangChi <ChyZin@dyn-160-39-144-79.dyn.columbia.edu>}'
+Date: Sat, 6 May 2017 21:19:00 -0400
+Subject: test merged from merge-sast
+Content: 
+ test/testVer1/test-all2.mpl     |  6 `{\color{green}+++}'`{\color{red}---}'
+ test/testVer1/test-apply.mpl    |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-func.mpl     |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-local1.mpl   |  9 `{\color{green}+++++}'`{\color{red}----}'
+ test/testVer1/test-mat-ops1.mpl |  6 `{\color{green}++++}'`{\color{red}--}'
+ test/testVer1/test-mat-ops2.mpl |  4 `{\color{green}+++}'`{\color{red}-}'
+ test/testVer1/test-matall.mpl   |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-ops2.mpl     | 24 `{\color{green}++++++++++++}'`{\color{red}------------}'
+ test/testVer2/fail-assign1.err  |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-assign2.err  |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-expr1.mpl    |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-func2.mpl    |  6 `{\color{green}+++}'`{\color{red}---}'
+ test/testVer2/fail-func8.mpl    |  4 `{\color{green}+}'`{\color{red}---}'
+ test/testVer2/fail-funcheck.err |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-funcheck.mpl |  4 `{\color{green}++}'`{\color{red}--}'
+ test/testVer2/fail-global1.err  |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-if1.err      |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-return1.err  |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-return2.err  |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-return2.mpl  |  4 `{\color{green}++}'`{\color{red}--}'
+ test/testVer2/fail-while1.err   |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-while2.mpl   |  2 `{\color{green}+}'`{\color{red}-}'
+ testall.sh                      |  5 `{\color{green}+}'`{\color{red}----}'
+ 23 files changed, 49 insertions(+), 49 deletions(-)
+
+963ec12: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Sat, 6 May 2017 05:53:20 -0400
+Subject: Fixed i+i issue
+Content: 
+ src/semant.ml | 78 `{\color{green}+++++++++++++++++++++++++++++++++++++++++}'`{\color{red}------------------}'
+ 1 file changed, 54 insertions(+), 24 deletions(-)
+
+464633b: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sat, 6 May 2017 05:45:06 -0400
+Subject: [BUG FIX] neighbor computation
+Content: 
+ src/codegen.ml    | 18 `{\color{green}++++++++++++++}'`{\color{red}----}'
+ src/demo.mpl      | 30 `{\color{green}++++++++++++++++++++++++++}'`{\color{red}----}'
+ src/exceptions.ml |  1 `{\color{green}+}'
+ src/semant.ml     |  2 `{\color{green}+}'`{\color{red}-}'
+ src/utils.c       |  2 `{\color{green}++}'
+ 5 files changed, 44 insertions(+), 9 deletions(-)
+
+f51bc40: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sat, 6 May 2017 03:36:42 -0400
+Subject: Successfully merged the SAST version of semantic checker
+Content: - Cleaned up the code for codegen
+- Fixed bugs in both codegen and sement
+- Test cases are not passing yet
+
+ src/codegen.ml     | 16 `{\color{green}++++++++}'`{\color{red}--------}'
+ src/mpl.ml         |  2 `{\color{green}+}'`{\color{red}-}'
+ src/test-wrap1.mpl |  9 `{\color{green}+++++}'`{\color{red}----}'
+ 3 files changed, 14 insertions(+), 13 deletions(-)
+
+e9e0664: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Sat, 6 May 2017 03:24:25 -0400
+Subject: testall.sh
+Content: 
+ testall.sh | 2 `{\color{green}+}'`{\color{red}-}'
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+06298d4: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Sat, 6 May 2017 03:02:19 -0400
+Subject: test refined for new sast
+Content: 
+ test/testVer1/test-all1.mpl        |  4 `{\color{green}++}'`{\color{red}--}'
+ test/testVer1/test-all2.mpl        |  4 `{\color{green}+++}'`{\color{red}-}'
+ test/testVer1/test-apply.mpl       |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-apply.out       |  5 `{\color{green}+++++}'
+ test/testVer1/test-func.mpl        |  7 `{\color{green}+++}'`{\color{red}----}'
+ test/testVer1/test-mat.mpl         | 18 `{\color{green}+++++++++}'`{\color{red}---------}'
+ test/testVer1/test-matall.mpl      |  4 `{\color{green}++}'`{\color{red}--}'
+ test/testVer1/test-print-board.out |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-assign1.mpl     |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-assign2.mpl     |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-expr1.mpl       | 10 `{\color{green}+++++}'`{\color{red}-----}'
+ test/testVer2/fail-func1.mpl       |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-func2.mpl       |  8 `{\color{green}++++++}'`{\color{red}--}'
+ test/testVer2/fail-func3.mpl       |  8 `{\color{green}++++++}'`{\color{red}--}'
+ test/testVer2/fail-func5.mpl       |  2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer2/fail-func6.mpl       |  3 `{\color{green}++}'`{\color{red}-}'
+ test/testVer2/fail-func7.mpl       |  3 `{\color{green}++}'`{\color{red}-}'
+ test/testVer2/fail-func8.mpl       | 14 `{\color{green}++++++++++}'`{\color{red}----}'
+ test/testVer2/fail-func9.mpl       |  3 `{\color{green}++}'`{\color{red}-}'
+ test/testVer2/fail-funcheck.mpl    | 13 `{\color{green}+++++}'`{\color{red}--------}'
+ test/testVer2/fail-global1.mpl     |  2 `{\color{green}+}'`{\color{red}-}'
+ 21 files changed, 69 insertions(+), 49 deletions(-)
+
+8199e36: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sat, 6 May 2017 02:57:32 -0400
+Subject: Fixed merged bugs
+Content: 
+ src/codegen.ml | 20 `{\color{green}+++++++++++}'`{\color{red}---------}'
+ src/mpl.ml     | 14 `{\color{green}++++}'`{\color{red}----------}'
+ src/semant.ml  | 13 `{\color{green}++++++}'`{\color{red}-------}'
+ 3 files changed, 21 insertions(+), 26 deletions(-)
+
+2762f92: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sat, 6 May 2017 02:28:47 -0400
+Subject: Preping for merge from matrix
+Content: 
+ src/ast.ml        |  10 `{\color{green}+}'`{\color{red}-}'
+ src/codegen.ml    | 379 `{\color{green}+++++++++++++++++++++++++++}'`{\color{red}---------------------------}'
+ src/exceptions.ml |  14 `{\color{green}+}'`{\color{red}-}'
+ src/mpl.ml        |  14 `{\color{green}+}'`{\color{red}-}'
+ src/sast.ml       |  28 `{\color{green}++}'`{\color{red}--}'
+ 5 files changed, 227 insertions(+), 218 deletions(-)
+
+5b61f08: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Sat, 6 May 2017 02:28:27 -0400
+Subject: Fixed some stuff regarding scopes
+Content: 
+ src/ast.ml    |   2 `{\color{green}+}'
+ src/sast.ml   |   4 `{\color{green}+}'`{\color{red}-}'
+ src/semant.ml | 149 `{\color{green}+++++++++++++++++++++++++++++++++++++++++++++++++}'`{\color{red}---------}'
+ 3 files changed, 131 insertions(+), 24 deletions(-)
+
+7f5d560: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Fri, 5 May 2017 23:11:22 -0400
+Subject: added success tests
+Content: 
+ test/testVer1/test-all1.mpl        |  13 `{\color{green}+++++}'
+ test/testVer1/test-all1.out        |   1 `{\color{green}+}'
+ test/testVer1/test-all2.mpl        |  13 `{\color{green}+++++}'
+ test/testVer1/test-all2.out        |   1 `{\color{green}+}'
+ test/testVer1/test-apply.mpl       |  12 `{\color{green}+++++}'
+ test/testVer1/test-func.mpl        |   4 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-if1.mpl         |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-if2.mpl         |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-if3.mpl         |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-if4.mpl         |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-if5.mpl         |   4 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-local1.mpl      |   4 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-local2.mpl      |   4 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-mat-ops.mpl     |   9 `{\color{green}++++}'
+ test/testVer1/test-mat-ops.out     |   4 `{\color{green}++}'
+ test/testVer1/test-mat-ops1.mpl    |   9 `{\color{green}++++}'
+ test/testVer1/test-mat-ops1.out    |   4 `{\color{green}++}'
+ test/testVer1/test-mat-ops2.mpl    |   9 `{\color{green}++++}'
+ test/testVer1/test-mat-ops2.out    |   4 `{\color{green}++}'
+ test/testVer1/test-mat-ops3.mpl    |   9 `{\color{green}++++}'
+ test/testVer1/test-mat-ops3.out    |   4 `{\color{green}++}'
+ test/testVer1/test-mat-ops4.mpl    |   9 `{\color{green}++++}'
+ test/testVer1/test-mat-ops4.out    |   4 `{\color{green}++}'
+ test/testVer1/test-mat-ops5.mpl    |   9 `{\color{green}++++}'
+ test/testVer1/test-mat-ops5.out    |   4 `{\color{green}++}'
+ test/testVer1/test-mat-ops6.mpl    |   9 `{\color{green}++++}'
+ test/testVer1/test-mat-ops6.out    |   4 `{\color{green}++}'
+ test/testVer1/test-mat.mpl         |   6 `{\color{green}+}'`{\color{red}--}'
+ test/testVer1/test-matall.mpl      |   6 `{\color{green}+}'`{\color{red}--}'
+ test/testVer1/test-matread.mpl     |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-matwrite.mpl    |  11 `{\color{green}+}'`{\color{red}---}'
+ test/testVer1/test-ops1.mpl        |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-ops2.mpl        |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-print-board.mpl |  26 `{\color{green}++++++++++}'
+ test/testVer1/test-print-board.out | 100 `{\color{green}+++++++++++++++++++++++++++++++++++++}'
+ test/testVer1/test-print.mpl       |   7 `{\color{green}+}'`{\color{red}--}'
+ test/testVer1/test-printm.mpl      |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-prints.mpl      |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-var1.mpl        |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-while1.mpl      |   2 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-while2.mpl      |   4 `{\color{green}+}'`{\color{red}-}'
+ 41 files changed, 285 insertions(+), 44 deletions(-)
+
+0d63048: `{\color{blue}ZhangChi <ChyZin@dyn-160-39-144-79.dyn.columbia.edu>}'
+Date: Fri, 5 May 2017 20:36:52 -0400
+Subject: related testall.sh updated
+Content: 
+ testall.sh | 19 `{\color{green}+++++++++++}'`{\color{red}--------}'
+ 1 file changed, 11 insertions(+), 8 deletions(-)
+
+fa5e493: `{\color{blue}ZhangChi <ChyZin@dyn-160-39-144-79.dyn.columbia.edu>}'
+Date: Fri, 5 May 2017 20:29:00 -0400
+Subject: add test err case
+Content: 
+ test/testVer2/fail-assign1.err  |  1 `{\color{green}+}'
+ test/testVer2/fail-assign1.mpl  | 11 `{\color{green}+++++++++++}'
+ test/testVer2/fail-assign2.err  |  1 `{\color{green}+}'
+ test/testVer2/fail-assign2.mpl  |  7 `{\color{green}+++++++}'
+ test/testVer2/fail-dead1.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-dead1.mpl    |  8 `{\color{green}++++++++}'
+ test/testVer2/fail-dead2.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-dead2.mpl    | 10 `{\color{green}++++++++++}'
+ test/testVer2/fail-expr1.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-expr1.mpl    | 14 `{\color{green}++++++++++++++}'
+ test/testVer2/fail-func1.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func1.mpl    | 12 `{\color{green}++++++++++++}'
+ test/testVer2/fail-func2.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func2.mpl    |  8 `{\color{green}++++++++}'
+ test/testVer2/fail-func3.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func3.mpl    |  8 `{\color{green}++++++++}'
+ test/testVer2/fail-func4.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func4.mpl    | 12 `{\color{green}++++++++++++}'
+ test/testVer2/fail-func5.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func5.mpl    | 14 `{\color{green}++++++++++++++}'
+ test/testVer2/fail-func6.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func6.mpl    |  9 `{\color{green}+++++++++}'
+ test/testVer2/fail-func7.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func7.mpl    |  9 `{\color{green}+++++++++}'
+ test/testVer2/fail-func8.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func8.mpl    | 13 `{\color{green}+++++++++++++}'
+ test/testVer2/fail-func9.err    |  1 `{\color{green}+}'
+ test/testVer2/fail-func9.mpl    |  9 `{\color{green}+++++++++}'
+ test/testVer2/fail-funcheck.err |  1 `{\color{green}+}'
+ test/testVer2/fail-funcheck.mpl | 14 `{\color{green}++++++++++++++}'
+ test/testVer2/fail-global1.err  |  1 `{\color{green}+}'
+ test/testVer2/fail-global1.mpl  |  9 `{\color{green}+++++++++}'
+ test/testVer2/fail-if1.err      |  1 `{\color{green}+}'
+ test/testVer2/fail-if1.mpl      |  6 `{\color{green}++++++}'
+ test/testVer2/fail-if2.err      |  1 `{\color{green}+}'
+ test/testVer2/fail-if2.mpl      |  6 `{\color{green}++++++}'
+ test/testVer2/fail-if3.err      |  1 `{\color{green}+}'
+ test/testVer2/fail-if3.mpl      |  8 `{\color{green}++++++++}'
+ test/testVer2/fail-nomain.err   |  1 `{\color{green}+}'
+ test/testVer2/fail-nomain.mpl   |  0
+ test/testVer2/fail-return1.err  |  1 `{\color{green}+}'
+ test/testVer2/fail-return1.mpl  |  4 `{\color{green}++++}'
+ test/testVer2/fail-return2.err  |  1 `{\color{green}+}'
+ test/testVer2/fail-return2.mpl  | 10 `{\color{green}++++++++++}'
+ test/testVer2/fail-while1.err   |  1 `{\color{green}+}'
+ test/testVer2/fail-while1.mpl   | 13 `{\color{green}+++++++++++++}'
+ test/testVer2/fail-while2.err   |  1 `{\color{green}+}'
+ test/testVer2/fail-while2.mpl   | 13 `{\color{green}+++++++++++++}'
+ 48 files changed, 251 insertions(+)
+
+9f1a339: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Fri, 5 May 2017 19:24:47 -0400
+Subject: preping for merge from backend
+Content: 
+ src/codegen.ml | 9 `{\color{green}++++}'`{\color{red}-----}'
+ src/demo.mpl   | 4 `{\color{green}++}'`{\color{red}--}'
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+b8d6cf2: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Fri, 5 May 2017 01:38:32 -0400
+Subject: [BUG FIX] The segfault is now fixed
+Content: - It was caused by APPLY's repeated alloca on the stack. I changed that
+  to malloc and free.
+- I am very happy
+
+ src/codegen.ml     | 12 `{\color{green}+++++++++}'`{\color{red}---}'
+ src/demo.mpl       | 16 `{\color{green}+++}'`{\color{red}-------------}'
+ src/mpl.ml         |  2 `{\color{green}+}'`{\color{red}-}'
+ src/run.sh         |  4 `{\color{green}+++}'`{\color{red}-}'
+ src/test-wrap1.mpl |  2 `{\color{green}+}'`{\color{red}-}'
+ src/utils.c        |  4 `{\color{green}++}'`{\color{red}--}'
+ 6 files changed, 19 insertions(+), 21 deletions(-)
+
+caa9ec8: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Thu, 4 May 2017 23:45:01 -0400
+Subject: [BUG] Apply: segfault when run too many times
+Content: - I counted the number of loops until segfault. It seems that the larger
+  the matrix, the faster it will occur, in terms of loop counts
+- The relationship seems to be almost perfectly linear here
+- Suspected memcpy, but really?
+
+ src/test-wrap1.mpl | 17 `{\color{green}+++++++++++++++++}'
+ 1 file changed, 17 insertions(+)
+
+e89077e: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Thu, 4 May 2017 19:45:09 -0400
+Subject: [Demo] First version of demo
+Content: - We changed the apply operator codegen so that we generate loops rather
+  then naively generating a lot of statements
+- The neighboring policy for apply now changed to wrap around, for
+  simplicity of the code and possibly demo
+- Many many bug fixes
+- BUG: when we run the demo it will segfault when the thing produced by
+  gliber gun hits the boundry of the canvas
+        - I tried printing out the indices we have accessed, but I
+          didn't find anything out of bounds.
+
+ demo.mpl              |  29 `{\color{green}+++++++}'
+ src/codegen.ml        | 235 `{\color{green}++++++++++++++++++++++++++++++++++}'`{\color{red}----------------}'
+ src/demo.mpl          |  30 `{\color{green}+++}'`{\color{red}----}'
+ src/mpl.ml            |   4 `{\color{green}+}'`{\color{red}-}'
+ src/rle-files/gun.txt | Bin `{\color{red}0}' -> `{\color{green}40000}' bytes
+ src/run.sh            |  15 `{\color{green}++++}'
+ src/script.sh         |   8 `{\color{red}--}'
+ src/test-matread.mpl  |  11 `{\color{green}+}'`{\color{red}--}'
+ src/utils.c           |  46 `{\color{green}++++++++++}'
+ testall.log           | 173 `{\color{red}-------------------------------------}'
+ 10 files changed, 270 insertions(+), 281 deletions(-)
+
+db41fbe: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Wed, 3 May 2017 20:03:52 -0400
+Subject: Made an sast and also added string literals.
+Content: 
+ src/ast.ml                |   4 `{\color{green}+}'`{\color{red}-}'
+ src/newSemanticChecker.ml | 165 `{\color{red}-------------------------}'
+ src/old_semant.ml         | 300 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++++}'
+ src/parser.mly            |   3 `{\color{green}+}'`{\color{red}-}'
+ src/sast.ml               |  40 `{\color{green}+++++}'`{\color{red}--}'
+ src/scanner.mll           |   1 `{\color{green}+}'
+ src/semant.ml             | 140 `{\color{green}+++++++++++++++}'`{\color{red}-------}'
+ src/test-matread.mpl      |   4 `{\color{green}+}'`{\color{red}-}'
+ 8 files changed, 434 insertions(+), 223 deletions(-)
+
+ee72ed7: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Tue, 2 May 2017 15:14:38 -0400
+Subject: modify golden ref because of changes made in printm. Now all test pass
+Content: 
+ matexample.txt                  | Bin `{\color{red}0}' -> `{\color{green}36}' bytes
+ test/testVer1/test-if5.out      |  12 `{\color{green}++++++++++}'`{\color{red}--}'
+ test/testVer1/test-local1.out   |  12 `{\color{green}++++++++++}'`{\color{red}--}'
+ test/testVer1/test-local2.out   |   6 `{\color{green}+++++}'`{\color{red}-}'
+ test/testVer1/test-matall.out   |  12 `{\color{green}++++++++++}'`{\color{red}--}'
+ test/testVer1/test-matread.out  |   6 `{\color{green}+++++}'`{\color{red}-}'
+ test/testVer1/test-matwrite.out |   6 `{\color{green}+++++}'`{\color{red}-}'
+ test/testVer1/test-ops2.mpl     |   2 `{\color{red}--}'
+ test/testVer1/test-ops2.out     |   1 `{\color{green}+}'
+ test/testVer1/test-printm.out   |   5 `{\color{green}++++}'`{\color{red}-}'
+ test/testVer1/test-while2.out   |  12 `{\color{green}++++++++++}'`{\color{red}--}'
+ 11 files changed, 60 insertions(+), 14 deletions(-)
+
+c177f9c: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Tue, 2 May 2017 14:59:05 -0400
+Subject: modified the apply, now it can first read the matrix and remember all the entries, then store all changes
+Content: 
+ src/codegen.ml | 53 `{\color{green}++++++++++++++++++++++++++++++++++++++}'`{\color{red}---------------}'
+ 1 file changed, 38 insertions(+), 15 deletions(-)
+
+d651f9a: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Tue, 2 May 2017 10:51:48 -0400
+Subject: added demo.mpl
+Content: 
+ src/demo.mpl | 42 `{\color{green}++++++++++++++++++++++++++++++++++++++++++}'
+ 1 file changed, 42 insertions(+)
+
+f8eee95: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Mon, 1 May 2017 23:38:15 -0400
+Subject: In progress: fix build_apply
+Content: 
+ src/codegen.ml  | 53 `{\color{green}++++++++++++++++++++++++++++}'`{\color{red}-------------------------}'
+ src/scanner.mll |  6 `{\color{green}+++}'`{\color{red}---}'
+ src/utils.c     |  4 `{\color{green}++}'`{\color{red}--}'
+ 3 files changed, 33 insertions(+), 30 deletions(-)
+
+aef0bd0: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Mon, 1 May 2017 23:33:16 -0400
+Subject: matrix access now supports [int][variable] things but doesn't check if the variable is an int
+Content: 
+ src/ast.ml     |  2 `{\color{green}+}'`{\color{red}-}'
+ src/parser.mly |  2 `{\color{green}+}'`{\color{red}-}'
+ src/semant.ml  | 28 `{\color{green}++++++++++++++++++++++++++}'`{\color{red}--}'
+ 3 files changed, 28 insertions(+), 4 deletions(-)
+
+3c12d6a: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Mon, 1 May 2017 21:34:34 -0400
+Subject: Added in matread and printm into the semantic checker
+Content: 
+ src/semant.ml        | 22 `{\color{green}++++++++++++++++++}'`{\color{red}----}'
+ src/test-matread.mpl |  9 `{\color{green}+++++}'`{\color{red}----}'
+ 2 files changed, 23 insertions(+), 8 deletions(-)
+
+cee5726: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Fri, 28 Apr 2017 00:02:27 -0400
+Subject: basic fmat can be formed now
+Content: 
+ src/codegen.ml  | 45 `{\color{green}+++++++++++++++++++++++++++++++++++}'`{\color{red}----------}'
+ src/fmat.c      | 14 `{\color{green}++++++++++++++}'
+ src/parser.mly  |  1 `{\color{green}+}'
+ src/scanner.mll |  2 `{\color{green}+}'`{\color{red}-}'
+ 4 files changed, 51 insertions(+), 11 deletions(-)
+
+41be668: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Wed, 26 Apr 2017 10:57:12 -0400
+Subject: changes for test
+Content: 
+ test/test-prints.mpl        |  3 `{\color{red}--}'
+ test/testVer1/test-ops1.mpl |  3 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-ops1.out | 76 `{\color{green}+++++++++}'`{\color{red}------------------------------------}'
+ test/testVer1/test-ops2.mpl |  3 `{\color{green}+}'`{\color{red}-}'
+ test/testVer1/test-ops2.out | 23 `{\color{green}+++++++}'`{\color{red}-------}'
+ test/testVer1/test-var2.mpl | 13 `{\color{red}--------}'
+ test/testVer1/test-var2.out |  1 `{\color{red}-}'
+ 7 files changed, 29 insertions(+), 93 deletions(-)
+
+7f9d596: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Tue, 25 Apr 2017 16:37:32 -0400
+Subject: Semantic Checker now accepts the apply operator
+Content: 
+ src/mpl.ml                    |  2 `{\color{green}+}'`{\color{red}-}'
+ src/semant.ml                 | 12 `{\color{green}+++++++}'`{\color{red}-----}'
+ src/test-matread.mpl          | 12 `{\color{green}+++++}'`{\color{red}-------}'
+ src/test-matrix-exception.mpl |  2 `{\color{green}+}'`{\color{red}-}'
+ 4 files changed, 14 insertions(+), 14 deletions(-)
+
+b97dbd5: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Tue, 25 Apr 2017 15:36:17 -0400
+Subject: golden ref local2 renew
+Content: 
+ test/testVer1/test-local2.out | 2 `{\color{green}+}'`{\color{red}-}'
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+2a95ffa: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Tue, 25 Apr 2017 02:18:12 -0400
+Subject: TEST REFINED
+Content: 
+ test/testVer1/test-if5.mpl    | 26 `{\color{green}++++++++++}'`{\color{red}---------}'
+ test/testVer1/test-if5.out    |  4 `{\color{green}+}'`{\color{red}--}'
+ test/testVer1/test-local1.mpl | 25 `{\color{green}++++++++++++}'`{\color{red}------}'
+ test/testVer1/test-local1.out | 12 `{\color{green}+++++++++}'
+ test/testVer1/test-local2.mpl | 59 `{\color{green}++++++++++++++++++++++++++++++++++}'`{\color{red}---------}'
+ test/testVer1/test-local2.out | 11 `{\color{green}+++++++}'`{\color{red}-}'
+ test/testVer1/test-matall.out |  4 `{\color{green}+}'`{\color{red}--}'
+ test/testVer1/test-ops1.mpl   |  6 `{\color{green}+++}'`{\color{red}--}'
+ test/testVer1/test-ops2.mpl   |  7 `{\color{green}+++}'`{\color{red}--}'
+ test/testVer1/test-printm.out |  3 `{\color{green}+}'`{\color{red}--}'
+ test/testVer1/test-var1.mpl   |  2 `{\color{red}--}'
+ test/testVer1/test-var1.out   |  1 `{\color{red}-}'
+ test/testVer1/test-while2.mpl | 29 `{\color{green}++++++++++++}'`{\color{red}---------}'
+ test/testVer1/test-while2.out |  2 `{\color{green}++}'
+ testall.sh                    |  8 `{\color{green}+++}'`{\color{red}---}'
+ 15 files changed, 137 insertions(+), 62 deletions(-)
+
+23f7f46: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Mon, 24 Apr 2017 21:09:53 -0400
+Subject: prints works now
+Content: 
+ src/codegen.ml                | 7 `{\color{green}++++}'`{\color{red}---}'
+ test/testVer1/test-prints.mpl | 4 `{\color{green}+++}'`{\color{red}-}'
+ test/testVer1/test-prints.out | 4 `{\color{green}+++}'`{\color{red}-}'
+ testall.sh                    | 2 `{\color{green}+}'`{\color{red}-}'
+ 4 files changed, 11 insertions(+), 6 deletions(-)
+
+ab63ab8: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Mon, 24 Apr 2017 14:23:43 -0400
+Subject: upload golden ref and do some cleaning
+Content: 
+ test/fail-assign1.err        |   1 `{\color{red}-}'
+ test/fail-assign1.mc         |   1 `{\color{red}-}'
+ test/fail-assign2.err        |   1 `{\color{red}-}'
+ test/fail-assign2.mc         |   1 `{\color{red}-}'
+ test/fail-assign3.err        |   1 `{\color{red}-}'
+ test/fail-assign3.mc         |  11 `{\color{red}---}'
+ test/fail-dead1.err          |   1 `{\color{red}-}'
+ test/fail-dead1.mc           |   8 `{\color{red}--}'
+ test/fail-dead2.err          |   1 `{\color{red}-}'
+ test/fail-dead2.mc           |  10 `{\color{red}---}'
+ test/fail-expr1.err          |   1 `{\color{red}-}'
+ test/fail-expr1.mc           |  18 `{\color{red}-----}'
+ test/fail-expr2.err          |   1 `{\color{red}-}'
+ test/fail-expr2.mc           |  14 `{\color{red}----}'
+ test/fail-for1.err           |   1 `{\color{red}-}'
+ test/fail-for1.mc            |  13 `{\color{red}----}'
+ test/fail-for2.err           |   1 `{\color{red}-}'
+ test/fail-for2.mc            |   8 `{\color{red}--}'
+ test/fail-for3.err           |   1 `{\color{red}-}'
+ test/fail-for3.mc            |   8 `{\color{red}--}'
+ test/fail-for4.err           |   1 `{\color{red}-}'
+ test/fail-for4.mc            |   8 `{\color{red}--}'
+ test/fail-for5.err           |   1 `{\color{red}-}'
+ test/fail-for5.mc            |  10 `{\color{red}---}'
+ test/fail-func1.err          |   1 `{\color{red}-}'
+ test/fail-func1.mc           |  12 `{\color{red}---}'
+ test/fail-func2.err          |   1 `{\color{red}-}'
+ test/fail-func2.mc           |   8 `{\color{red}--}'
+ test/fail-func3.err          |   1 `{\color{red}-}'
+ test/fail-func3.mc           |   8 `{\color{red}--}'
+ test/fail-func4.err          |   1 `{\color{red}-}'
+ test/fail-func4.mc           |  12 `{\color{red}---}'
+ test/fail-func5.err          |   1 `{\color{red}-}'
+ test/fail-func5.mc           |  14 `{\color{red}----}'
+ test/fail-func6.err          |   1 `{\color{red}-}'
+ test/fail-func6.mc           |   9 `{\color{red}---}'
+ test/fail-func7.err          |   1 `{\color{red}-}'
+ test/fail-func7.mc           |   9 `{\color{red}---}'
+ test/fail-func8.err          |   1 `{\color{red}-}'
+ test/fail-func8.mc           |  13 `{\color{red}----}'
+ test/fail-func9.err          |   1 `{\color{red}-}'
+ test/fail-func9.mc           |   9 `{\color{red}---}'
+ test/fail-global1.err        |   1 `{\color{red}-}'
+ test/fail-global1.mc         |   9 `{\color{red}---}'
+ test/fail-global2.err        |   1 `{\color{red}-}'
+ test/fail-global2.mc         |   9 `{\color{red}---}'
+ test/fail-if1.err            |   1 `{\color{red}-}'
+ test/fail-if1.mc             |   6 `{\color{red}--}'
+ test/fail-if2.err            |   1 `{\color{red}-}'
+ test/fail-if2.mc             |   6 `{\color{red}--}'
+ test/fail-if3.err            |   1 `{\color{red}-}'
+ test/fail-if3.mc             |   8 `{\color{red}--}'
+ test/fail-nomain.err         |   1 `{\color{red}-}'
+ test/fail-nomain.mc          |   0
+ test/fail-return1.err        |   1 `{\color{red}-}'
+ test/fail-return1.mc         |   4 `{\color{red}-}'
+ test/fail-return2.err        |   1 `{\color{red}-}'
+ test/fail-return2.mc         |  10 `{\color{red}---}'
+ test/fail-while1.err         |   1 `{\color{red}-}'
+ test/fail-while1.mc          |  13 `{\color{red}----}'
+ test/fail-while2.err         |   1 `{\color{red}-}'
+ test/fail-while2.mc          |  13 `{\color{red}----}'
+ test/test-add1.mc            |  10 `{\color{red}---}'
+ test/test-add1.out           |   1 `{\color{red}-}'
+ test/test-arith1.mc          |   5 `{\color{red}--}'
+ test/test-arith1.out         |   1 `{\color{red}-}'
+ test/test-arith2.mc          |   5 `{\color{red}--}'
+ test/test-arith2.out         |   1 `{\color{red}-}'
+ test/test-arith3.mc          |  13 `{\color{red}----}'
+ test/test-arith3.out         |   1 `{\color{red}-}'
+ test/test-fib.mc             |  16 `{\color{red}----}'
+ test/test-fib.out            |   6 `{\color{red}--}'
+ test/test-for1.mc            |   9 `{\color{red}---}'
+ test/test-for1.out           |   6 `{\color{red}--}'
+ test/test-for2.mc            |  11 `{\color{red}---}'
+ test/test-for2.out           |   6 `{\color{red}--}'
+ test/test-func1.mc           |  12 `{\color{red}---}'
+ test/test-func1.out          |   1 `{\color{red}-}'
+ test/test-func2.mc           |  18 `{\color{red}-----}'
+ test/test-func2.out          |   1 `{\color{red}-}'
+ test/test-func3.mc           |  13 `{\color{red}----}'
+ test/test-func3.out          |   4 `{\color{red}-}'
+ test/test-func4.mc           |  14 `{\color{red}----}'
+ test/test-func4.out          |   1 `{\color{red}-}'
+ test/test-func5.mc           |   9 `{\color{red}---}'
+ test/test-func5.out          |   0
+ test/test-func6.mc           |   9 `{\color{red}---}'
+ test/test-func6.out          |   1 `{\color{red}-}'
+ test/test-func7.mc           |  13 `{\color{red}----}'
+ test/test-func7.out          |   1 `{\color{red}-}'
+ test/test-func8.mc           |  10 `{\color{red}---}'
+ test/test-func8.out          |   1 `{\color{red}-}'
+ test/test-gcd.mc             |  15 `{\color{red}----}'
+ test/test-gcd.out            |   3 `{\color{red}-}'
+ test/test-gcd2.mc            |  14 `{\color{red}----}'
+ test/test-gcd2.out           |   3 `{\color{red}-}'
+ test/test-global1.mc         |  30 `{\color{red}--------}'
+ test/test-global1.out        |   4 `{\color{red}-}'
+ test/test-global2.mc         |  10 `{\color{red}---}'
+ test/test-global2.out        |   1 `{\color{red}-}'
+ test/test-global3.mc         |  11 `{\color{red}---}'
+ test/test-global3.out        |   1 `{\color{red}-}'
+ test/test-hello.mc           |   7 `{\color{red}--}'
+ test/test-hello.out          |   3 `{\color{red}-}'
+ test/test-if1.mc             |   6 `{\color{red}--}'
+ test/test-if1.out            |   2 `{\color{red}-}'
+ test/test-if2.mc             |   6 `{\color{red}--}'
+ test/test-if2.out            |   2 `{\color{red}-}'
+ test/test-if3.mc             |   6 `{\color{red}--}'
+ test/test-if3.out            |   1 `{\color{red}-}'
+ test/test-if4.mc             |   6 `{\color{red}--}'
+ test/test-if4.out            |   2 `{\color{red}-}'
+ test/test-if5.mc             |  16 `{\color{red}----}'
+ test/test-if5.out            |   2 `{\color{red}-}'
+ test/test-local1.mc          |  13 `{\color{red}----}'
+ test/test-local1.out         |   1 `{\color{red}-}'
+ test/test-local2.mc          |  14 `{\color{red}----}'
+ test/test-local2.out         |   1 `{\color{red}-}'
+ test/test-ops1.mc            |  28 `{\color{red}-------}'
+ test/test-ops1.out           |  24 `{\color{red}------}'
+ test/test-ops2.mc            |  17 `{\color{red}-----}'
+ test/test-ops2.out           |  14 `{\color{red}----}'
+ test/test-var1.mc            |   7 `{\color{red}--}'
+ test/test-var1.out           |   1 `{\color{red}-}'
+ test/test-var2.mc            |  13 `{\color{red}----}'
+ test/test-var2.out           |   1 `{\color{red}-}'
+ test/test-while1.mc          |  11 `{\color{red}---}'
+ test/test-while1.out         |   6 `{\color{red}--}'
+ test/test-while2.mc          |  16 `{\color{red}----}'
+ test/test-while2.out         |   1 `{\color{red}-}'
+ test/testVer1/matexample.txt | Bin `{\color{red}0}' -> `{\color{green}36}' bytes
+ testall.log                  | 173 `{\color{green}+++++++++++++++++++++++++++++++++++++++++++}'
+ testall.sh                   |  61 `{\color{green}+++++++}'`{\color{red}--------}'
+ 133 files changed, 204 insertions(+), 861 deletions(-)
+
+01a488b: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Mon, 24 Apr 2017 14:16:15 -0400
+Subject: test committed and testall.sh modified. Problem now:1:if a mpl file is all commented, it cannot be compiled. 2:Something wrong with prints when tested invalid character
+Content: 
+ result.txt                      | Bin `{\color{red}0}' -> `{\color{green}11848}' bytes
+ test/testVer1/test-func.out     |   2 `{\color{green}++}'
+ test/testVer1/test-if1.out      |   2 `{\color{green}++}'
+ test/testVer1/test-if2.out      |   2 `{\color{green}++}'
+ test/testVer1/test-if3.out      |   1 `{\color{green}+}'
+ test/testVer1/test-if4.out      |   2 `{\color{green}++}'
+ test/testVer1/test-if5.out      |   2 `{\color{green}++}'
+ test/testVer1/test-local1.out   |   1 `{\color{green}+}'
+ test/testVer1/test-local2.out   |   1 `{\color{green}+}'
+ test/testVer1/test-mat.mpl      |  28 `{\color{green}++++++++++++++++}'
+ test/testVer1/test-mat.out      |   9 `{\color{green}++++++}'
+ test/testVer1/test-matall.mpl   |  17 `{\color{green}++++++++++}'
+ test/testVer1/test-matall.out   |   4 `{\color{green}+++}'
+ test/testVer1/test-matread.mpl  |   6 `{\color{green}++++}'
+ test/testVer1/test-matread.out  |   1 `{\color{green}+}'
+ test/testVer1/test-matwrite.mpl |  17 `{\color{green}++++++++++}'
+ test/testVer1/test-matwrite.out |   1 `{\color{green}+}'
+ test/testVer1/test-ops1.out     |  70 `{\color{green}++++++++++++++++++++++++++++++++++++++++}'
+ test/testVer1/test-ops2.out     |  14 `{\color{green}++++++++}'
+ test/testVer1/test-print.mpl    |   1 `{\color{red}-}'
+ test/testVer1/test-print.out    |   1 `{\color{green}+}'
+ test/testVer1/test-printm.mpl   |   5 `{\color{green}+++}'
+ test/testVer1/test-printm.out   |   2 `{\color{green}++}'
+ test/testVer1/test-prints.mpl   |   4 `{\color{green}+++}'
+ test/testVer1/test-prints.out   |   1 `{\color{green}+}'
+ test/testVer1/test-var1.mpl     |   1 `{\color{green}+}'
+ test/testVer1/test-var1.out     |   2 `{\color{green}++}'
+ test/testVer1/test-var2.out     |   1 `{\color{green}+}'
+ test/testVer1/test-while1.out   |   6 `{\color{green}++++}'
+ 29 files changed, 203 insertions(+), 1 deletion(-)
+
+8383a0c: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Mon, 24 Apr 2017 11:07:17 -0400
+Subject: [matwrite] added utils.c
+Content: 
+ src/utils.c | 156 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++}'
+ 1 file changed, 156 insertions(+)
+
+2d6afd6: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sun, 23 Apr 2017 23:29:54 -0400
+Subject: [matwrite] working version with one test case
+Content: - Added a function in C
+- Put all the C functions inside utils.c
+
+ README.md            |  2 `{\color{green}+}'`{\color{red}-}'
+ src/Makefile         | 12 `{\color{green}++++++}'`{\color{red}------}'
+ src/codegen.ml       | 36 `{\color{green}+++++++++++++++++++++++++++}'`{\color{red}---------}'
+ src/test-matread.mpl |  1 `{\color{green}+}'
+ 4 files changed, 35 insertions(+), 16 deletions(-)
+
+12b5a65: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Sun, 23 Apr 2017 22:32:03 -0400
+Subject: Compilation doesn't work because i haven't setup here
+Content: 
+ src/semant.ml | 16 `{\color{green}++++++++++++++}'`{\color{red}--}'
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+a72bd93: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Sun, 23 Apr 2017 22:01:29 -0400
+Subject: working version of semant
+Content: 
+ src/ast.ml                    | 19 `{\color{green}+++++++}'`{\color{red}------------}'
+ src/semant.ml                 | 25 `{\color{green}+++++++++++++++}'`{\color{red}----------}'
+ src/test-matrix-exception.mpl |  4 `{\color{green}+++}'`{\color{red}-}'
+ 3 files changed, 25 insertions(+), 23 deletions(-)
+
+5b242e2: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Tue, 18 Apr 2017 17:26:33 -0400
+Subject: "04/18/2017 Implement matread function. We implemented matread function by calling C function successfully. It works like printm and take 2 parameters, path and the destination matrix. Users are assumed to know the size of the matrix they want to read."
+Content: 
+ src/Makefile         |  7 `{\color{green}++++}'`{\color{red}---}'
+ src/buildmat.c       | 20 `{\color{green}++++++++++++++++++++}'
+ src/codegen.ml       | 15 `{\color{green}+++++++++++++++}'
+ src/matread.c        | 38 `{\color{green}++++++++++++++++++++++++++++++++++++++}'
+ src/test-matread.mpl | 14 `{\color{green}++++++++++++++}'
+ 5 files changed, 91 insertions(+), 3 deletions(-)
+
+aec9dc5: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Sun, 16 Apr 2017 21:24:37 -0400
+Subject: [Entry function] Now have # variables work
+Content: - We manually set the arguments of the entry function so that we can
+  access neighbors with the entry function using the sharp notation.
+- We set all the out-of-bound neighbors to 0.
+- TODO:
+    - `fMat`
+    - Wait until monday.
+
+ README.md         |  4 `{\color{green}++++}'
+ src/Makefile      |  4 `{\color{green}++}'`{\color{red}--}'
+ src/codegen.ml    | 32 `{\color{green}+++++++++++++++++++++}'`{\color{red}-----------}'
+ src/exceptions.ml |  2 `{\color{green}+}'`{\color{red}-}'
+ src/parser.mly    |  9 `{\color{green}+++++++++}'
+ 5 files changed, 37 insertions(+), 14 deletions(-)
+
+27ae947: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Sun, 16 Apr 2017 20:30:57 -0400
+Subject: first working version of semant.ml
+Content: 
+ src/semant.ml | 173 `{\color{green}+++++++++++++++++++++++++++++++++++}'`{\color{red}-----------------------}'
+ 1 file changed, 105 insertions(+), 68 deletions(-)
+
+f0be81e: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Sun, 16 Apr 2017 19:25:35 -0400
+Subject: semant checker fixed error ast.typ
+Content: 
+ src/newSemanticChecker.ml | 77 `{\color{green}+++++++++++++++++++++++++}'`{\color{red}----------------------}'
+ 1 file changed, 41 insertions(+), 36 deletions(-)
+
+164b00a: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Fri, 14 Apr 2017 16:19:49 -0400
+Subject: added sample exception test case
+Content: 
+ src/test-matrix-exception.mpl | 4 `{\color{green}++++}'
+ 1 file changed, 4 insertions(+)
+
+4f35a40: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Fri, 14 Apr 2017 16:09:40 -0400
+Subject: revised semant helperfunction and binop
+Content: 
+ src/newSemanticChecker.ml | 116 `{\color{green}+++++++++++++++++++++++}'`{\color{red}-----------------------}'
+ 1 file changed, 59 insertions(+), 57 deletions(-)
+
+ed6a2a3: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Thu, 13 Apr 2017 22:51:04 -0400
+Subject: add @ test
+Content: 
+ test/testVer1/test-func.mpl | 17 `{\color{green}+++++++++++++++++}'
+ 1 file changed, 17 insertions(+)
+
+2496f60: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Thu, 13 Apr 2017 20:51:53 -0400
+Subject: Adding the functions Jane wants. What's good Nimo?
+Content: 
+ src/newSemanticChecker.ml | 26 `{\color{green}+++++++++++++++++++++++++}'`{\color{red}-}'
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+
+6bd3307: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Wed, 12 Apr 2017 17:44:30 -0400
+Subject: [Apply] Apply operator now works!
+Content: - Implemented the apply operator
+- Fixed the order of matrix literal in the parser
+- Comment: code is ugly
+- TODOs
+    - Function matrix
+
+ src/codegen.ml   | 105 `{\color{green}+++++++++++++++++++++++++++++++++}'`{\color{red}----------------------}'
+ src/parser.mly   |   4 `{\color{green}+}'`{\color{red}--}'
+ src/printbig.c   |  75 `{\color{green}+++++++++++++++++++++++++++++++++++++++}'
+ src/test-mat.mpl |  13 `{\color{green}+++++}'`{\color{red}--}'
+ 4 files changed, 150 insertions(+), 47 deletions(-)
+
+1cd1097: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Wed, 12 Apr 2017 17:36:55 -0400
+Subject: Revised semantic checker binop
+Content: 
+ src/ast.ml                |   1 `{\color{green}+}'
+ src/newSemanticChecker.ml | 167 `{\color{green}+++++++++++++++++++++++++}'`{\color{red}---------------------}'
+ src/parser.mly            |  14 `{\color{green}+++}'`{\color{red}-}'
+ 3 files changed, 102 insertions(+), 80 deletions(-)
+
+e8d0923: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Tue, 11 Apr 2017 18:59:27 -0400
+Subject: matrix access fixed
+Content: 
+ src/codegen.ml   | 4 `{\color{green}++}'`{\color{red}--}'
+ src/test-mat.mpl | 5 `{\color{green}+++++}'
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+da0637e: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Tue, 11 Apr 2017 18:20:00 -0400
+Subject: Modified semantchecker & sast file
+Content: 
+ src/newSemanticChecker.ml | 79 `{\color{green}++++++++++++++++++++++++++++++++++++++++++}'`{\color{red}-----}'
+ src/sast.ml               | 46 `{\color{green}+++++++++++++++++++++++++++}'
+ 2 files changed, 118 insertions(+), 7 deletions(-)
+
+16bdb6a: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Tue, 11 Apr 2017 16:34:32 -0400
+Subject: [FIXME] single grp not enough
+Content: 
+ src/codegen.ml | 83 `{\color{green}++++++++++++++++++++++++++++++++++++++++}'`{\color{red}------------------}'
+ 1 file changed, 57 insertions(+), 26 deletions(-)
+
+d407c38: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Tue, 11 Apr 2017 15:09:28 -0400
+Subject: test:1)if pass 2)varpass 3)while fail
+Content: 
+ test/testVer1/test-if1.mpl    |  6 `{\color{green}++++++}'
+ test/testVer1/test-if2.mpl    |  6 `{\color{green}++++++}'
+ test/testVer1/test-if3.mpl    |  6 `{\color{green}++++++}'
+ test/testVer1/test-if4.mpl    |  6 `{\color{green}++++++}'
+ test/testVer1/test-if5.mpl    | 17 `{\color{green}+++++++++++++++++}'
+ test/testVer1/test-local1.mpl | 14 `{\color{green}++++++++++++++}'
+ test/testVer1/test-local2.mpl | 15 `{\color{green}+++++++++++++++}'
+ test/testVer1/test-ops1.mpl   | 28 `{\color{green}++++++++++++++++++++++++++++}'
+ test/testVer1/test-ops2.mpl   | 17 `{\color{green}+++++++++++++++++}'
+ test/testVer1/test-print.mpl  | 11 `{\color{green}+++++++++++}'
+ test/testVer1/test-var1.mpl   | 21 `{\color{green}+++++++++++++++++++++}'
+ test/testVer1/test-var2.mpl   | 13 `{\color{green}+++++++++++++}'
+ test/testVer1/test-while1.mpl | 11 `{\color{green}+++++++++++}'
+ test/testVer1/test-while2.mpl | 17 `{\color{green}+++++++++++++++++}'
+ 14 files changed, 188 insertions(+)
+
+99abae2: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Mon, 10 Apr 2017 23:11:10 -0400
+Subject: fix codegen.ml
+Content: 
+ src/codegen.ml | 2 `{\color{green}+}'`{\color{red}-}'
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+018b381: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Mon, 10 Apr 2017 22:58:47 -0400
+Subject: [Bug fix] float declaration error
+Content: 
+ src/codegen.ml  | 12 `{\color{green}+++++++}'`{\color{red}-----}'
+ src/printm.c    | 16 `{\color{green}++++++++}'`{\color{red}--------}'
+ src/scanner.mll |  4 `{\color{green}++}'`{\color{red}--}'
+ 3 files changed, 17 insertions(+), 15 deletions(-)
+
+8e580a5: `{\color{blue}DRC9702 <drinconcruz@knox.edu>}'
+Date: Mon, 10 Apr 2017 22:35:30 -0400
+Subject: Refactor from scratch. Please don't kill me Nimo
+Content: 
+ src/newSemanticChecker.ml | 56 `{\color{green}+++++++++++++++++++++++++++++++++++++++++++++++}'
+ 1 file changed, 56 insertions(+)
+
+aa187e7: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Mon, 10 Apr 2017 20:49:02 -0400
+Subject: testall modified
+Content: 
+ testall.sh | 18 `{\color{green}+++++++++}'`{\color{red}---------}'
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+f676265: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Mon, 10 Apr 2017 12:48:49 -0400
+Subject: [README] added the plan for the next 3 weeks
+Content: 
+ README.md | 17 `{\color{green}+++++++++++++++++}'
+ 1 file changed, 17 insertions(+)
+
+c2035ea: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Wed, 5 Apr 2017 14:23:41 -0400
+Subject: [Codegen] printm now works
+Content: 
+ src/Makefile        |  2 `{\color{green}+}'`{\color{red}-}'
+ src/codegen.ml      | 10 `{\color{green}+++++}'`{\color{red}-----}'
+ src/printm.c        |  2 `{\color{green}+}'`{\color{red}-}'
+ src/test-mat.mpl    |  3 `{\color{green}+++}'
+ src/test-printm.mpl |  5 `{\color{green}+++++}'
+ 5 files changed, 15 insertions(+), 7 deletions(-)
+
+f0a4c41: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Wed, 5 Apr 2017 00:39:43 -0400
+Subject: [Codegen] matrix print needs to be fixed
+Content: 
+ src/Makefile   |  2 `{\color{green}+}'`{\color{red}-}'
+ src/codegen.ml | 17 `{\color{green}+++++++++++++}'`{\color{red}----}'
+ src/mpl.ml     |  2 `{\color{green}+}'`{\color{red}-}'
+ src/printm.c   | 50 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++++++++}'
+ 4 files changed, 65 insertions(+), 6 deletions(-)
+
+b388f2f: `{\color{blue}chyzhang <chyzhang@brandeis.edu>}'
+Date: Tue, 4 Apr 2017 21:50:57 -0400
+Subject: fixed bugs about matrix and printm builder
+Content: 
+ src/codegen.ml | 41 `{\color{green}++++++++++++++++++++++}'`{\color{red}-------------------}'
+ 1 file changed, 22 insertions(+), 19 deletions(-)
+
+a75c331: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Tue, 4 Apr 2017 00:50:00 -0400
+Subject: [Codegen] Trying to add printm
+Content: - We had rows and cols before we add the value associated with an id
+  into the map, BUT when we encounter a function call to "printm", we do
+not have row and col data with the id.
+- Trying to add in another map to store it.
+
+ src/Makefile   |  8 `{\color{green}++++++}'
+ src/codegen.ml | 85 `{\color{green}+++++++++++++++++++++++++++++++++++++++++}'`{\color{red}-----------------}'
+ 2 files changed, 69 insertions(+), 24 deletions(-)
+
+c614615: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Mon, 3 Apr 2017 23:04:25 -0400
+Subject: Revising semantic checker
+Content: 
+ src/exceptions.ml |  6 `{\color{red}------}'
+ src/semant.ml     | 54 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++}'`{\color{red}----------}'
+ 2 files changed, 44 insertions(+), 16 deletions(-)
+
+6c5d0e7: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Mon, 3 Apr 2017 10:42:57 -0400
+Subject: [Sement] Added skeleton code for sement checker
+Content: 
+ src/semant.ml | 172 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++++++++++++++++}'
+ 1 file changed, 172 insertions(+)
+
+953ee7c: `{\color{blue}Nimo Wode Ni <wodeni@users.noreply.github.com>}'
+Date: Mon, 3 Apr 2017 10:25:55 -0400
+Subject: Hello world version
+Content: - We have the system up and running
+- Still missing if and loops
+- Need to add matrix as soon as possible
+
+
+ .travis.yml                                      |   14 `{\color{green}+}'
+ hello_world_demo.sh                              |   27 `{\color{green}+}'
+ src/Makefile                                     |    4 `{\color{green}+}'`{\color{red}-}'
+ src/ast.ml                                       |   33 `{\color{green}+}'`{\color{red}-}'
+ src/codegen.ml                                   |  220 `{\color{green}+++}'
+ src/exceptions.ml                                |   74 `{\color{green}+}'
+ src/mpl.ml                                       |    9 `{\color{green}+}'`{\color{red}-}'
+ src/parser.mly                                   |   97 `{\color{green}+}'`{\color{red}-}'
+ src/scanner.mll                                  |   19 `{\color{green}+}'`{\color{red}-}'
+ src/script.sh                                    |    8 `{\color{green}+}'
+ src/tokenize.ml                                  |   54 `{\color{green}+}'
+ test/scanner/scanner.ml                          | 2288 `{\color{green}++++++++++++++++++++++}'
+ test/scanner/scripts/ScannerTest.ml              |   86 `{\color{green}+}'
+ test/scanner/scripts/build.sh                    |   14 `{\color{green}+}'
+ test/scanner/scripts/clean.sh                    |    3 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_carrot.out    |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_carrot.test   |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_dollar.out    |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_dollar.test   |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_percent.out   |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_percent.test  |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_period.out    |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_period.test   |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_pound.out     |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_pound.test    |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_tilde.out     |    1 `{\color{green}+}'
+ test/scanner/scripts/fail/_illegal_tilde.test    |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_arithmetic.out        |    5 `{\color{green}+}'
+ test/scanner/scripts/pass/_arithmetic.test       |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_assignment.out        |    4 `{\color{green}+}'
+ test/scanner/scripts/pass/_assignment.test       |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_base_scanner.out      |   43 `{\color{green}+}'
+ test/scanner/scripts/pass/_base_scanner.test     |    7 `{\color{green}+}'
+ test/scanner/scripts/pass/_comment.out           |    0
+ test/scanner/scripts/pass/_comment.test          |    6 `{\color{green}+}'
+ test/scanner/scripts/pass/_conditionals.out      |    9 `{\color{green}+}'
+ test/scanner/scripts/pass/_conditionals.test     |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_control_flow.out      |    5 `{\color{green}+}'
+ test/scanner/scripts/pass/_control_flow.test     |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_delimiters.out        |    6 `{\color{green}+}'
+ test/scanner/scripts/pass/_delimiters.test       |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_function.out          |   14 `{\color{green}+}'
+ test/scanner/scripts/pass/_function.test         |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_identifier.out        |    5 `{\color{green}+}'
+ test/scanner/scripts/pass/_identifier.test       |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_literal.out           |    7 `{\color{green}+}'
+ test/scanner/scripts/pass/_literal.test          |    7 `{\color{green}+}'
+ test/scanner/scripts/pass/_main_function.out     |    9 `{\color{green}+}'
+ test/scanner/scripts/pass/_main_function.test    |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_matrix.out            |    6 `{\color{green}+}'
+ test/scanner/scripts/pass/_matrix.test           |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_misc.out              |    2 `{\color{green}+}'
+ test/scanner/scripts/pass/_misc.test             |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_mixed_arithmetic.out  |    9 `{\color{green}+}'
+ test/scanner/scripts/pass/_mixed_arithmetic.test |    1 `{\color{green}+}'
+ test/scanner/scripts/pass/_types.out             |   21 `{\color{green}+}'
+ test/scanner/scripts/pass/_types.test            |    1 `{\color{green}+}'
+ test/scanner/scripts/test.sh                     |  281 `{\color{green}+++}'
+ test/test-prints.mpl                             |    3 `{\color{green}+}'
+ travis-ci.sh                                     |   23 `{\color{green}+}'
+ 60 files changed, 3367 insertions(+), 79 deletions(-)
+
+df9e2b5: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Mon, 20 Mar 2017 15:35:21 -0400
+Subject: fixed shift/reduct conflicts
+Content: 
+ src/ast.ml     |  5 `{\color{green}+++}'`{\color{red}--}'
+ src/parser.mly | 29 `{\color{green}+++++++++}'`{\color{red}--------------------}'
+ 2 files changed, 12 insertions(+), 22 deletions(-)
+
+ce23c15: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Wed, 15 Mar 2017 15:58:30 -0400
+Subject: Replace FloatLit with num type
+Content: 
+ src/ast.ml     | 1 `{\color{red}-}'
+ src/parser.mly | 5 `{\color{green}++}'`{\color{red}---}'
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+5d0f119: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Wed, 15 Mar 2017 15:50:10 -0400
+Subject: Added brackets to scanner; added matrix initialization and access to parser and ast.
+Content: 
+ src/ast.ml      | 18 `{\color{green}++++++++++++++}'`{\color{red}----}'
+ src/parser.mly  | 34 `{\color{green}+++++++++++++++++++}'`{\color{red}---------------}'
+ src/scanner.mll |  2 `{\color{green}++}'
+ 3 files changed, 35 insertions(+), 19 deletions(-)
+
+ddb2962: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Wed, 15 Mar 2017 13:12:35 -0400
+Subject: Added floating point numberin scanner and parser.
+Content: ISSUE: NEG operator is deleted bacause microc has a solution to this
+problem. We need to clean up the ocde to revert to the original
+solution, especially the unnecessary BInt type.
+
+ src/ast.ml      |  3 `{\color{green}+}'`{\color{red}--}'
+ src/mpl.ml      |  2 `{\color{green}++}'
+ src/parser.mly  | 11 `{\color{green}+++++}'`{\color{red}------}'
+ src/scanner.mll |  9 `{\color{green}+++++++}'`{\color{red}--}'
+ 4 files changed, 15 insertions(+), 10 deletions(-)
+
+e17386a: `{\color{blue}ZhangChi <ChyZin@ZhangChideMacBook-Pro.local>}'
+Date: Wed, 15 Mar 2017 11:30:28 -0400
+Subject: skeleton for test, modified first 3 test
+Content: 
+ test/fail-assign1.err |   1 `{\color{green}+}'
+ test/fail-assign1.mc  |   1 `{\color{green}+}'
+ test/fail-assign2.err |   1 `{\color{green}+}'
+ test/fail-assign2.mc  |   1 `{\color{green}+}'
+ test/fail-assign3.err |   1 `{\color{green}+}'
+ test/fail-assign3.mc  |  11 `{\color{green}+++}'
+ test/fail-dead1.err   |   1 `{\color{green}+}'
+ test/fail-dead1.mc    |   8 `{\color{green}+++}'
+ test/fail-dead2.err   |   1 `{\color{green}+}'
+ test/fail-dead2.mc    |  10 `{\color{green}+++}'
+ test/fail-expr1.err   |   1 `{\color{green}+}'
+ test/fail-expr1.mc    |  18 `{\color{green}+++++}'
+ test/fail-expr2.err   |   1 `{\color{green}+}'
+ test/fail-expr2.mc    |  14 `{\color{green}++++}'
+ test/fail-for1.err    |   1 `{\color{green}+}'
+ test/fail-for1.mc     |  13 `{\color{green}++++}'
+ test/fail-for2.err    |   1 `{\color{green}+}'
+ test/fail-for2.mc     |   8 `{\color{green}+++}'
+ test/fail-for3.err    |   1 `{\color{green}+}'
+ test/fail-for3.mc     |   8 `{\color{green}+++}'
+ test/fail-for4.err    |   1 `{\color{green}+}'
+ test/fail-for4.mc     |   8 `{\color{green}+++}'
+ test/fail-for5.err    |   1 `{\color{green}+}'
+ test/fail-for5.mc     |  10 `{\color{green}+++}'
+ test/fail-func1.err   |   1 `{\color{green}+}'
+ test/fail-func1.mc    |  12 `{\color{green}++++}'
+ test/fail-func2.err   |   1 `{\color{green}+}'
+ test/fail-func2.mc    |   8 `{\color{green}+++}'
+ test/fail-func3.err   |   1 `{\color{green}+}'
+ test/fail-func3.mc    |   8 `{\color{green}+++}'
+ test/fail-func4.err   |   1 `{\color{green}+}'
+ test/fail-func4.mc    |  12 `{\color{green}++++}'
+ test/fail-func5.err   |   1 `{\color{green}+}'
+ test/fail-func5.mc    |  14 `{\color{green}++++}'
+ test/fail-func6.err   |   1 `{\color{green}+}'
+ test/fail-func6.mc    |   9 `{\color{green}+++}'
+ test/fail-func7.err   |   1 `{\color{green}+}'
+ test/fail-func7.mc    |   9 `{\color{green}+++}'
+ test/fail-func8.err   |   1 `{\color{green}+}'
+ test/fail-func8.mc    |  13 `{\color{green}++++}'
+ test/fail-func9.err   |   1 `{\color{green}+}'
+ test/fail-func9.mc    |   9 `{\color{green}+++}'
+ test/fail-global1.err |   1 `{\color{green}+}'
+ test/fail-global1.mc  |   9 `{\color{green}+++}'
+ test/fail-global2.err |   1 `{\color{green}+}'
+ test/fail-global2.mc  |   9 `{\color{green}+++}'
+ test/fail-if1.err     |   1 `{\color{green}+}'
+ test/fail-if1.mc      |   6 `{\color{green}++}'
+ test/fail-if2.err     |   1 `{\color{green}+}'
+ test/fail-if2.mc      |   6 `{\color{green}++}'
+ test/fail-if3.err     |   1 `{\color{green}+}'
+ test/fail-if3.mc      |   8 `{\color{green}+++}'
+ test/fail-nomain.err  |   1 `{\color{green}+}'
+ test/fail-nomain.mc   |   0
+ test/fail-return1.err |   1 `{\color{green}+}'
+ test/fail-return1.mc  |   4 `{\color{green}++}'
+ test/fail-return2.err |   1 `{\color{green}+}'
+ test/fail-return2.mc  |  10 `{\color{green}+++}'
+ test/fail-while1.err  |   1 `{\color{green}+}'
+ test/fail-while1.mc   |  13 `{\color{green}++++}'
+ test/fail-while2.err  |   1 `{\color{green}+}'
+ test/fail-while2.mc   |  13 `{\color{green}++++}'
+ test/test-add1.mc     |  10 `{\color{green}+++}'
+ test/test-add1.out    |   1 `{\color{green}+}'
+ test/test-arith1.mc   |   5 `{\color{green}++}'
+ test/test-arith1.out  |   1 `{\color{green}+}'
+ test/test-arith2.mc   |   5 `{\color{green}++}'
+ test/test-arith2.out  |   1 `{\color{green}+}'
+ test/test-arith3.mc   |  13 `{\color{green}++++}'
+ test/test-arith3.out  |   1 `{\color{green}+}'
+ test/test-fib.mc      |  16 `{\color{green}+++++}'
+ test/test-fib.out     |   6 `{\color{green}++}'
+ test/test-for1.mc     |   9 `{\color{green}+++}'
+ test/test-for1.out    |   6 `{\color{green}++}'
+ test/test-for2.mc     |  11 `{\color{green}+++}'
+ test/test-for2.out    |   6 `{\color{green}++}'
+ test/test-func1.mc    |  12 `{\color{green}++++}'
+ test/test-func1.out   |   1 `{\color{green}+}'
+ test/test-func2.mc    |  18 `{\color{green}+++++}'
+ test/test-func2.out   |   1 `{\color{green}+}'
+ test/test-func3.mc    |  13 `{\color{green}++++}'
+ test/test-func3.out   |   4 `{\color{green}++}'
+ test/test-func4.mc    |  14 `{\color{green}++++}'
+ test/test-func4.out   |   1 `{\color{green}+}'
+ test/test-func5.mc    |   9 `{\color{green}+++}'
+ test/test-func5.out   |   0
+ test/test-func6.mc    |   9 `{\color{green}+++}'
+ test/test-func6.out   |   1 `{\color{green}+}'
+ test/test-func7.mc    |  13 `{\color{green}++++}'
+ test/test-func7.out   |   1 `{\color{green}+}'
+ test/test-func8.mc    |  10 `{\color{green}+++}'
+ test/test-func8.out   |   1 `{\color{green}+}'
+ test/test-gcd.mc      |  15 `{\color{green}++++}'
+ test/test-gcd.out     |   3 `{\color{green}+}'
+ test/test-gcd2.mc     |  14 `{\color{green}++++}'
+ test/test-gcd2.out    |   3 `{\color{green}+}'
+ test/test-global1.mc  |  30 `{\color{green}++++++++}'
+ test/test-global1.out |   4 `{\color{green}++}'
+ test/test-global2.mc  |  10 `{\color{green}+++}'
+ test/test-global2.out |   1 `{\color{green}+}'
+ test/test-global3.mc  |  11 `{\color{green}+++}'
+ test/test-global3.out |   1 `{\color{green}+}'
+ test/test-hello.mc    |   7 `{\color{green}++}'
+ test/test-hello.out   |   3 `{\color{green}+}'
+ test/test-if1.mc      |   6 `{\color{green}++}'
+ test/test-if1.out     |   2 `{\color{green}+}'
+ test/test-if2.mc      |   6 `{\color{green}++}'
+ test/test-if2.out     |   2 `{\color{green}+}'
+ test/test-if3.mc      |   6 `{\color{green}++}'
+ test/test-if3.out     |   1 `{\color{green}+}'
+ test/test-if4.mc      |   6 `{\color{green}++}'
+ test/test-if4.out     |   2 `{\color{green}+}'
+ test/test-if5.mc      |  16 `{\color{green}+++++}'
+ test/test-if5.out     |   2 `{\color{green}+}'
+ test/test-local1.mc   |  13 `{\color{green}++++}'
+ test/test-local1.out  |   1 `{\color{green}+}'
+ test/test-local2.mc   |  14 `{\color{green}++++}'
+ test/test-local2.out  |   1 `{\color{green}+}'
+ test/test-ops1.mc     |  28 `{\color{green}++++++++}'
+ test/test-ops1.out    |  24 `{\color{green}+++++++}'
+ test/test-ops2.mc     |  17 `{\color{green}+++++}'
+ test/test-ops2.out    |  14 `{\color{green}++++}'
+ test/test-var1.mc     |   7 `{\color{green}++}'
+ test/test-var1.out    |   1 `{\color{green}+}'
+ test/test-var2.mc     |  13 `{\color{green}++++}'
+ test/test-var2.out    |   1 `{\color{green}+}'
+ test/test-while1.mc   |  11 `{\color{green}+++}'
+ test/test-while1.out  |   6 `{\color{green}++}'
+ test/test-while2.mc   |  16 `{\color{green}+++++}'
+ test/test-while2.out  |   1 `{\color{green}+}'
+ testall.log           |   0
+ testall.sh            | 184 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++++++++}'
+ 132 files changed, 1015 insertions(+)
+
+9ec4379: `{\color{blue}Jiangfeng Wang <jw3107@columbia.edu>}'
+Date: Wed, 15 Mar 2017 11:06:42 -0400
+Subject: Edited parser to enable matrix initialization
+Content: 
+ src/parser.mly | 26 `{\color{green}+++++++++++++++++++++++++}'`{\color{red}-}'
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+
+8c0525c: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Tue, 14 Mar 2017 16:16:40 -0400
+Subject: Compiled Scanner and parser with new tokens added
+Content: - Scanner now compiles but could be buggy
+- Parser now has the new tokens but not the correct grammar
+
+ scanner.mll     |  45 `{\color{red}-------------}'
+ src/Makefile    |  92 `{\color{green}+++++++++++++++++++++++++++}'
+ src/ast.ml      | 113 `{\color{green}+++++++++++++++++++++++++++++++++}'
+ src/mpl.ml      |  32 `{\color{green}++++++++++}'
+ src/parser.mly  | 129 `{\color{green}+++++++++++++++++++++++++++++++++++++}'
+ src/scanner.mll | 193 `{\color{green}++++++++++++++++++++++++++++++++++++++++++++++++++++++++}'
+ 6 files changed, 559 insertions(+), 45 deletions(-)
+
+3600804: `{\color{blue}wodeni <wn2155@columbia.edu>}'
+Date: Thu, 26 Jan 2017 15:02:57 -0500
+Subject: Meeting notes until Spring break and related documents.
+Content: Also skeleton code for scanner.
+
+ README.md                         | 237 `{\color{green}++++++++++++++++++++++++++++++++++++++}'
+ doc/language-reference-manual.pdf | Bin `{\color{red}0}' -> `{\color{green}289072}' bytes
+ doc/proposal-graded.pdf           | Bin `{\color{red}0}' -> `{\color{green}1347012}' bytes
+ scanner.mll                       |  45 `{\color{green}++++++++}'
+ 4 files changed, 282 insertions(+)
+
+1f51699: `{\color{blue}DRC9702 <david.rincon.cruz@gmail.com>}'
+Date: Wed, 25 Jan 2017 21:25:38 -0500
+Subject: Initial commit
+Content: 
+ README.md | 2 `{\color{green}++}'
+ 1 file changed, 2 insertions(+)
+\end{lstlisting}
