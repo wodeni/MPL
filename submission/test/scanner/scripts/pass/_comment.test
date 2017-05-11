@@ -1,6 +1,0 @@
-/*
-   This is a comment
-   "Comment"
-   None of this should be tokenized.
-   int num = 8;
- */
