@@ -1,7 +1,6 @@
 set +x
 set -e
 
-# Process file name and path
 fullname=$(basename "$1")
 extension="${filename##*.}"
 filename="${fullname%.*}"
@@ -13,4 +12,7 @@ make clean && make
 llc -relocation-model=pic $llfilename
 clang -o main utils.o $sfilename
 ./main
+# Combine the input and output to the same image and display it
+convert lena.pgm lena-out.pgm +append combined.pgm
+display combined.pgm
 

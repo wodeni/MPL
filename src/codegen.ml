@@ -93,10 +93,9 @@ in
   let ppmrw_int_t         = L.function_type i32_t [| L.pointer_type i8_t; L.pointer_type i8_t;
                             L.pointer_type i8_t; L.pointer_type i8_t; i32_t; i32_t |] in
   let ppmread_func        = L.declare_function "ppmread" ppmrw_int_t the_module in
-  let ppmwrite_func        = L.declare_function "ppmwrite" ppmrw_int_t the_module in
+  let ppmwrite_func       = L.declare_function "ppmwrite" ppmrw_int_t the_module in
 
   (* Define each function so we can call it *)
-  (* FIXME: now that we take in some arguments, the number 9 is wrong *)
   let function_decls =
     let function_decl m fdecl =
       let name  = fdecl.S.sfname in 
@@ -162,7 +161,6 @@ in
    |               Helper Functions                    |
    * ------------------------------------------------- *)
     (* Return the value for a variable or formal argument *)
-    (* TODO: should we dthrow exception here? *)
     let getSlocal (a, _) = a in
     let getMlocal (_, b) = b in
     let lookup n = try StringMap.find n (getSlocal local_vars) 
@@ -226,36 +224,8 @@ in
             rem (add (rem (add j xj_l) col) col) col
             else rem (add j xj_l) col
         in 
-        (*
-        ignore(L.build_call printf_func [| int_format_str ; x |] "printf" b);
-        ignore(L.build_call printf_func [| int_format_str ; y |] "printf" b);
-        *)
         L.build_load (L.build_gep mat [| L.const_int i32_t 0; x; y |] "build_gep"  b) "build_load" b
     in
-
-    (*
-    let get_while_builders start_builder = 
-        let outter_pred_bb = L.append_block context "outter" the_function in
-        ignore (L.build_br outter_pred_bb b);
-        let outter_builder = L.builder_at_end context outter_pred_bb in
-        let outter_bool_val = L.build_icmp L.Icmp.Slt i (L.const_int i32_t rows) "outter_bool_val" outter_builder in
-        let outter_body_bb = L.append_block context "outter_body" the_function in
-        let outter_body_builder = L.builder_at_end context outter_body_bb in
-          let inner_pred_bb = L.append_block context "inner" the_function in
-          ignore (L.build_br inner_pred_bb outter_body_builder);
-          let inner_builder = L.builder_at_end context inner_pred_bb in
-          let j = L.build_load jptr "inner_countv" inner_builder in
-          let inner_bool_val = L.build_icmp L.Icmp.Slt j (L.const_int i32_t cols) "inner_bool_val" inner_builder in
-          let inner_body_bb = L.append_block context "inner_body" the_function in
-          let inner_body_builder = L.builder_at_end context inner_body_bb in
-          ignore(L.build_br inner_pred_bb inner_body_builder);
-          let inner_merge_bb = L.append_block context "inner_merge" the_function in
-          ignore(L.build_cond_br inner_bool_val inner_body_bb inner_merge_bb inner_builder);
-          ignore(L.build_br outter_pred_bb (get_builder inner_merge_bb));
-        let outter_merge_bb = L.append_block context "outter_merge" the_function in
-        ignore (L.build_cond_br outter_bool_val outter_body_bb outter_merge_bb outter_builder);
-        let outter_merge_builder = get_builder outter_merge_bb in
-  *)
 
 
     (* Build instructions for apply operation, this will translate a single 
@@ -281,10 +251,6 @@ in
         let jptr        = L.build_alloca i32_t "inner_count" b in
         ignore(L.build_store (L.const_int i32_t 0) iptr b);
         ignore(L.build_call memcpy_func [|  old_mat_ptr; mat_ptr; dim  |] "memcpy" b);
-        (*
-        ignore(L.build_call printm_int_func [| old_mat_ptr; (L.const_int i32_t rows); 
-                                (L.const_int i32_t cols) |] "printm_int" b);
-        *)
 
         let outter_pred_bb = L.append_block context "outter" the_function in
         ignore (L.build_br outter_pred_bb b);
@@ -311,10 +277,6 @@ in
 
           (* The actual code for function application *)
           let entry = L.build_gep (lookup mat_str) [| L.const_int i32_t 0; i; j |] mat_str inner_body_builder in
-          (*
-            ignore(L.build_call printf_func [| int_format_str ; i |] "printf" inner_body_builder);
-            ignore(L.build_call printf_func [| int_format_str ; j |] "printf" inner_body_builder);
-           *)
 
           (* for all the nine neighbors *)
           let arr = Array.make 9 (L.const_int i32_t 0) in 
@@ -357,10 +319,6 @@ in
         let arr_ptr = L.build_in_bounds_gep m (idx 0 0) "build_in_bounds_gep" b in 
          L.build_bitcast arr_ptr (pointer_t i8_t) "mat_ptr" b 
     in
-
-    (* TODO: what is this?
-    let buildName s = String.sub s 1 ((String.length s)-2) 
-    in*)  
 
   (* ------------------------------------------------- *
    |               Expression Builder                  |
@@ -484,16 +442,6 @@ in
             A.Int -> L.build_call pgmread_func [| (expr builder e1); (get_mptr id builder);
                 (L.const_int i32_t rows); (L.const_int i32_t cols) |] "pgmread" builder
             | _ -> raise(Exceptions.UnsupportedMatrixType)        )
-                   
-      (* NOTE: we do not have any user defined functions
-       *       Will use this code once we implement "@"
-      | A.Call (f, act) ->
-         let (fdef, fdecl) = StringMap.find f function_decls in
-	 let actuals = List.rev (List.map (expr builder) (List.rev act)) in
-	 let result = (match fdecl.A.typ with A.Void -> ""
-                                            | _ -> f ^ "_result") in
-         L.build_call fdef (Array.of_list actuals) result builder
-    *)
       | _ -> raise(Exceptions.StatementNotSuuported)
     in
 

@@ -7,7 +7,12 @@ int entry() {
 
 int main() {
     Mat<int>[512][512] img;
+    int i;
+    i = 0;
     pgmread("lena.pgm", img);
-    entry @ img;
+    while(i < 20) {
+        entry @ img;
+        i = i + 1;
+    }
     pgmwrite("lena-out.pgm", img);
 }

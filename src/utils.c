@@ -13,14 +13,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-// #define LIVE 254 // a black square
-// #define LIVE "\u2588\u2588" // a black square
-// #define DEAD "  "     // a space
 #define LIVE "o" // a black square
 #define DEAD "."     // a space
 #define clear() printf("\033[H\033[J")
-// #define clear() puts("\033[J\033[1;1H")
-// #define clear() system ( "clear" );
 #define get_symbol(i) (i == 0 ? DEAD : LIVE)
 #define mat_entry(mat, n, i, j) (*((mat + i * n) + j))
 

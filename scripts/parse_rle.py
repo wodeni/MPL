@@ -135,13 +135,13 @@ class RunLengthEncodedParser:
             pattern_str += row_str + '\n'
         return pattern_str
 
-def output_rle(filename, raw_arr, nrow, ncol, paddlex, paddley):
+def output_rle(filename, raw_arr, nrow, ncol, paddle):
     with open(filename, "wb") as fp:
-        for i in range(0, paddlex):
+        for i in range(0, paddle):
             for i in range(0, ncol):
                 fp.write(struct.pack('i', 0))
         for row in raw_arr:
-            for i in range(0, paddley):
+            for i in range(0, paddle):
                 fp.write(struct.pack('i', 0))
             for e in row:
                 if(e == 'b'):
@@ -150,11 +150,11 @@ def output_rle(filename, raw_arr, nrow, ncol, paddlex, paddley):
                     res = 1
                 fp.write(struct.pack('i', res))
             # Fill the rest of the row
-            for i in range(0, ncol - len(row) - paddley):
+            for i in range(0, ncol - len(row) - paddle):
                 fp.write(struct.pack('i', 0))
 
         # Fill the rest of the board
-        for i in range(0, nrow - len(raw_arr) - paddlex):
+        for i in range(0, nrow - len(raw_arr) - paddle):
             for i in range(0, ncol):
                 fp.write(struct.pack('i', 0))
 
@@ -169,15 +169,12 @@ x = 36, y = 9, rule = B3/S23
 24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
 obo$10bo5bo7bo$11bo3bo$12b2o! """
 
-    if(len(argv) !=  7):
-        print("usage: <input filename> <output filename> <width> <height> <startx> <starty>")
+    if(len(argv) !=  5):
+        print("usage: <input filename> <output filename> <width> <height>")
         return
     sample_rle = open(argv[1], 'r').read()
     width = int(argv[3])
     height = int(argv[4])
-    startx = int(argv[5])
-    starty = int(argv[6])
-    
 
     rle_parser = RunLengthEncodedParser(sample_rle)
     print("name:", rle_parser.get_name())
@@ -197,7 +194,8 @@ obo$10bo5bo7bo$11bo3bo$12b2o! """
     raw_arr = rle_parser.get_pattern_2d_array()
     print("writing to: " + argv[2])
     # output_rle(argv[1], raw_arr, 100, 100, 30)
-    output_rle(argv[2], raw_arr, width, height, startx, starty)
+    output_rle(argv[2], raw_arr, width, height, 30)
 
 if(__name__ == "__main__"):
+    print (sys.argv)
     main(sys.argv)
