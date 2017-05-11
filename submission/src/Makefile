@@ -96,5 +96,6 @@ TESTFILES = $(TESTS:%=test-%.mpl) $(TESTS:%=test-%.out) \
 TARFILES = ast.ml codegen.ml exceptions.ml Makefile mpl.ml parser.mly scanner.mll \
 	semant.ml sast.ml utils.c ../testall.sh $(TESTFILES:%=../testVer1/tests/%)
 
-mpl.tar.gz : 
-	cd .. && tar czf mpl.tar.gz submission
+mpl.tar.gz : $(TARFILES)
+	cd ../.. && tar czf mpl/mpl.tar.gz \
+		$(TARFILES:%=mpl/%)
