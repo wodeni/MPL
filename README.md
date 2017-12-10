@@ -9,7 +9,6 @@ Team members:
 - David Rincon-Cruz
 - Jiangfeng Wang
 
-The code base is currently runnable, but several features are incomplete.
 
 
 
